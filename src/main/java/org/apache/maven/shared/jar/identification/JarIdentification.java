@@ -57,27 +57,27 @@ public class JarIdentification
     /**
      * The list of possible group IDs discovered.
      */
-    private List<String> potentialGroupIds = new ArrayList<String>();
+    private List<String> potentialGroupIds = new ArrayList<>();
 
     /**
      * The list of possible artifact IDs discovered.
      */
-    private List<String> potentialArtifactIds = new ArrayList<String>();
+    private List<String> potentialArtifactIds = new ArrayList<>();
 
     /**
      * The list of possible versions discovered.
      */
-    private List<String> potentialVersions = new ArrayList<String>();
+    private List<String> potentialVersions = new ArrayList<>();
 
     /**
      * The list of possible artifact names discovered.
      */
-    private List<String> potentialNames = new ArrayList<String>();
+    private List<String> potentialNames = new ArrayList<>();
 
     /**
      * The list of possible vendors discovered.
      */
-    private List<String> potentialVendors = new ArrayList<String>();
+    private List<String> potentialVendors = new ArrayList<>();
 
     /**
      * Add a validated group ID.

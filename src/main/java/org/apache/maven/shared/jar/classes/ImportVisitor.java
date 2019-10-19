@@ -153,7 +153,7 @@ public class ImportVisitor
 
         // Double ".." indicates a bad class fail-fast.
         // Seen when ConstantUTF8 Pool has regex patterns.
-        if ( ret.indexOf( ".." ) != -1 )
+        if ( ret.contains( ".." ) )
         {
             return;
         }

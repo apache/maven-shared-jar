@@ -59,7 +59,7 @@ public class EmbeddedMavenModelExposer
                 "More than one Maven model entry was found in the JAR, using only the first of: " + entries );
         }
 
-        JarEntry pom = (JarEntry) entries.get( 0 );
+        JarEntry pom = entries.get( 0 );
         MavenXpp3Reader pomreader = new MavenXpp3Reader();
         InputStream is = null;
         try

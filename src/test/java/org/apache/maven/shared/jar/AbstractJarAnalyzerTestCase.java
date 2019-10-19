@@ -24,7 +24,6 @@ import org.codehaus.plexus.PlexusTestCase;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,23 +31,25 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * Abstract JarAnalyzer TestCase
  */
 public abstract class AbstractJarAnalyzerTestCase
     extends PlexusTestCase
 {
-    public File getSampleJar( String filename )
-        throws MalformedURLException, UnsupportedEncodingException
+    protected File getSampleJar( String filename )
+        throws UnsupportedEncodingException
     {
         String path = getClass().getResource( "/jars/" + filename ).getPath();
         // URLDecoder.decode necessary for JDK 1.5+, where spaces are escaped to %20
-        return new File( URLDecoder.decode( path, "UTF-8" ) );
+        return new File( URLDecoder.decode( path, UTF_8.name() ) );
     }
 
-    public void assertNotContainsRegex( String msg, String regex, Collection<String> coll )
+    protected void assertNotContainsRegex( String msg, String regex, Collection<String> coll )
     {
-        List<String> failures = new ArrayList<String>();
+        List<String> failures = new ArrayList<>();
         Pattern pat = Pattern.compile( regex );
         for ( String value : coll )
         {
@@ -61,7 +62,7 @@ public abstract class AbstractJarAnalyzerTestCase
 
         if ( !failures.isEmpty() )
         {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append( msg ).append( " collection has illegal regex \"" ).append( regex ).append( "\"" );
             for ( String failure : failures )
             {

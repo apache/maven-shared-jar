@@ -114,9 +114,9 @@ public class JarClassesAnalysis
                     }
 
                     Method[] methods = javaClass.getMethods();
-                    for ( int i = 0; i < methods.length; i++ )
+                    for ( Method method : methods )
                     {
-                        classes.addMethod( classSignature + "." + methods[i].getName() + methods[i].getSignature() );
+                        classes.addMethod( classSignature + "." + method.getName() + method.getSignature() );
                     }
 
                     String classPackageName = javaClass.getPackageName();
@@ -183,9 +183,9 @@ public class JarClassesAnalysis
     {
         boolean ret = false;
         Method[] methods = javaClass.getMethods();
-        for ( int i = 0; i < methods.length; i++ )
+        for ( Method method : methods )
         {
-            LineNumberTable linenumbers = methods[i].getLineNumberTable();
+            LineNumberTable linenumbers = method.getLineNumberTable();
             if ( linenumbers != null && linenumbers.getLength() > 0 )
             {
                 ret = true;

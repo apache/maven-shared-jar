@@ -24,7 +24,6 @@ import org.apache.maven.shared.jar.JarData;
 import org.codehaus.plexus.digest.DigesterException;
 import org.codehaus.plexus.digest.StreamingDigester;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.apache.maven.shared.utils.io.IOUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,34 +64,20 @@ public class JarBytecodeHashAnalyzer
                 digester.reset();
                 for ( JarEntry entry : entries )
                 {
-                    computeEntryBytecodeHash( jarAnalyzer.getEntryInputStream( entry ) );
+                    try ( InputStream is = jarAnalyzer.getEntryInputStream( entry ) )
+                    {
+                        digester.update( is );
+                    }
                 }
                 result = digester.calc();
                 jarData.setBytecodeHash( result );
             }
-            catch ( DigesterException e )
-            {
-                getLogger().warn( "Unable to calculate the hashcode.", e );
-            }
-            catch ( IOException e )
+            catch ( DigesterException | IOException e )
             {
                 getLogger().warn( "Unable to calculate the hashcode.", e );
             }
         }
         return result;
-    }
-
-    private void computeEntryBytecodeHash( InputStream is )
-        throws IOException, DigesterException
-    {
-        try
-        {
-            digester.update( is );
-        }
-        finally
-        {
-            IOUtil.close( is );
-        }
     }
 
     public void setDigester( StreamingDigester digester )

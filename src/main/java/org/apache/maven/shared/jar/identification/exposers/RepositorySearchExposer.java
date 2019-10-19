@@ -70,7 +70,7 @@ public class RepositorySearchExposer
 
     public void expose( JarIdentification identification, JarAnalyzer jarAnalyzer )
     {
-        List<Artifact> repohits = new ArrayList<Artifact>();
+        List<Artifact> repohits = new ArrayList<>();
 
         String hash = fileHashAnalyzer.computeHash( jarAnalyzer );
         if ( hash != null )

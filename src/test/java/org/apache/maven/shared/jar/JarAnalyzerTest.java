@@ -71,7 +71,6 @@ public class JarAnalyzerTest
     }
 
     public void testMissingFile()
-        throws Exception
     {
         try
         {

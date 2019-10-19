@@ -23,7 +23,6 @@ import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.apache.maven.shared.utils.io.IOUtil;
 import org.apache.maven.shared.utils.StringUtils;
 
 import java.io.BufferedReader;
@@ -56,7 +55,7 @@ public class TextFileExposer
 
     private List<String> findTextFileVersions( JarAnalyzer jarAnalyzer )
     {
-        List<String> textVersions = new ArrayList<String>();
+        List<String> textVersions = new ArrayList<>();
         List<JarEntry> hits = jarAnalyzer.getVersionEntries();
 
         for ( JarEntry entry : hits )
@@ -65,10 +64,8 @@ public class TextFileExposer
             if ( !entry.getName().endsWith( ".class" ) ) //$NON-NLS-1$
             {
                 getLogger().debug( "Version Hit: " + entry.getName() );
-                InputStream is = null;
-                try
+                try ( InputStream is = jarAnalyzer.getEntryInputStream( entry ) )
                 {
-                    is = jarAnalyzer.getEntryInputStream( entry );
                     BufferedReader br = new BufferedReader( new InputStreamReader( is ) );
 
                     String line = br.readLine();
@@ -84,10 +81,6 @@ public class TextFileExposer
                 catch ( IOException e )
                 {
                     getLogger().warn( "Unable to read line from " + entry.getName(), e );
-                }
-                finally
-                {
-                    IOUtil.close( is );
                 }
             }
         }

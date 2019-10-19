@@ -173,7 +173,7 @@ public class JarAnalyzer
      */
     public List<JarEntry> filterEntries( Pattern pattern )
     {
-        List<JarEntry> ret = new ArrayList<JarEntry>();
+        List<JarEntry> ret = new ArrayList<>();
 
         for ( JarEntry entry : getEntries() )
         {
