@@ -23,7 +23,7 @@ import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.EmptyVisitor;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.commons.collections.list.SetUniqueList;
+import org.apache.commons.collections4.list.SetUniqueList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +68,7 @@ public class ImportVisitor
 
         // Create a list that is guaranteed to be unique while retaining it's list qualities (LinkedHashSet does not
         // expose the list interface even if natural ordering is retained)  
-        this.imports = SetUniqueList.decorate( new ArrayList<String>() );
+        this.imports = SetUniqueList.setUniqueList( new ArrayList<String>() );
     }
 
     /**

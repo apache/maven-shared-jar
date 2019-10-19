@@ -19,7 +19,7 @@ package org.apache.maven.shared.jar.classes;
  * under the License.
  */
 
-import org.apache.commons.collections.list.SetUniqueList;
+import org.apache.commons.collections4.list.SetUniqueList;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,10 +71,10 @@ public class JarClasses
     {
         // Unique list decorators are used to ensure natural ordering is retained, the list interface is availble, and
         // that duplicates are not entered.
-        imports = SetUniqueList.decorate( new ArrayList<String>() );
-        packages = SetUniqueList.decorate( new ArrayList<String>() );
-        classNames = SetUniqueList.decorate( new ArrayList<String>() );
-        methods = SetUniqueList.decorate( new ArrayList<String>() );
+        imports = SetUniqueList.setUniqueList( new ArrayList<String>() );
+        packages = SetUniqueList.setUniqueList( new ArrayList<String>() );
+        classNames = SetUniqueList.setUniqueList( new ArrayList<String>() );
+        methods = SetUniqueList.setUniqueList( new ArrayList<String>() );
     }
 
     /**

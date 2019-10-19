@@ -19,8 +19,8 @@ package org.apache.maven.shared.jar.identification.exposers;
  * under the License.
  */
 
-import org.apache.commons.collections.Bag;
-import org.apache.commons.collections.bag.HashBag;
+import org.apache.commons.collections4.Bag;
+import org.apache.commons.collections4.bag.HashBag;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
@@ -44,7 +44,7 @@ public class TimestampExposer
     {
         List<JarEntry> entries = jarAnalyzer.getEntries();
         SimpleDateFormat tsformat = new SimpleDateFormat( "yyyyMMdd", Locale.US ); //$NON-NLS-1$
-        Bag timestamps = new HashBag();
+        Bag<String> timestamps = new HashBag<>();
         for ( JarEntry entry : entries )
         {
             long time = entry.getTime();
@@ -54,12 +54,12 @@ public class TimestampExposer
 
         String ts = "";
         int tsmax = 0;
-        for ( Object timestamp : timestamps )
+        for ( String timestamp : timestamps )
         {
             int count = timestamps.getCount( timestamp );
             if ( count > tsmax )
             {
-                ts = (String) timestamp;
+                ts = timestamp;
                 tsmax = count;
             }
         }
