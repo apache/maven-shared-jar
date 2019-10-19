@@ -22,6 +22,7 @@ package org.apache.maven.shared.jar.identification.exposers;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
+import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.apache.maven.shared.utils.StringUtils;
 
@@ -37,9 +38,8 @@ import java.util.jar.JarEntry;
 /**
  * Exposer that examines a a JAR for files that contain the text <code>version</code> (case-insensitive) and
  * adds the contents as potential version(s).
- *
- * @plexus.component role="org.apache.maven.shared.jar.identification.JarIdentificationExposer" role-hint="textFile"
  */
+@Component( role = JarIdentificationExposer.class, hint = "textFile" )
 public class TextFileExposer
     extends AbstractLogEnabled
     implements JarIdentificationExposer

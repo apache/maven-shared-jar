@@ -21,6 +21,8 @@ package org.apache.maven.shared.jar.identification.hash;
 
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.JarData;
+import org.codehaus.plexus.component.annotations.Component;
+import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
@@ -29,18 +31,16 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
  * Analyzer that calculates the hash code for the entire file. Can be used to detect an exact copy of the file.
  * <p/>
  * If you are not using Plexus, you must call {@link #setDigester(org.codehaus.plexus.digest.Digester)} before use
- *
- * @plexus.component role="org.apache.maven.shared.jar.identification.hash.JarHashAnalyzer" role-hint="file"
  */
+@Component( role = JarHashAnalyzer.class, hint = "file" )
 public class JarFileHashAnalyzer
     extends AbstractLogEnabled
     implements JarHashAnalyzer
 {
     /**
      * The digester to use for computing the hash. Under Plexus, the default is SHA-1.
-     *
-     * @plexus.requirement role-hint="sha1"
      */
+    @Requirement( hint = "sha1" )
     private Digester digester;
 
     public String computeHash( JarAnalyzer jarAnalyzer )

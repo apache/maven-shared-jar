@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
+import org.codehaus.plexus.component.annotations.Component;
 
 /**
  * Empty repository hash search.  Always returns an empty list.
@@ -30,9 +31,8 @@ import org.apache.maven.artifact.Artifact;
  * Used for local only implementation of a RepositoryHashSearch. It is expected for the users of this library to provide
  * an implementation of a {@link org.apache.maven.shared.jar.identification.repository.RepositoryHashSearch} against a
  * real repository.
- *
- * @plexus.component role="org.apache.maven.shared.jar.identification.repository.RepositoryHashSearch" role-hint="empty"
  */
+@Component( role = RepositoryHashSearch.class, hint = "empty" )
 public class EmptyRepositoryHashSearch
     implements RepositoryHashSearch
 {

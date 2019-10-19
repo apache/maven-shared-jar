@@ -25,6 +25,7 @@ import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
 import org.apache.maven.shared.utils.StringUtils;
+import org.codehaus.plexus.component.annotations.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,9 +35,8 @@ import java.util.jar.JarEntry;
 
 /**
  * Exposer that examines a a JAR and uses the most recent timestamp as a potential version.
- *
- * @plexus.component role="org.apache.maven.shared.jar.identification.JarIdentificationExposer" role-hint="timestamp"
  */
+@Component( role = JarIdentificationExposer.class, hint = "timestamp" )
 public class TimestampExposer
     implements JarIdentificationExposer
 {

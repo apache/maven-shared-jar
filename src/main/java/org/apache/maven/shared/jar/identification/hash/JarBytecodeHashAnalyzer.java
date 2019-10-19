@@ -21,6 +21,8 @@ package org.apache.maven.shared.jar.identification.hash;
 
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.JarData;
+import org.codehaus.plexus.component.annotations.Component;
+import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.digest.DigesterException;
 import org.codehaus.plexus.digest.StreamingDigester;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
@@ -36,18 +38,16 @@ import java.util.jar.JarEntry;
  * <p/>
  * If you are not using Plexus, you must call {@link #setDigester(org.codehaus.plexus.digest.StreamingDigester)} before
  * use
- *
- * @plexus.component role="org.apache.maven.shared.jar.identification.hash.JarHashAnalyzer" role-hint="bytecode"
  */
+@Component( role = JarHashAnalyzer.class, hint = "bytecode" )
 public class JarBytecodeHashAnalyzer
     extends AbstractLogEnabled
     implements JarHashAnalyzer
 {
     /**
      * The streaming digester to use for computing the hash. Under Plexus, the default is SHA-1.
-     *
-     * @plexus.requirement role-hint="sha1"
      */
+    @Requirement( hint = "sha1" )
     private StreamingDigester digester;
 
     public String computeHash( JarAnalyzer jarAnalyzer )

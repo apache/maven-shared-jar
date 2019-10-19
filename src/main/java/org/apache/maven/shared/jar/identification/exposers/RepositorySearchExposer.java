@@ -25,6 +25,8 @@ import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
 import org.apache.maven.shared.jar.identification.hash.JarHashAnalyzer;
 import org.apache.maven.shared.jar.identification.repository.RepositoryHashSearch;
+import org.codehaus.plexus.component.annotations.Component;
+import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 import java.util.ArrayList;
@@ -38,10 +40,8 @@ import java.util.List;
  * {@link #setBytecodeHashAnalyzer(org.apache.maven.shared.jar.identification.hash.JarHashAnalyzer)},
  * {@link #setFileHashAnalyzer(org.apache.maven.shared.jar.identification.hash.JarHashAnalyzer)},
  * {@link #setRepositoryHashSearch(org.apache.maven.shared.jar.identification.repository.RepositoryHashSearch)}
- *
- * @plexus.component role="org.apache.maven.shared.jar.identification.JarIdentificationExposer"
- *                   role-hint="repositorySearch"
  */
+@Component( role = JarIdentificationExposer.class, hint = "repositorySearch" )
 public class RepositorySearchExposer
     extends AbstractLogEnabled
     implements JarIdentificationExposer
@@ -49,23 +49,21 @@ public class RepositorySearchExposer
     /**
      * The repository searcher to use.
      *
-     * @plexus.requirement
      * @todo this currently only provides for the 'empty' repository search, which isn't very useful
      */
+    @Requirement
     private RepositoryHashSearch repositoryHashSearch;
 
     /**
      * The hash analyzer for the entire file.
-     *
-     * @plexus.requirement role-hint="file"
      */
+    @Requirement( hint = "file" )
     private JarHashAnalyzer fileHashAnalyzer;
 
     /**
      * The hash analyzer for the file's bytecode.
-     *
-     * @plexus.requirement role-hint="bytecode"
      */
+    @Requirement( hint = "bytecode" )
     private JarHashAnalyzer bytecodeHashAnalyzer;
 
     public void expose( JarIdentification identification, JarAnalyzer jarAnalyzer )

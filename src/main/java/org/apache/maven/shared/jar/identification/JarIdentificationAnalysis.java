@@ -21,6 +21,8 @@ package org.apache.maven.shared.jar.identification;
 
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.utils.StringUtils;
+import org.codehaus.plexus.component.annotations.Component;
+import org.codehaus.plexus.component.annotations.Requirement;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,16 +38,14 @@ import java.util.List;
  * <p/>
  * Note that you must first create an instance of {@link org.apache.maven.shared.jar.JarAnalyzer} - see its Javadoc for
  * a typical use.
- *
- * @plexus.component role="org.apache.maven.shared.jar.identification.JarIdentificationAnalysis" role-hint="default"
  */
+@Component( role =  JarIdentificationAnalysis.class )
 public class JarIdentificationAnalysis
 {
     /**
      * The Maven information exposers to use during identification.
-     *
-     * @plexus.requirement role="org.apache.maven.shared.jar.identification.JarIdentificationExposer"
      */
+    @Requirement( role = JarIdentificationExposer.class )
     private List<JarIdentificationExposer> exposers;
 
     /**

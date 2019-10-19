@@ -22,15 +22,15 @@ package org.apache.maven.shared.jar.identification.exposers;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
+import org.codehaus.plexus.component.annotations.Component;
 
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 /**
  * Exposer that examines a JAR's manifest to derive Maven metadata.
- *
- * @plexus.component role="org.apache.maven.shared.jar.identification.JarIdentificationExposer" role-hint="manifest"
  */
+@Component( role = JarIdentificationExposer.class, hint = "manifest" )
 public class ManifestExposer
     implements JarIdentificationExposer
 {

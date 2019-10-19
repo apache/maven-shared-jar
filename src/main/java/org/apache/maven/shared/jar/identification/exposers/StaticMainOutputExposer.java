@@ -22,6 +22,7 @@ package org.apache.maven.shared.jar.identification.exposers;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
+import org.codehaus.plexus.component.annotations.Component;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,9 +32,8 @@ import java.util.List;
  * <code>main</code> method if it exists to obtain the version.
  *
  * @todo not currently implemented
- * @plexus.component role="org.apache.maven.shared.jar.identification.JarIdentificationExposer"
- *                   role-hint="staticMainOutput"
  */
+@Component( role = JarIdentificationExposer.class, hint = "staticMainOutput" )
 public class StaticMainOutputExposer
     implements JarIdentificationExposer
 {

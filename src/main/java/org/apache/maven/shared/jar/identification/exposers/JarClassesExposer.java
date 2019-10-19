@@ -24,6 +24,8 @@ import org.apache.maven.shared.jar.classes.JarClasses;
 import org.apache.maven.shared.jar.classes.JarClassesAnalysis;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
+import org.codehaus.plexus.component.annotations.Component;
+import org.codehaus.plexus.component.annotations.Requirement;
 
 /**
  * Exposer that examines a JAR file to derive Maven metadata from the classes in a JAR. It will currently identify
@@ -31,15 +33,12 @@ import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
  * <p/>
  * Note: if not being used from Plexus, the {@link #setAnalyzer(org.apache.maven.shared.jar.classes.JarClassesAnalysis)}
  * method must be called to avoid a NullPointerException during the expose method.
- *
- * @plexus.component role="org.apache.maven.shared.jar.identification.JarIdentificationExposer" role-hint="jarClasses"
  */
+@Component( role = JarIdentificationExposer.class, hint = "jarClasses" )
 public class JarClassesExposer
     implements JarIdentificationExposer
 {
-    /**
-     * @plexus.requirement
-     */
+    @Requirement
     private JarClassesAnalysis analyzer;
 
     public void expose( JarIdentification identification, JarAnalyzer jarAnalyzer )

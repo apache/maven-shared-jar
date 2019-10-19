@@ -26,6 +26,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.maven.shared.jar.JarAnalyzer;
+import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 import java.io.IOException;
@@ -38,9 +39,9 @@ import java.util.jar.JarEntry;
  * Note that you must first create an instance of {@link org.apache.maven.shared.jar.JarAnalyzer} - see its Javadoc for
  * a typical use.
  *
- * @plexus.component role="org.apache.maven.shared.jar.classes.JarClassesAnalysis" role-hint="default"
  * @see #analyze(org.apache.maven.shared.jar.JarAnalyzer)
  */
+@Component ( role = JarClassesAnalysis.class )
 public class JarClassesAnalysis
     extends AbstractLogEnabled
 {
