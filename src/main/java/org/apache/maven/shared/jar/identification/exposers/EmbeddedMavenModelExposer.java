@@ -27,7 +27,6 @@ import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.apache.maven.shared.utils.io.IOUtil;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.IOException;
@@ -60,12 +59,23 @@ public class EmbeddedMavenModelExposer
 
         JarEntry pom = entries.get( 0 );
         MavenXpp3Reader pomreader = new MavenXpp3Reader();
-        InputStream is = null;
-        try
+        try ( InputStream is = jarAnalyzer.getEntryInputStream( pom );
+              InputStreamReader isreader = new InputStreamReader( is ) )
         {
-            is = jarAnalyzer.getEntryInputStream( pom );
-            InputStreamReader isreader = new InputStreamReader( is );
             Model model = pomreader.read( isreader );
+
+            if ( model.getParent() != null )
+            {
+                // use parent values only if project values not exists
+                if ( model.getGroupId() == null )
+                {
+                    identification.addAndSetGroupId( model.getParent().getGroupId() );
+                }
+                if ( model.getVersion() == null )
+                {
+                    identification.addAndSetVersion( model.getParent().getVersion() );
+                }
+            }
 
             identification.addAndSetGroupId( model.getGroupId() );
             identification.addAndSetArtifactId( model.getArtifactId() );
@@ -91,10 +101,6 @@ public class EmbeddedMavenModelExposer
         catch ( XmlPullParserException e )
         {
             getLogger().error( "Unable to parse model " + pom.getName() + " in " + jarAnalyzer.getFile() + ".", e );
-        }
-        finally
-        {
-            IOUtil.close( is );
         }
     }
 }

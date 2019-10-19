@@ -32,6 +32,26 @@ import java.io.File;
 public class EmbeddedMavenModelExposerTest
     extends AbstractJarAnalyzerTestCase
 {
+    public void testExposerWithParent()
+            throws Exception
+    {
+        File file = getSampleJar( "test1.jar" );
+
+        JarIdentification identification = new JarIdentification();
+
+        EmbeddedMavenModelExposer exposer = new EmbeddedMavenModelExposer();
+        exposer.expose( identification, new JarAnalyzer( file ) );
+
+        assertEquals( 1, identification.getPotentialGroupIds().size() );
+        assertEquals(  "test", identification.getPotentialGroupIds().get( 0 ) );
+
+        assertEquals( 1, identification.getPotentialArtifactIds().size() );
+        assertEquals(  "test1", identification.getPotentialArtifactIds().get( 0 ) );
+
+        assertEquals( 1, identification.getPotentialVersions().size() );
+        assertEquals(  "1.1-SNAPSHOT", identification.getPotentialVersions().get( 0 ) );
+    }
+
     public void testExposerWithJXR()
         throws Exception
     {
