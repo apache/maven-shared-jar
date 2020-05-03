@@ -71,10 +71,10 @@ public class JarClasses
     {
         // Unique list decorators are used to ensure natural ordering is retained, the list interface is availble, and
         // that duplicates are not entered.
-        imports = SetUniqueList.setUniqueList( new ArrayList<String>() );
-        packages = SetUniqueList.setUniqueList( new ArrayList<String>() );
-        classNames = SetUniqueList.setUniqueList( new ArrayList<String>() );
-        methods = SetUniqueList.setUniqueList( new ArrayList<String>() );
+        imports = SetUniqueList.setUniqueList( new ArrayList<>() );
+        packages = SetUniqueList.setUniqueList( new ArrayList<>() );
+        classNames = SetUniqueList.setUniqueList( new ArrayList<>() );
+        methods = SetUniqueList.setUniqueList( new ArrayList<>() );
     }
 
     /**

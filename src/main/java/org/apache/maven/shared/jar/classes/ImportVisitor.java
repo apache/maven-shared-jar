@@ -68,7 +68,7 @@ public class ImportVisitor
 
         // Create a list that is guaranteed to be unique while retaining it's list qualities (LinkedHashSet does not
         // expose the list interface even if natural ordering is retained)  
-        this.imports = SetUniqueList.setUniqueList( new ArrayList<String>() );
+        this.imports = SetUniqueList.setUniqueList( new ArrayList<>() );
     }
 
     /**
