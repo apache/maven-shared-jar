@@ -31,6 +31,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
 /**
@@ -115,13 +116,7 @@ public class JarAnalyzer
         List<JarEntry> entries = Collections.list( jarFile.entries() );
 
         // Sorting of list is done by name to ensure a bytecode hash is always consistent.
-        Collections.sort( entries, new Comparator<JarEntry>()
-        {
-            public int compare( JarEntry entry1, JarEntry entry2 )
-            {
-                return entry1.getName().compareTo( entry2.getName() );
-            }
-        } );
+        entries.sort( Comparator.comparing( ZipEntry::getName ) );
 
         Manifest manifest;
         try
