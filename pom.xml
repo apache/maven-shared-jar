@@ -58,7 +58,7 @@
   </distributionManagement>
 
   <properties>
-    <mavenVersion>3.0</mavenVersion>
+    <mavenVersion>3.1.0</mavenVersion>
     <javaVersion>7</javaVersion>
     <project.build.outputTimestamp>2020-04-04T09:03:59Z</project.build.outputTimestamp>
   </properties>
@@ -72,13 +72,13 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-model</artifactId>
       <version>${mavenVersion}</version>
     </dependency>
-
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-artifact</artifactId>
@@ -92,6 +92,11 @@
 
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-container-default</artifactId>
+      <version>2.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-digest</artifactId>
       <version>1.1</version>
       <exclusions>
@@ -101,18 +106,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-
-    <dependency>
-      <groupId>org.sonatype.sisu</groupId>
-      <artifactId>sisu-inject-plexus</artifactId>
-      <version>1.4.2</version><!-- 1.4.2 for Maven 3.0 -->
-    </dependency>
-<!--    <dependency>-->
-<!--      <groupId>org.eclipse.sisu</groupId>-->
-<!--      <artifactId>org.eclipse.sisu.plexus</artifactId>-->
-<!--      <version>0.0.0.M2a</version>&lt;!&ndash; 0.0.0.M2a for Maven 3.1.0, 0.0.0.M5 for 3.1.1 &ndash;&gt;-->
-<!--    </dependency>-->
-
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
