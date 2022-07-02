@@ -19,15 +19,18 @@ package org.apache.maven.shared.jar.identification.exposers;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Organization;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,11 +41,14 @@ import java.util.jar.JarEntry;
 /**
  * Exposer that examines a JAR file for any embedded Maven metadata for identification.
  */
-@Component( role = JarIdentificationExposer.class, hint = "embeddedMavenModel" )
+@Singleton
+@Named( "embeddedMavenModel" )
 public class EmbeddedMavenModelExposer
-    extends AbstractLogEnabled
     implements JarIdentificationExposer
 {
+    private final Logger logger = LoggerFactory.getLogger( getClass() );
+
+    @Override
     public void expose( JarIdentification identification, JarAnalyzer jarAnalyzer )
     {
         List<JarEntry> entries = jarAnalyzer.getMavenPomEntries();
@@ -53,7 +59,7 @@ public class EmbeddedMavenModelExposer
 
         if ( entries.size() > 1 )
         {
-            getLogger().warn(
+            logger.warn(
                 "More than one Maven model entry was found in the JAR, using only the first of: " + entries );
         }
 
@@ -96,11 +102,11 @@ public class EmbeddedMavenModelExposer
         }
         catch ( IOException e )
         {
-            getLogger().error( "Unable to read model " + pom.getName() + " in " + jarAnalyzer.getFile() + ".", e );
+            logger.error( "Unable to read model " + pom.getName() + " in " + jarAnalyzer.getFile() + ".", e );
         }
         catch ( XmlPullParserException e )
         {
-            getLogger().error( "Unable to parse model " + pom.getName() + " in " + jarAnalyzer.getFile() + ".", e );
+            logger.error( "Unable to parse model " + pom.getName() + " in " + jarAnalyzer.getFile() + ".", e );
         }
     }
 }

@@ -19,6 +19,9 @@ package org.apache.maven.shared.jar.classes;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.DescendingVisitor;
@@ -26,8 +29,8 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.maven.shared.jar.JarAnalyzer;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -41,10 +44,12 @@ import java.util.jar.JarEntry;
  *
  * @see #analyze(org.apache.maven.shared.jar.JarAnalyzer)
  */
-@Component ( role = JarClassesAnalysis.class )
+@Singleton
+@Named
 public class JarClassesAnalysis
-    extends AbstractLogEnabled
 {
+    private final Logger logger = LoggerFactory.getLogger( getClass() );
+
     private static final double JAVA_1_8_CLASS_VERSION = 52.0;
 
     private static final double JAVA_1_7_CLASS_VERSION = 51.0;
@@ -133,12 +138,12 @@ public class JarClassesAnalysis
                 }
                 catch ( ClassFormatException e )
                 {
-                    getLogger().warn( "Unable to process class " + classname + " in JarAnalyzer File " + jarfilename,
+                    logger.warn( "Unable to process class " + classname + " in JarAnalyzer File " + jarfilename,
                                       e );
                 }
                 catch ( IOException e )
                 {
-                    getLogger().warn( "Unable to process JarAnalyzer File " + jarfilename, e );
+                    logger.warn( "Unable to process JarAnalyzer File " + jarfilename, e );
                 }
             }
 

@@ -19,31 +19,29 @@ package org.apache.maven.shared.jar.identification.exposers;
  * under the License.
  */
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
 import org.apache.maven.shared.jar.identification.hash.JarHashAnalyzer;
 import org.apache.maven.shared.jar.identification.repository.RepositoryHashSearch;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * Exposer that examines a Maven repository for identical files to the JAR being analyzed. It will look for both
  * identical files, and files with identical classes.
- * <p/>
- * Note: if not using Plexus, you must call the following methods to be able to expose any data from the class:
- * {@link #setBytecodeHashAnalyzer(org.apache.maven.shared.jar.identification.hash.JarHashAnalyzer)},
- * {@link #setFileHashAnalyzer(org.apache.maven.shared.jar.identification.hash.JarHashAnalyzer)},
- * {@link #setRepositoryHashSearch(org.apache.maven.shared.jar.identification.repository.RepositoryHashSearch)}
  */
-@Component( role = JarIdentificationExposer.class, hint = "repositorySearch" )
+@Singleton
+@Named( "repositorySearch" )
 public class RepositorySearchExposer
-    extends AbstractLogEnabled
     implements JarIdentificationExposer
 {
     /**
@@ -51,21 +49,29 @@ public class RepositorySearchExposer
      *
      * @todo this currently only provides for the 'empty' repository search, which isn't very useful
      */
-    @Requirement
-    private RepositoryHashSearch repositoryHashSearch;
+    private final RepositoryHashSearch repositoryHashSearch;
 
     /**
      * The hash analyzer for the entire file.
      */
-    @Requirement( hint = "file" )
-    private JarHashAnalyzer fileHashAnalyzer;
+    private final JarHashAnalyzer fileHashAnalyzer;
 
     /**
      * The hash analyzer for the file's bytecode.
      */
-    @Requirement( hint = "bytecode" )
-    private JarHashAnalyzer bytecodeHashAnalyzer;
+    private final JarHashAnalyzer bytecodeHashAnalyzer;
 
+    @Inject
+    public RepositorySearchExposer( RepositoryHashSearch repositoryHashSearch,
+                                    @Named( "file" ) JarHashAnalyzer fileHashAnalyzer,
+                                    @Named( "bytecode" ) JarHashAnalyzer bytecodeHashAnalyzer )
+    {
+        this.repositoryHashSearch = requireNonNull( repositoryHashSearch );
+        this.fileHashAnalyzer = requireNonNull( fileHashAnalyzer );
+        this.bytecodeHashAnalyzer = requireNonNull( bytecodeHashAnalyzer );
+    }
+
+    @Override
     public void expose( JarIdentification identification, JarAnalyzer jarAnalyzer )
     {
         List<Artifact> repohits = new ArrayList<>();
@@ -89,20 +95,5 @@ public class RepositorySearchExposer
             identification.addAndSetArtifactId( artifact.getArtifactId() );
             identification.addAndSetVersion( artifact.getVersion() );
         }
-    }
-
-    public void setRepositoryHashSearch( RepositoryHashSearch repo )
-    {
-        this.repositoryHashSearch = repo;
-    }
-
-    public void setFileHashAnalyzer( JarHashAnalyzer fileHashAnalyzer )
-    {
-        this.fileHashAnalyzer = fileHashAnalyzer;
-    }
-
-    public void setBytecodeHashAnalyzer( JarHashAnalyzer bytecodeHashAnalyzer )
-    {
-        this.bytecodeHashAnalyzer = bytecodeHashAnalyzer;
     }
 }

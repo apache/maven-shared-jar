@@ -19,12 +19,15 @@ package org.apache.maven.shared.jar.identification.exposers;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.apache.maven.shared.utils.StringUtils;
+import org.codehaus.plexus.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -39,11 +42,14 @@ import java.util.jar.JarEntry;
  * Exposer that examines a a JAR for files that contain the text <code>version</code> (case-insensitive) and
  * adds the contents as potential version(s).
  */
-@Component( role = JarIdentificationExposer.class, hint = "textFile" )
+@Singleton
+@Named( "textFile" )
 public class TextFileExposer
-    extends AbstractLogEnabled
     implements JarIdentificationExposer
 {
+    private final Logger logger = LoggerFactory.getLogger( getClass() );
+
+    @Override
     public void expose( JarIdentification identification, JarAnalyzer jarAnalyzer )
     {
         List<String> textFiles = findTextFileVersions( jarAnalyzer );
@@ -63,7 +69,7 @@ public class TextFileExposer
             // skip this entry if it's a class file.
             if ( !entry.getName().endsWith( ".class" ) ) //$NON-NLS-1$
             {
-                getLogger().debug( "Version Hit: " + entry.getName() );
+                logger.debug( "Version Hit: " + entry.getName() );
                 try ( InputStream is = jarAnalyzer.getEntryInputStream( entry ) )
                 {
                     BufferedReader br = new BufferedReader( new InputStreamReader( is ) );
@@ -72,7 +78,7 @@ public class TextFileExposer
                     // TODO: check for key=value pair.
                     // TODO: maybe even for groupId entries.
 
-                    getLogger().debug( line );
+                    logger.debug( line );
                     if ( StringUtils.isNotEmpty( line ) )
                     {
                         textVersions.add( line );
@@ -80,7 +86,7 @@ public class TextFileExposer
                 }
                 catch ( IOException e )
                 {
-                    getLogger().warn( "Unable to read line from " + entry.getName(), e );
+                    logger.warn( "Unable to read line from " + entry.getName(), e );
                 }
             }
         }

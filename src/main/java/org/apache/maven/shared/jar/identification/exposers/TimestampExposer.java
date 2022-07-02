@@ -19,13 +19,15 @@ package org.apache.maven.shared.jar.identification.exposers;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.bag.HashBag;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
-import org.apache.maven.shared.utils.StringUtils;
-import org.codehaus.plexus.component.annotations.Component;
+import org.codehaus.plexus.util.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -36,10 +38,12 @@ import java.util.jar.JarEntry;
 /**
  * Exposer that examines a a JAR and uses the most recent timestamp as a potential version.
  */
-@Component( role = JarIdentificationExposer.class, hint = "timestamp" )
+@Singleton
+@Named( "timestamp" )
 public class TimestampExposer
     implements JarIdentificationExposer
 {
+    @Override
     public void expose( JarIdentification identification, JarAnalyzer jarAnalyzer )
     {
         List<JarEntry> entries = jarAnalyzer.getEntries();

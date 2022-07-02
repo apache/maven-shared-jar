@@ -19,10 +19,12 @@ package org.apache.maven.shared.jar.identification.exposers;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
-import org.codehaus.plexus.component.annotations.Component;
 
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -30,10 +32,12 @@ import java.util.jar.Manifest;
 /**
  * Exposer that examines a JAR's manifest to derive Maven metadata.
  */
-@Component( role = JarIdentificationExposer.class, hint = "manifest" )
+@Singleton
+@Named( "manifest" )
 public class ManifestExposer
     implements JarIdentificationExposer
 {
+    @Override
     public void expose( JarIdentification identification, JarAnalyzer jarAnalyzer )
     {
         Manifest manifest = jarAnalyzer.getJarData().getManifest();

@@ -19,29 +19,39 @@ package org.apache.maven.shared.jar.identification.hash;
  * under the License.
  */
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.JarData;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Analyzer that calculates the hash code for the entire file. Can be used to detect an exact copy of the file.
- * <p/>
- * If you are not using Plexus, you must call {@link #setDigester(org.codehaus.plexus.digest.Digester)} before use
  */
-@Component( role = JarHashAnalyzer.class, hint = "file" )
+@Singleton
+@Named( "file" )
 public class JarFileHashAnalyzer
-    extends AbstractLogEnabled
     implements JarHashAnalyzer
 {
+    private final Logger logger = LoggerFactory.getLogger( getClass() );
+
     /**
      * The digester to use for computing the hash. Under Plexus, the default is SHA-1.
      */
-    @Requirement( hint = "sha1" )
-    private Digester digester;
+    private final Digester digester;
+
+    @Inject
+    public JarFileHashAnalyzer( @Named( "sha1" ) Digester digester )
+    {
+        this.digester = requireNonNull( digester );
+    }
 
     public String computeHash( JarAnalyzer jarAnalyzer )
     {
@@ -57,14 +67,9 @@ public class JarFileHashAnalyzer
             }
             catch ( DigesterException e )
             {
-                getLogger().warn( "Unable to calculate the hashcode.", e );
+                logger.warn( "Unable to calculate the hashcode.", e );
             }
         }
         return result;
-    }
-
-    public void setDigester( Digester digester )
-    {
-        this.digester = digester;
     }
 }

@@ -20,6 +20,8 @@ package org.apache.maven.shared.jar;
  */
 
 import junit.framework.AssertionFailedError;
+import org.codehaus.plexus.ContainerConfiguration;
+import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusTestCase;
 
 import java.io.File;
@@ -39,6 +41,12 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public abstract class AbstractJarAnalyzerTestCase
     extends PlexusTestCase
 {
+    @Override
+    protected void customizeContainerConfiguration( ContainerConfiguration configuration )
+    {
+        configuration.setAutoWiring( true ).setClassPathScanning( PlexusConstants.SCANNING_CACHE );
+    }
+
     protected File getSampleJar( String filename )
         throws UnsupportedEncodingException
     {
