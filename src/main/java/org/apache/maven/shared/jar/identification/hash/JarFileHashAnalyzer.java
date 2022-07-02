@@ -19,18 +19,18 @@ package org.apache.maven.shared.jar.identification.hash;
  * under the License.
  */
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.JarData;
-import org.codehaus.plexus.digest.Digester;
-import org.codehaus.plexus.digest.DigesterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static java.util.Objects.requireNonNull;
 
 /**
  * Analyzer that calculates the hash code for the entire file. Can be used to detect an exact copy of the file.
@@ -42,17 +42,7 @@ public class JarFileHashAnalyzer
 {
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
-    /**
-     * The digester to use for computing the hash. Under Plexus, the default is SHA-1.
-     */
-    private final Digester digester;
-
-    @Inject
-    public JarFileHashAnalyzer( @Named( "sha1" ) Digester digester )
-    {
-        this.digester = requireNonNull( digester );
-    }
-
+    @Override
     public String computeHash( JarAnalyzer jarAnalyzer )
     {
         JarData jarData = jarAnalyzer.getJarData();
@@ -62,10 +52,12 @@ public class JarFileHashAnalyzer
         {
             try
             {
-                result = digester.calc( jarData.getFile() );
-                jarData.setFileHash( result );
+                try ( InputStream inputStream = Files.newInputStream( jarData.getFile().toPath() ) )
+                {
+                    jarData.setFileHash( DigestUtils.sha1Hex( inputStream ) );
+                }
             }
-            catch ( DigesterException e )
+            catch ( IOException e )
             {
                 logger.warn( "Unable to calculate the hashcode.", e );
             }
