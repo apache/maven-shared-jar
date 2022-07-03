@@ -19,11 +19,13 @@ package org.apache.maven.shared.jar.identification.repository;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
-import org.codehaus.plexus.component.annotations.Component;
 
 /**
  * Empty repository hash search.  Always returns an empty list.
@@ -32,7 +34,8 @@ import org.codehaus.plexus.component.annotations.Component;
  * an implementation of a {@link org.apache.maven.shared.jar.identification.repository.RepositoryHashSearch} against a
  * real repository.
  */
-@Component( role = RepositoryHashSearch.class, hint = "empty" )
+@Singleton
+@Named( "empty" )
 public class EmptyRepositoryHashSearch
     implements RepositoryHashSearch
 {

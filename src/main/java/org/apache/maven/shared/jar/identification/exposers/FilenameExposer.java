@@ -19,11 +19,13 @@ package org.apache.maven.shared.jar.identification.exposers;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
-import org.apache.maven.shared.utils.io.FileUtils;
-import org.codehaus.plexus.component.annotations.Component;
+import org.codehaus.plexus.util.FileUtils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,12 +35,14 @@ import java.util.regex.Pattern;
  * Exposer that examines a JAR file to derive Maven metadata from the pattern of the JAR's filename.
  * Will match the format <i>artifactId</i>-<i>version</i>.jar.
  */
-@Component( role = JarIdentificationExposer.class, hint = "filename" )
+@Singleton
+@Named( "filename" )
 public class FilenameExposer
     implements JarIdentificationExposer
 {
-    private static final Pattern VERSION_PATTERN = Pattern.compile( "-[0-9]" );
+    private static final Pattern VERSION_PATTERN = Pattern.compile( "-\\d" );
 
+    @Override
     public void expose( JarIdentification identification, JarAnalyzer jarAnalyzer )
     {
         String filename = FileUtils.removeExtension( jarAnalyzer.getFile().getName() );

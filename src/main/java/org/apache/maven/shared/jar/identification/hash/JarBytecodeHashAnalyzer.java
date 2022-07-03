@@ -19,13 +19,14 @@ package org.apache.maven.shared.jar.identification.hash;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.JarData;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.digest.DigesterException;
-import org.codehaus.plexus.digest.StreamingDigester;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,20 +36,13 @@ import java.util.jar.JarEntry;
 /**
  * Analyzer that calculates the hash code for the entire file. Can be used to detect an exact copy of the file's class
  * data. Useful to see thru a recompile, recompression, or timestamp change.
- * <p/>
- * If you are not using Plexus, you must call {@link #setDigester(org.codehaus.plexus.digest.StreamingDigester)} before
- * use
  */
-@Component( role = JarHashAnalyzer.class, hint = "bytecode" )
+@Singleton
+@Named( "bytecode" )
 public class JarBytecodeHashAnalyzer
-    extends AbstractLogEnabled
     implements JarHashAnalyzer
 {
-    /**
-     * The streaming digester to use for computing the hash. Under Plexus, the default is SHA-1.
-     */
-    @Requirement( hint = "sha1" )
-    private StreamingDigester digester;
+    private final Logger logger = LoggerFactory.getLogger( getClass() );
 
     public String computeHash( JarAnalyzer jarAnalyzer )
     {
@@ -61,27 +55,20 @@ public class JarBytecodeHashAnalyzer
 
             try
             {
-                digester.reset();
                 for ( JarEntry entry : entries )
                 {
                     try ( InputStream is = jarAnalyzer.getEntryInputStream( entry ) )
                     {
-                        digester.update( is );
+                        result = DigestUtils.sha1Hex( is );
                     }
                 }
-                result = digester.calc();
                 jarData.setBytecodeHash( result );
             }
-            catch ( DigesterException | IOException e )
+            catch ( IOException e )
             {
-                getLogger().warn( "Unable to calculate the hashcode.", e );
+                logger.warn( "Unable to calculate the hashcode.", e );
             }
         }
         return result;
-    }
-
-    public void setDigester( StreamingDigester digester )
-    {
-        this.digester = digester;
     }
 }

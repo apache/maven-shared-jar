@@ -19,13 +19,16 @@ package org.apache.maven.shared.jar.identification;
  * under the License.
  */
 
-import org.apache.maven.shared.jar.JarAnalyzer;
-import org.apache.maven.shared.utils.StringUtils;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.component.annotations.Requirement;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
-import java.util.Collections;
+import org.apache.maven.shared.jar.JarAnalyzer;
+import org.codehaus.plexus.util.StringUtils;
+
 import java.util.List;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Analyze the JAR file to identify Maven artifact metadata. This class is thread safe and immutable as long as all
@@ -33,20 +36,23 @@ import java.util.List;
  * <p/>
  * If using Plexus, the class will use all available exposers in the container.
  * <p/>
- * If not using Plexus, the exposers must be set using {@link #setExposers(java.util.List)} before calling
- * {@link #analyze(org.apache.maven.shared.jar.JarAnalyzer)}
- * <p/>
  * Note that you must first create an instance of {@link org.apache.maven.shared.jar.JarAnalyzer} - see its Javadoc for
  * a typical use.
  */
-@Component( role =  JarIdentificationAnalysis.class )
+@Singleton
+@Named
 public class JarIdentificationAnalysis
 {
     /**
      * The Maven information exposers to use during identification.
      */
-    @Requirement( role = JarIdentificationExposer.class )
-    private List<JarIdentificationExposer> exposers;
+    private final List<JarIdentificationExposer> exposers;
+
+    @Inject
+    public JarIdentificationAnalysis( List<JarIdentificationExposer> exposers )
+    {
+        this.exposers = requireNonNull( exposers );
+    }
 
     /**
      * Analyze a JAR and find any associated Maven metadata. Note that if the provided JAR analyzer has previously
@@ -142,10 +148,5 @@ public class JarIdentificationAnalysis
             }
         }
         return largest;
-    }
-
-    public void setExposers( List<JarIdentificationExposer> exposers )
-    {
-        this.exposers = Collections.unmodifiableList( exposers );
     }
 }

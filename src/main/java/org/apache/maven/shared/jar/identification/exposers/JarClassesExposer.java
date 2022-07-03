@@ -19,28 +19,36 @@ package org.apache.maven.shared.jar.identification.exposers;
  * under the License.
  */
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.classes.JarClasses;
 import org.apache.maven.shared.jar.classes.JarClassesAnalysis;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.component.annotations.Requirement;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Exposer that examines a JAR file to derive Maven metadata from the classes in a JAR. It will currently identify
  * potential group IDs from the class packages.
- * <p/>
- * Note: if not being used from Plexus, the {@link #setAnalyzer(org.apache.maven.shared.jar.classes.JarClassesAnalysis)}
- * method must be called to avoid a NullPointerException during the expose method.
  */
-@Component( role = JarIdentificationExposer.class, hint = "jarClasses" )
+@Singleton
+@Named( "jarClasses" )
 public class JarClassesExposer
     implements JarIdentificationExposer
 {
-    @Requirement
-    private JarClassesAnalysis analyzer;
+    private final JarClassesAnalysis analyzer;
 
+    @Inject
+    public JarClassesExposer( JarClassesAnalysis analyzer )
+    {
+        this.analyzer = requireNonNull( analyzer );
+    }
+
+    @Override
     public void expose( JarIdentification identification, JarAnalyzer jarAnalyzer )
     {
         JarClasses jarclasses = analyzer.analyze( jarAnalyzer );
@@ -49,10 +57,5 @@ public class JarClassesExposer
         {
             identification.addGroupId( packagename );
         }
-    }
-
-    public void setAnalyzer( JarClassesAnalysis analyzer )
-    {
-        this.analyzer = analyzer;
     }
 }

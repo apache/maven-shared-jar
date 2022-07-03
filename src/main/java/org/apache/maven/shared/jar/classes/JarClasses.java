@@ -35,22 +35,22 @@ public class JarClasses
     /**
      * The list of imports in the classes in the JAR.
      */
-    private List<String> imports;
+    private final List<String> imports;
 
     /**
      * A list of packages represented by classes in the JAR.
      */
-    private List<String> packages;
+    private final List<String> packages;
 
     /**
      * A list of the classes that in the JAR.
      */
-    private List<String> classNames;
+    private final List<String> classNames;
 
     /**
      * A list of methods within the classes in the JAR.
      */
-    private List<String> methods;
+    private final List<String> methods;
 
     /**
      * Whether the JAR contains any code with debug information. If there is a mix of debug and release code, this will
@@ -71,10 +71,10 @@ public class JarClasses
     {
         // Unique list decorators are used to ensure natural ordering is retained, the list interface is availble, and
         // that duplicates are not entered.
-        imports = SetUniqueList.setUniqueList( new ArrayList<String>() );
-        packages = SetUniqueList.setUniqueList( new ArrayList<String>() );
-        classNames = SetUniqueList.setUniqueList( new ArrayList<String>() );
-        methods = SetUniqueList.setUniqueList( new ArrayList<String>() );
+        imports = SetUniqueList.setUniqueList( new ArrayList<>() );
+        packages = SetUniqueList.setUniqueList( new ArrayList<>() );
+        classNames = SetUniqueList.setUniqueList( new ArrayList<>() );
+        methods = SetUniqueList.setUniqueList( new ArrayList<>() );
     }
 
     /**

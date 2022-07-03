@@ -19,10 +19,12 @@ package org.apache.maven.shared.jar.identification.exposers;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
-import org.codehaus.plexus.component.annotations.Component;
 
 import java.util.Collections;
 import java.util.List;
@@ -33,10 +35,12 @@ import java.util.List;
  *
  * @todo not currently implemented
  */
-@Component( role = JarIdentificationExposer.class, hint = "staticMainOutput" )
+@Singleton
+@Named( "staticMainOutput" )
 public class StaticMainOutputExposer
     implements JarIdentificationExposer
 {
+    @Override
     public void expose( JarIdentification identification, JarAnalyzer jarAnalyzer )
     {
         List<String> staticMains = findStaticMainVersions();

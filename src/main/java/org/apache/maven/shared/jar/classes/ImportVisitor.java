@@ -39,12 +39,12 @@ public class ImportVisitor
     /**
      * The list of imports discovered.
      */
-    private List<String> imports;
+    private final List<String> imports;
 
     /**
      * The Java class that is being analyzed.
      */
-    private JavaClass javaClass;
+    private final JavaClass javaClass;
 
     /**
      * Pattern to detect if the import is qualified and allows retrieval of the actual import name from the string via
@@ -68,7 +68,7 @@ public class ImportVisitor
 
         // Create a list that is guaranteed to be unique while retaining it's list qualities (LinkedHashSet does not
         // expose the list interface even if natural ordering is retained)  
-        this.imports = SetUniqueList.setUniqueList( new ArrayList<String>() );
+        this.imports = SetUniqueList.setUniqueList( new ArrayList<>() );
     }
 
     /**
@@ -86,6 +86,7 @@ public class ImportVisitor
      *
      * @see org.apache.bcel.classfile.EmptyVisitor#visitConstantClass(org.apache.bcel.classfile.ConstantClass)
      */
+    @Override
     public void visitConstantClass( ConstantClass constantClass )
     {
         String name = constantClass.getBytes( javaClass.getConstantPool() );
@@ -119,6 +120,7 @@ public class ImportVisitor
      *
      * @see org.apache.bcel.classfile.EmptyVisitor#visitConstantUtf8(org.apache.bcel.classfile.ConstantUtf8)
      */
+    @Override
     public void visitConstantUtf8( ConstantUtf8 constantUtf8 )
     {
         String ret = constantUtf8.getBytes().trim();
