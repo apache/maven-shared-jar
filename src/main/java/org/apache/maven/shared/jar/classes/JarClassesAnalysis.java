@@ -1,5 +1,3 @@
-package org.apache.maven.shared.jar.classes;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,9 +16,14 @@ package org.apache.maven.shared.jar.classes;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.jar.classes;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.jar.JarEntry;
 
 import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.ClassParser;
@@ -32,10 +35,6 @@ import org.apache.maven.shared.jar.JarAnalyzer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.jar.JarEntry;
-
 /**
  * Analyze the classes in a JAR file. This class is thread safe and immutable as it retains no state.
  *
@@ -46,9 +45,8 @@ import java.util.jar.JarEntry;
  */
 @Singleton
 @Named
-public class JarClassesAnalysis
-{
-    private final Logger logger = LoggerFactory.getLogger( getClass() );
+public class JarClassesAnalysis {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final double JAVA_1_8_CLASS_VERSION = 52.0;
 
@@ -74,126 +72,94 @@ public class JarClassesAnalysis
      * @param jarAnalyzer the JAR to analyze. This must not yet have been closed.
      * @return the details of the classes found
      */
-    public JarClasses analyze( JarAnalyzer jarAnalyzer )
-    {
+    public JarClasses analyze(JarAnalyzer jarAnalyzer) {
         JarClasses classes = jarAnalyzer.getJarData().getJarClasses();
-        if ( classes == null )
-        {
+        if (classes == null) {
             String jarfilename = jarAnalyzer.getFile().getAbsolutePath();
             classes = new JarClasses();
 
             List<JarEntry> classList = jarAnalyzer.getClassEntries();
 
-            classes.setDebugPresent( false );
+            classes.setDebugPresent(false);
 
             double maxVersion = 0.0;
 
-            for ( JarEntry entry : classList )
-            {
+            for (JarEntry entry : classList) {
                 String classname = entry.getName();
 
-                try
-                {
-                    ClassParser classParser = new ClassParser( jarfilename, classname );
+                try {
+                    ClassParser classParser = new ClassParser(jarfilename, classname);
 
                     JavaClass javaClass = classParser.parse();
 
                     String classSignature = javaClass.getClassName();
 
-                    if ( !classes.isDebugPresent() )
-                    {
-                        if ( hasDebugSymbols( javaClass ) )
-                        {
-                            classes.setDebugPresent( true );
+                    if (!classes.isDebugPresent()) {
+                        if (hasDebugSymbols(javaClass)) {
+                            classes.setDebugPresent(true);
                         }
                     }
 
                     double classVersion = javaClass.getMajor();
-                    if ( javaClass.getMinor() > 0 )
-                    {
+                    if (javaClass.getMinor() > 0) {
                         classVersion = classVersion + javaClass.getMinor() / 10.0;
                     }
 
-                    if ( classVersion > maxVersion )
-                    {
+                    if (classVersion > maxVersion) {
                         maxVersion = classVersion;
                     }
 
                     Method[] methods = javaClass.getMethods();
-                    for ( Method method : methods )
-                    {
-                        classes.addMethod( classSignature + "." + method.getName() + method.getSignature() );
+                    for (Method method : methods) {
+                        classes.addMethod(classSignature + "." + method.getName() + method.getSignature());
                     }
 
                     String classPackageName = javaClass.getPackageName();
 
-                    classes.addClassName( classSignature );
-                    classes.addPackage( classPackageName );
+                    classes.addClassName(classSignature);
+                    classes.addPackage(classPackageName);
 
-                    ImportVisitor importVisitor = new ImportVisitor( javaClass );
-                    DescendingVisitor descVisitor = new DescendingVisitor( javaClass, importVisitor );
-                    javaClass.accept( descVisitor );
+                    ImportVisitor importVisitor = new ImportVisitor(javaClass);
+                    DescendingVisitor descVisitor = new DescendingVisitor(javaClass, importVisitor);
+                    javaClass.accept(descVisitor);
 
-                    classes.addImports( importVisitor.getImports() );
-                }
-                catch ( ClassFormatException e )
-                {
-                    logger.warn( "Unable to process class " + classname + " in JarAnalyzer File " + jarfilename,
-                                      e );
-                }
-                catch ( IOException e )
-                {
-                    logger.warn( "Unable to process JarAnalyzer File " + jarfilename, e );
+                    classes.addImports(importVisitor.getImports());
+                } catch (ClassFormatException e) {
+                    logger.warn("Unable to process class " + classname + " in JarAnalyzer File " + jarfilename, e);
+                } catch (IOException e) {
+                    logger.warn("Unable to process JarAnalyzer File " + jarfilename, e);
                 }
             }
 
-            if ( maxVersion == JAVA_1_8_CLASS_VERSION )
-            {
-                classes.setJdkRevision( "1.8" );
-            }
-            else if ( maxVersion == JAVA_1_7_CLASS_VERSION )
-            {
-                classes.setJdkRevision( "1.7" );
-            }
-            else if ( maxVersion == JAVA_1_6_CLASS_VERSION )
-            {
-                classes.setJdkRevision( "1.6" );
-            }
-            else if ( maxVersion == JAVA_1_5_CLASS_VERSION )
-            {
-                classes.setJdkRevision( "1.5" );
-            }
-            else if ( maxVersion == JAVA_1_4_CLASS_VERSION )
-            {
-                classes.setJdkRevision( "1.4" );
-            }
-            else if ( maxVersion == JAVA_1_3_CLASS_VERSION )
-            {
-                classes.setJdkRevision( "1.3" );
-            }
-            else if ( maxVersion == JAVA_1_2_CLASS_VERSION )
-            {
-                classes.setJdkRevision( "1.2" );
-            }
-            else if ( maxVersion == JAVA_1_1_CLASS_VERSION )
-            {
-                classes.setJdkRevision( "1.1" );
+            if (maxVersion == JAVA_1_8_CLASS_VERSION) {
+                classes.setJdkRevision("1.8");
+            } else if (maxVersion == JAVA_1_7_CLASS_VERSION) {
+                classes.setJdkRevision("1.7");
+            } else if (maxVersion == JAVA_1_6_CLASS_VERSION) {
+                classes.setJdkRevision("1.6");
+            } else if (maxVersion == JAVA_1_5_CLASS_VERSION) {
+                classes.setJdkRevision("1.5");
+            } else if (maxVersion == JAVA_1_4_CLASS_VERSION) {
+                classes.setJdkRevision("1.4");
+            } else if (maxVersion == JAVA_1_3_CLASS_VERSION) {
+                classes.setJdkRevision("1.3");
+            } else if (maxVersion == JAVA_1_2_CLASS_VERSION) {
+                classes.setJdkRevision("1.2");
+            } else if (maxVersion == JAVA_1_1_CLASS_VERSION) {
+                classes.setJdkRevision("1.1");
             }
 
-            jarAnalyzer.getJarData().setJarClasses( classes );
+            jarAnalyzer.getJarData().setJarClasses(classes);
         }
         return classes;
     }
 
-    private boolean hasDebugSymbols( JavaClass javaClass )
-    {
+    private boolean hasDebugSymbols(JavaClass javaClass) {
         boolean ret = false;
         Method[] methods = javaClass.getMethods();
-        for ( Method method : methods )
-        {
+        for (Method method : methods) {
             LineNumberTable linenumbers = method.getLineNumberTable();
-            if ( linenumbers != null && linenumbers.getLength() > 0 )
-            {
+            if (linenumbers != null && linenumbers.getLength() > 0) {
                 ret = true;
                 break;
             }

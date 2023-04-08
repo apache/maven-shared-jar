@@ -1,5 +1,3 @@
-package org.apache.maven.shared.jar.identification.hash;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,19 +16,19 @@ package org.apache.maven.shared.jar.identification.hash;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.jar.identification.hash;
 
 import org.apache.maven.shared.jar.JarAnalyzer;
 
 /**
  * Classes that can calculate various hash signatures for a JAR file to later uniquely identify them.
  */
-public interface JarHashAnalyzer
-{
+public interface JarHashAnalyzer {
     /**
      * Compute the hash for the JAR. The hashcode will then be cached in the JAR data class for later use.
      *
      * @param jarAnalyzer the JAR analyzer to use to obtain the entries to hash
      * @return the hash, or null if not able to be computed due to an exception.
      */
-    String computeHash( JarAnalyzer jarAnalyzer );
+    String computeHash(JarAnalyzer jarAnalyzer);
 }

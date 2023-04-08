@@ -1,5 +1,3 @@
-package org.apache.maven.shared.jar.identification.exposers;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,46 +16,40 @@ package org.apache.maven.shared.jar.identification.exposers;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.jar.identification.exposers;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
 import org.codehaus.plexus.util.FileUtils;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-
 /**
  * Exposer that examines a JAR file to derive Maven metadata from the pattern of the JAR's filename.
  * Will match the format <i>artifactId</i>-<i>version</i>.jar.
  */
 @Singleton
-@Named( "filename" )
-public class FilenameExposer
-    implements JarIdentificationExposer
-{
-    private static final Pattern VERSION_PATTERN = Pattern.compile( "-\\d" );
+@Named("filename")
+public class FilenameExposer implements JarIdentificationExposer {
+    private static final Pattern VERSION_PATTERN = Pattern.compile("-\\d");
 
     @Override
-    public void expose( JarIdentification identification, JarAnalyzer jarAnalyzer )
-    {
-        String filename = FileUtils.removeExtension( jarAnalyzer.getFile().getName() );
-        Matcher mat = VERSION_PATTERN.matcher( filename );
-        if ( mat.find() )
-        {
-            String prefix = filename.substring( 0, mat.start() );
-            identification.addArtifactId( prefix );
-            identification.addName( prefix );
-            identification.addVersion( filename.substring( mat.end() - 1 ) );
-        }
-        else
-        {
-            identification.addArtifactId( filename );
-            identification.addName( filename );
+    public void expose(JarIdentification identification, JarAnalyzer jarAnalyzer) {
+        String filename = FileUtils.removeExtension(jarAnalyzer.getFile().getName());
+        Matcher mat = VERSION_PATTERN.matcher(filename);
+        if (mat.find()) {
+            String prefix = filename.substring(0, mat.start());
+            identification.addArtifactId(prefix);
+            identification.addName(prefix);
+            identification.addVersion(filename.substring(mat.end() - 1));
+        } else {
+            identification.addArtifactId(filename);
+            identification.addName(filename);
         }
     }
 }

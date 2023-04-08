@@ -1,5 +1,3 @@
-package org.apache.maven.shared.jar.identification.exposers;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,70 +16,64 @@ package org.apache.maven.shared.jar.identification.exposers;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.jar.identification.exposers;
+
+import java.io.File;
 
 import org.apache.maven.shared.jar.AbstractJarAnalyzerTestCase;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 
-import java.io.File;
-
-
 /**
  * Test Case for Embedded Maven Model Taxon Data.
  */
-public class EmbeddedMavenModelExposerTest
-    extends AbstractJarAnalyzerTestCase
-{
-    public void testExposerWithParent()
-            throws Exception
-    {
-        File file = getSampleJar( "test1.jar" );
+public class EmbeddedMavenModelExposerTest extends AbstractJarAnalyzerTestCase {
+    public void testExposerWithParent() throws Exception {
+        File file = getSampleJar("test1.jar");
 
         JarIdentification identification = new JarIdentification();
 
         EmbeddedMavenModelExposer exposer = new EmbeddedMavenModelExposer();
-        exposer.expose( identification, new JarAnalyzer( file ) );
+        exposer.expose(identification, new JarAnalyzer(file));
 
-        assertEquals( 1, identification.getPotentialGroupIds().size() );
-        assertEquals(  "test", identification.getPotentialGroupIds().get( 0 ) );
+        assertEquals(1, identification.getPotentialGroupIds().size());
+        assertEquals("test", identification.getPotentialGroupIds().get(0));
 
-        assertEquals( 1, identification.getPotentialArtifactIds().size() );
-        assertEquals(  "test1", identification.getPotentialArtifactIds().get( 0 ) );
+        assertEquals(1, identification.getPotentialArtifactIds().size());
+        assertEquals("test1", identification.getPotentialArtifactIds().get(0));
 
-        assertEquals( 1, identification.getPotentialVersions().size() );
-        assertEquals(  "1.1-SNAPSHOT", identification.getPotentialVersions().get( 0 ) );
+        assertEquals(1, identification.getPotentialVersions().size());
+        assertEquals("1.1-SNAPSHOT", identification.getPotentialVersions().get(0));
     }
 
-    public void testExposerWithJXR()
-        throws Exception
-    {
-        File file = getSampleJar( "jxr.jar" );
+    public void testExposerWithJXR() throws Exception {
+        File file = getSampleJar("jxr.jar");
 
         JarIdentification identification = new JarIdentification();
 
         EmbeddedMavenModelExposer exposer = new EmbeddedMavenModelExposer();
-        exposer.expose( identification, new JarAnalyzer( file ) );
+        exposer.expose(identification, new JarAnalyzer(file));
 
-        assertFalse( "exposer.groupIds", identification.getPotentialGroupIds().isEmpty() );
-        assertFalse( "exposer.artifactIds", identification.getPotentialArtifactIds().isEmpty() );
-        assertFalse( "exposer.versions", identification.getPotentialVersions().isEmpty() );
+        assertFalse("exposer.groupIds", identification.getPotentialGroupIds().isEmpty());
+        assertFalse(
+                "exposer.artifactIds", identification.getPotentialArtifactIds().isEmpty());
+        assertFalse("exposer.versions", identification.getPotentialVersions().isEmpty());
 
         // TODO test others
     }
 
-    public void testExposerWithANT()
-        throws Exception
-    {
-        File file = getSampleJar( "ant.jar" );
+    public void testExposerWithANT() throws Exception {
+        File file = getSampleJar("ant.jar");
 
         JarIdentification identification = new JarIdentification();
 
         EmbeddedMavenModelExposer exposer = new EmbeddedMavenModelExposer();
-        exposer.expose( identification, new JarAnalyzer( file ) );
+        exposer.expose(identification, new JarAnalyzer(file));
 
-        assertTrue( "exposer.groupIds", identification.getPotentialGroupIds().isEmpty() );
-        assertTrue( "exposer.artifactIds", identification.getPotentialArtifactIds().isEmpty() );
-        assertTrue( "exposer.versions", identification.getPotentialVersions().isEmpty() );
+        assertTrue("exposer.groupIds", identification.getPotentialGroupIds().isEmpty());
+        assertTrue(
+                "exposer.artifactIds", identification.getPotentialArtifactIds().isEmpty());
+        assertTrue("exposer.versions", identification.getPotentialVersions().isEmpty());
 
         // TODO test others
     }

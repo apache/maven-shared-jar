@@ -1,5 +1,3 @@
-package org.apache.maven.shared.jar.identification.repository;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.shared.jar.identification.repository;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.jar.identification.repository;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -35,17 +34,13 @@ import org.apache.maven.artifact.Artifact;
  * real repository.
  */
 @Singleton
-@Named( "empty" )
-public class EmptyRepositoryHashSearch
-    implements RepositoryHashSearch
-{
-    public List<Artifact> searchBytecodeHash( String hash )
-    {
+@Named("empty")
+public class EmptyRepositoryHashSearch implements RepositoryHashSearch {
+    public List<Artifact> searchBytecodeHash(String hash) {
         return Collections.emptyList();
     }
 
-    public List<Artifact> searchFileHash( String hash )
-    {
+    public List<Artifact> searchFileHash(String hash) {
         return Collections.emptyList();
     }
 }

@@ -1,5 +1,3 @@
-package org.apache.maven.shared.jar.identification.hash;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.shared.jar.identification.hash;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.jar.identification.hash;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -36,30 +35,23 @@ import org.slf4j.LoggerFactory;
  * Analyzer that calculates the hash code for the entire file. Can be used to detect an exact copy of the file.
  */
 @Singleton
-@Named( "file" )
-public class JarFileHashAnalyzer
-    implements JarHashAnalyzer
-{
-    private final Logger logger = LoggerFactory.getLogger( getClass() );
+@Named("file")
+public class JarFileHashAnalyzer implements JarHashAnalyzer {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
-    public String computeHash( JarAnalyzer jarAnalyzer )
-    {
+    public String computeHash(JarAnalyzer jarAnalyzer) {
         JarData jarData = jarAnalyzer.getJarData();
 
         String result = jarData.getFileHash();
-        if ( result == null )
-        {
-            try
-            {
-                try ( InputStream inputStream = Files.newInputStream( jarData.getFile().toPath() ) )
-                {
-                    jarData.setFileHash( DigestUtils.sha1Hex( inputStream ) );
+        if (result == null) {
+            try {
+                try (InputStream inputStream =
+                        Files.newInputStream(jarData.getFile().toPath())) {
+                    jarData.setFileHash(DigestUtils.sha1Hex(inputStream));
                 }
-            }
-            catch ( IOException e )
-            {
-                logger.warn( "Unable to calculate the hashcode.", e );
+            } catch (IOException e) {
+                logger.warn("Unable to calculate the hashcode.", e);
             }
         }
         return result;

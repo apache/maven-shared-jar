@@ -1,5 +1,3 @@
-package org.apache.maven.shared.jar.classes;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,20 +16,20 @@ package org.apache.maven.shared.jar.classes;
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import org.apache.commons.collections4.list.SetUniqueList;
+package org.apache.maven.shared.jar.classes;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.apache.commons.collections4.list.SetUniqueList;
 
 /**
  * Gathered facts about the classes within a JAR file.
  *
  * @see org.apache.maven.shared.jar.classes.JarClassesAnalysis#analyze(org.apache.maven.shared.jar.JarAnalyzer)
  */
-public class JarClasses
-{
+public class JarClasses {
     /**
      * The list of imports in the classes in the JAR.
      */
@@ -67,14 +65,13 @@ public class JarClasses
     /**
      * Constructor to create an empty instance.
      */
-    public JarClasses()
-    {
+    public JarClasses() {
         // Unique list decorators are used to ensure natural ordering is retained, the list interface is availble, and
         // that duplicates are not entered.
-        imports = SetUniqueList.setUniqueList( new ArrayList<>() );
-        packages = SetUniqueList.setUniqueList( new ArrayList<>() );
-        classNames = SetUniqueList.setUniqueList( new ArrayList<>() );
-        methods = SetUniqueList.setUniqueList( new ArrayList<>() );
+        imports = SetUniqueList.setUniqueList(new ArrayList<>());
+        packages = SetUniqueList.setUniqueList(new ArrayList<>());
+        classNames = SetUniqueList.setUniqueList(new ArrayList<>());
+        methods = SetUniqueList.setUniqueList(new ArrayList<>());
     }
 
     /**
@@ -82,9 +79,8 @@ public class JarClasses
      *
      * @param name the name of the class
      */
-    public void addClassName( String name )
-    {
-        this.classNames.add( name );
+    public void addClassName(String name) {
+        this.classNames.add(name);
     }
 
     /**
@@ -92,9 +88,8 @@ public class JarClasses
      *
      * @param name the name of the package
      */
-    public void addPackage( String name )
-    {
-        this.packages.add( name );
+    public void addPackage(String name) {
+        this.packages.add(name);
     }
 
     /**
@@ -102,9 +97,8 @@ public class JarClasses
      *
      * @param name the name of the method
      */
-    public void addMethod( String name )
-    {
-        this.methods.add( name );
+    public void addMethod(String name) {
+        this.methods.add(name);
     }
 
     /**
@@ -112,48 +106,39 @@ public class JarClasses
      *
      * @param imports the imports to add. Each item should be a String to avoid down the line ClassCastExceptions.
      */
-    public void addImports( List<String> imports )
-    {
-        this.imports.addAll( imports );
+    public void addImports(List<String> imports) {
+        this.imports.addAll(imports);
     }
 
-    public List<String> getImports()
-    {
-        return Collections.unmodifiableList( imports );
+    public List<String> getImports() {
+        return Collections.unmodifiableList(imports);
     }
 
-    public List<String> getClassNames()
-    {
-        return Collections.unmodifiableList( classNames );
+    public List<String> getClassNames() {
+        return Collections.unmodifiableList(classNames);
     }
 
-    public List<String> getPackages()
-    {
-        return Collections.unmodifiableList( packages );
+    public List<String> getPackages() {
+        return Collections.unmodifiableList(packages);
     }
 
-    public boolean isDebugPresent()
-    {
+    public boolean isDebugPresent() {
         return isDebugPresent;
     }
 
-    public void setDebugPresent( boolean hasDebugSymbols )
-    {
+    public void setDebugPresent(boolean hasDebugSymbols) {
         this.isDebugPresent = hasDebugSymbols;
     }
 
-    public String getJdkRevision()
-    {
+    public String getJdkRevision() {
         return jdkRevision;
     }
 
-    public void setJdkRevision( String jdkRevision )
-    {
+    public void setJdkRevision(String jdkRevision) {
         this.jdkRevision = jdkRevision;
     }
 
-    public List<String> getMethods()
-    {
-        return Collections.unmodifiableList( methods );
+    public List<String> getMethods() {
+        return Collections.unmodifiableList(methods);
     }
 }

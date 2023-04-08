@@ -1,5 +1,3 @@
-package org.apache.maven.shared.jar.identification;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.shared.jar.identification;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.jar.identification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +26,7 @@ import java.util.List;
  *
  * @see org.apache.maven.shared.jar.identification.JarIdentificationAnalysis#analyze(org.apache.maven.shared.jar.JarAnalyzer)
  */
-public class JarIdentification
-{
+public class JarIdentification {
     /**
      * The group ID derived or guessed from the list of potentials of the JAR.
      */
@@ -84,14 +82,12 @@ public class JarIdentification
      *
      * @param groupId the group ID discovered
      */
-    public void addAndSetGroupId( String groupId )
-    {
-        if ( groupId != null )
-        {
+    public void addAndSetGroupId(String groupId) {
+        if (groupId != null) {
             this.groupId = groupId;
         }
 
-        addGroupId( groupId );
+        addGroupId(groupId);
     }
 
     /**
@@ -99,9 +95,8 @@ public class JarIdentification
      *
      * @param groupId the group ID discovered
      */
-    public void addGroupId( String groupId )
-    {
-        addUnique( potentialGroupIds, groupId );
+    public void addGroupId(String groupId) {
+        addUnique(potentialGroupIds, groupId);
     }
 
     /**
@@ -109,14 +104,12 @@ public class JarIdentification
      *
      * @param artifactId the artifact ID discovered
      */
-    public void addAndSetArtifactId( String artifactId )
-    {
-        if ( artifactId != null )
-        {
+    public void addAndSetArtifactId(String artifactId) {
+        if (artifactId != null) {
             this.artifactId = artifactId;
         }
 
-        addArtifactId( artifactId );
+        addArtifactId(artifactId);
     }
 
     /**
@@ -124,9 +117,8 @@ public class JarIdentification
      *
      * @param artifactId the artifact ID discovered
      */
-    public void addArtifactId( String artifactId )
-    {
-        addUnique( potentialArtifactIds, artifactId );
+    public void addArtifactId(String artifactId) {
+        addUnique(potentialArtifactIds, artifactId);
     }
 
     /**
@@ -134,14 +126,12 @@ public class JarIdentification
      *
      * @param version the version discovered
      */
-    public void addAndSetVersion( String version )
-    {
-        if ( version != null )
-        {
+    public void addAndSetVersion(String version) {
+        if (version != null) {
             this.version = version;
         }
 
-        addVersion( version );
+        addVersion(version);
     }
 
     /**
@@ -149,9 +139,8 @@ public class JarIdentification
      *
      * @param version the version discovered
      */
-    public void addVersion( String version )
-    {
-        addUnique( potentialVersions, version );
+    public void addVersion(String version) {
+        addUnique(potentialVersions, version);
     }
 
     /**
@@ -159,14 +148,12 @@ public class JarIdentification
      *
      * @param name the vendor name discovered
      */
-    public void addAndSetVendor( String name )
-    {
-        if ( name != null )
-        {
+    public void addAndSetVendor(String name) {
+        if (name != null) {
             vendor = name;
         }
 
-        addVendor( name );
+        addVendor(name);
     }
 
     /**
@@ -174,9 +161,8 @@ public class JarIdentification
      *
      * @param name the vendor name discovered
      */
-    public void addVendor( String name )
-    {
-        addUnique( potentialVendors, name );
+    public void addVendor(String name) {
+        addUnique(potentialVendors, name);
     }
 
     /**
@@ -184,14 +170,12 @@ public class JarIdentification
      *
      * @param name the artifact name discovered
      */
-    public void addAndSetName( String name )
-    {
-        if ( name != null )
-        {
+    public void addAndSetName(String name) {
+        if (name != null) {
             this.name = name;
         }
 
-        addName( name );
+        addName(name);
     }
 
     /**
@@ -199,94 +183,75 @@ public class JarIdentification
      *
      * @param name the artifact name discovered
      */
-    public void addName( String name )
-    {
-        addUnique( potentialNames, name );
+    public void addName(String name) {
+        addUnique(potentialNames, name);
     }
 
-    private static void addUnique( List<String> list, String value )
-    {
-        if ( value != null )
-        {
-            if ( !list.contains( value ) )
-            {
-                list.add( value );
+    private static void addUnique(List<String> list, String value) {
+        if (value != null) {
+            if (!list.contains(value)) {
+                list.add(value);
             }
         }
     }
 
-    public String getArtifactId()
-    {
+    public String getArtifactId() {
         return artifactId;
     }
 
-    public void setArtifactId( String artifactId )
-    {
+    public void setArtifactId(String artifactId) {
         this.artifactId = artifactId;
     }
 
-    public String getGroupId()
-    {
+    public String getGroupId() {
         return groupId;
     }
 
-    public void setGroupId( String groupId )
-    {
+    public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public void setName( String name )
-    {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public String getVendor()
-    {
+    public String getVendor() {
         return vendor;
     }
 
-    public void setVendor( String vendor )
-    {
+    public void setVendor(String vendor) {
         this.vendor = vendor;
     }
 
-    public String getVersion()
-    {
+    public String getVersion() {
         return version;
     }
 
-    public void setVersion( String version )
-    {
+    public void setVersion(String version) {
         this.version = version;
     }
 
-    public List<String> getPotentialVersions()
-    {
+    public List<String> getPotentialVersions() {
         return potentialVersions;
     }
 
-    public List<String> getPotentialNames()
-    {
+    public List<String> getPotentialNames() {
         return potentialNames;
     }
 
-    public List<String> getPotentialGroupIds()
-    {
+    public List<String> getPotentialGroupIds() {
         return potentialGroupIds;
     }
 
-    public List<String> getPotentialArtifactIds()
-    {
+    public List<String> getPotentialArtifactIds() {
         return potentialArtifactIds;
     }
 
-    public List<String> getPotentialVendors()
-    {
+    public List<String> getPotentialVendors() {
         return potentialVendors;
     }
 }
