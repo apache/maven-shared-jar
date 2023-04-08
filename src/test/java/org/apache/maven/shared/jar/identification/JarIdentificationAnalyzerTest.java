@@ -28,7 +28,7 @@ import java.io.File;
 /**
  * JarAnalyzer Taxon Analyzer Test Case
  *
- * @todo test the exposers individually instead of in aggregate here (and test the normalize, etc. methods here instead with controlled exposers)
+ * TODO test the exposers individually instead of in aggregate here (and test the normalize, etc. methods here instead with controlled exposers)
  */
 public class JarIdentificationAnalyzerTest
     extends AbstractJarAnalyzerTestCase
