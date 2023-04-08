@@ -29,7 +29,7 @@ import org.apache.maven.artifact.Artifact;
 
 /**
  * Empty repository hash search.  Always returns an empty list.
- * <p/>
+ *
  * Used for local only implementation of a RepositoryHashSearch. It is expected for the users of this library to provide
  * an implementation of a {@link org.apache.maven.shared.jar.identification.repository.RepositoryHashSearch} against a
  * real repository.

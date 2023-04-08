@@ -39,7 +39,7 @@
     </li>
 </ul>
 
-<a name="Identification"><h2>Maven Artifact Identification</h2></a>
+<h2 id="Identification">Maven Artifact Identification</h2>
 
 <p>
     To determine the Maven artifact metadata for a particular JAR, the
@@ -60,24 +60,25 @@
 
 <p>
     Example usage:
-    <pre>
-        JarAnalyzer jar = new JarAnalyzer( jarFile );
-        JarIdenfitication jarIdenfitication;
-        try
-        {
-            // instance must have been previously obtained through Plexus or created as instructed in its Javadoc
-            jarIdenfitication = jarIdenfiticationAnalyzer.analyze( jar );
-        }
-        finally
-        {
-            jar.closeQuietly();
-        }
-
-        // continue to use jarIdenfitication or jar.getJarData()
-    </pre>
 </p>
 
-<a name="ClassAnalysis"><h2>Java Class Analysis</h2></a>
+<pre>
+    JarAnalyzer jar = new JarAnalyzer( jarFile );
+    JarIdenfitication jarIdenfitication;
+    try
+    {
+        // instance must have been previously obtained through Plexus or created as instructed in its Javadoc
+        jarIdenfitication = jarIdenfiticationAnalyzer.analyze( jar );
+    }
+    finally
+    {
+        jar.closeQuietly();
+    }
+
+    // continue to use jarIdenfitication or jar.getJarData()
+</pre>
+
+<h2 id="ClassAnalysis">Java Class Analysis</h2>
 
 <p>
     To determine the Java class metadata for a particular JAR, the
@@ -98,22 +99,22 @@
 
 <p>
     Example usage:
-    <pre>
-        JarAnalyzer jar = new JarAnalyzer( jarFile );
-        JarClasses jarClasses;
-        try
-        {
-            // instance must have been previously obtained through Plexus or created as instructed in its Javadoc
-            jarClasses = jarClassAnalyzer.analyze( jar );
-        }
-        finally
-        {
-            jar.closeQuietly();
-        }
-
-        // continue to use jarClasses or jar.getJarData()
-    </pre>
 </p>
+<pre>
+    JarAnalyzer jar = new JarAnalyzer( jarFile );
+    JarClasses jarClasses;
+    try
+    {
+        // instance must have been previously obtained through Plexus or created as instructed in its Javadoc
+        jarClasses = jarClassAnalyzer.analyze( jar );
+    }
+    finally
+    {
+        jar.closeQuietly();
+    }
+
+    // continue to use jarClasses or jar.getJarData()
+</pre>
 
 </body>
 </html>

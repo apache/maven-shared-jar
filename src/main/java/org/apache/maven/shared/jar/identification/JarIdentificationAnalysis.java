@@ -33,9 +33,9 @@ import static java.util.Objects.requireNonNull;
 /**
  * Analyze the JAR file to identify Maven artifact metadata. This class is thread safe and immutable as long as all
  * provided exposers are, as it retains no state.
- * <p/>
+ *
  * If using Plexus, the class will use all available exposers in the container.
- * <p/>
+ *
  * Note that you must first create an instance of {@link org.apache.maven.shared.jar.JarAnalyzer} - see its Javadoc for
  * a typical use.
  */

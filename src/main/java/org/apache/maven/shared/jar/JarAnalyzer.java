@@ -37,11 +37,11 @@ import java.util.zip.ZipException;
 /**
  * Open a JAR file to be analyzed. Note that once created, the {@link #closeQuietly()} method should be called to
  * release the associated file handle.
- * <p/>
+ *
  * Typical usage:
  * <pre>
  *  JarAnalyzer jar = new JarAnalyzer( jarFile );
- * <p/>
+ *
  *  try
  *  {
  *      // do some analysis, such as:
@@ -51,10 +51,10 @@ import java.util.zip.ZipException;
  *  {
  *      jar.closeQuietly();
  *  }
- * <p/>
+ *
  *  // use jar.getJarData() in some way, or the data returned by the JAR analyzer. jar itself can no longer be used.
  * </pre>
- * <p/>
+ *
  * Note: that the actual data is separated from this class by design to minimise the chance of forgetting to close the
  * JAR file. The {@link org.apache.maven.shared.jar.JarData} class exposed, as well as any data returned by actual
  * analyzers that use this class, can be used safely once this class is out of scope.

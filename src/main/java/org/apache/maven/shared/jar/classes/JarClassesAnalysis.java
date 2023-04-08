@@ -38,7 +38,7 @@ import java.util.jar.JarEntry;
 
 /**
  * Analyze the classes in a JAR file. This class is thread safe and immutable as it retains no state.
- * <p/>
+ *
  * Note that you must first create an instance of {@link org.apache.maven.shared.jar.JarAnalyzer} - see its Javadoc for
  * a typical use.
  *

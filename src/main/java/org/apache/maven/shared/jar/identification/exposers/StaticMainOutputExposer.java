@@ -32,8 +32,8 @@ import java.util.List;
 /**
  * Exposer that examines a a JAR for classes that have <code>Version</code> in the name and calls their
  * <code>main</code> method if it exists to obtain the version.
- *
- * @todo not currently implemented
+ * <p>
+ * TODO not currently implemented
  */
 @Singleton
 @Named( "staticMainOutput" )
