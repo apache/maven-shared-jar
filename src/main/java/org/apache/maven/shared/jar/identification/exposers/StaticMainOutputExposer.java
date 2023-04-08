@@ -1,5 +1,3 @@
-package org.apache.maven.shared.jar.identification.exposers;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,16 +16,17 @@ package org.apache.maven.shared.jar.identification.exposers;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.jar.identification.exposers;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Exposer that examines a a JAR for classes that have <code>Version</code> in the name and calls their
@@ -36,22 +35,17 @@ import java.util.List;
  * TODO not currently implemented
  */
 @Singleton
-@Named( "staticMainOutput" )
-public class StaticMainOutputExposer
-    implements JarIdentificationExposer
-{
+@Named("staticMainOutput")
+public class StaticMainOutputExposer implements JarIdentificationExposer {
     @Override
-    public void expose( JarIdentification identification, JarAnalyzer jarAnalyzer )
-    {
+    public void expose(JarIdentification identification, JarAnalyzer jarAnalyzer) {
         List<String> staticMains = findStaticMainVersions();
-        for ( String ver : staticMains )
-        {
-            identification.addVersion( ver );
+        for (String ver : staticMains) {
+            identification.addVersion(ver);
         }
     }
 
-    private List<String> findStaticMainVersions()
-    {
+    private List<String> findStaticMainVersions() {
         // TODO: Execute the static main methods of classes with 'Version' in their name.
         return Collections.emptyList();
     }

@@ -1,5 +1,3 @@
-package org.apache.maven.shared.jar.identification.exposers;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,10 +16,14 @@ package org.apache.maven.shared.jar.identification.exposers;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.jar.identification.exposers;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.shared.jar.JarAnalyzer;
@@ -30,9 +32,6 @@ import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
 import org.apache.maven.shared.jar.identification.hash.JarHashAnalyzer;
 import org.apache.maven.shared.jar.identification.repository.RepositoryHashSearch;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -40,10 +39,8 @@ import static java.util.Objects.requireNonNull;
  * identical files, and files with identical classes.
  */
 @Singleton
-@Named( "repositorySearch" )
-public class RepositorySearchExposer
-    implements JarIdentificationExposer
-{
+@Named("repositorySearch")
+public class RepositorySearchExposer implements JarIdentificationExposer {
     /**
      * The repository searcher to use.
      *
@@ -62,38 +59,34 @@ public class RepositorySearchExposer
     private final JarHashAnalyzer bytecodeHashAnalyzer;
 
     @Inject
-    public RepositorySearchExposer( RepositoryHashSearch repositoryHashSearch,
-                                    @Named( "file" ) JarHashAnalyzer fileHashAnalyzer,
-                                    @Named( "bytecode" ) JarHashAnalyzer bytecodeHashAnalyzer )
-    {
-        this.repositoryHashSearch = requireNonNull( repositoryHashSearch );
-        this.fileHashAnalyzer = requireNonNull( fileHashAnalyzer );
-        this.bytecodeHashAnalyzer = requireNonNull( bytecodeHashAnalyzer );
+    public RepositorySearchExposer(
+            RepositoryHashSearch repositoryHashSearch,
+            @Named("file") JarHashAnalyzer fileHashAnalyzer,
+            @Named("bytecode") JarHashAnalyzer bytecodeHashAnalyzer) {
+        this.repositoryHashSearch = requireNonNull(repositoryHashSearch);
+        this.fileHashAnalyzer = requireNonNull(fileHashAnalyzer);
+        this.bytecodeHashAnalyzer = requireNonNull(bytecodeHashAnalyzer);
     }
 
     @Override
-    public void expose( JarIdentification identification, JarAnalyzer jarAnalyzer )
-    {
+    public void expose(JarIdentification identification, JarAnalyzer jarAnalyzer) {
         List<Artifact> repohits = new ArrayList<>();
 
-        String hash = fileHashAnalyzer.computeHash( jarAnalyzer );
-        if ( hash != null )
-        {
-            repohits.addAll( repositoryHashSearch.searchFileHash( hash ) );
+        String hash = fileHashAnalyzer.computeHash(jarAnalyzer);
+        if (hash != null) {
+            repohits.addAll(repositoryHashSearch.searchFileHash(hash));
         }
 
-        String bytecodehash = bytecodeHashAnalyzer.computeHash( jarAnalyzer );
-        if ( bytecodehash != null )
-        {
-            repohits.addAll( repositoryHashSearch.searchBytecodeHash( bytecodehash ) );
+        String bytecodehash = bytecodeHashAnalyzer.computeHash(jarAnalyzer);
+        if (bytecodehash != null) {
+            repohits.addAll(repositoryHashSearch.searchBytecodeHash(bytecodehash));
         }
 
         // Found hits in the repository.
-        for ( Artifact artifact : repohits )
-        {
-            identification.addAndSetGroupId( artifact.getGroupId() );
-            identification.addAndSetArtifactId( artifact.getArtifactId() );
-            identification.addAndSetVersion( artifact.getVersion() );
+        for (Artifact artifact : repohits) {
+            identification.addAndSetGroupId(artifact.getGroupId());
+            identification.addAndSetArtifactId(artifact.getArtifactId());
+            identification.addAndSetVersion(artifact.getVersion());
         }
     }
 }

@@ -1,5 +1,3 @@
-package org.apache.maven.shared.jar;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,10 +16,7 @@ package org.apache.maven.shared.jar;
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import org.apache.maven.shared.jar.classes.JarClasses;
-import org.apache.maven.shared.jar.identification.JarIdentification;
-import org.codehaus.plexus.util.StringUtils;
+package org.apache.maven.shared.jar;
 
 import java.io.File;
 import java.util.Collections;
@@ -30,11 +25,14 @@ import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 
+import org.apache.maven.shared.jar.classes.JarClasses;
+import org.apache.maven.shared.jar.identification.JarIdentification;
+import org.codehaus.plexus.util.StringUtils;
+
 /**
  * Class that contains details of a single JAR file and it's entries.
  */
-public final class JarData
-{
+public final class JarData {
     /**
      * The JAR file.
      */
@@ -43,7 +41,7 @@ public final class JarData
     /**
      * Whether the JAR file is sealed.
      */
-    private final boolean sealed;
+    private final boolean aSealed;
 
     /**
      * The hashcode for the entire file's contents.
@@ -82,108 +80,88 @@ public final class JarData
      * @param manifest the JAR manifest
      * @param entries  the JAR entries
      */
-    public JarData( File file, Manifest manifest, List<JarEntry> entries )
-    {
+    public JarData(File file, Manifest manifest, List<JarEntry> entries) {
         this.file = file;
 
         this.manifest = manifest;
 
-        this.entries = Collections.unmodifiableList( entries );
+        this.entries = Collections.unmodifiableList(entries);
 
-        boolean sealed = false;
-        if ( this.manifest != null )
-        {
-            String sval = this.manifest.getMainAttributes().getValue( Attributes.Name.SEALED );
-            if ( StringUtils.isNotEmpty( sval ) )
-            {
-                sealed = "true".equalsIgnoreCase( sval.trim() );
+        boolean aSealed = false;
+        if (this.manifest != null) {
+            String sval = this.manifest.getMainAttributes().getValue(Attributes.Name.SEALED);
+            if (StringUtils.isNotEmpty(sval)) {
+                aSealed = "true".equalsIgnoreCase(sval.trim());
             }
         }
-        this.sealed = sealed;
+        this.aSealed = aSealed;
     }
 
-    public List<JarEntry> getEntries()
-    {
+    public List<JarEntry> getEntries() {
         return entries;
     }
 
-    public Manifest getManifest()
-    {
+    public Manifest getManifest() {
         return manifest;
     }
 
-    public File getFile()
-    {
+    public File getFile() {
         return file;
     }
 
-    public boolean isSealed()
-    {
-        return sealed;
+    public boolean isSealed() {
+        return aSealed;
     }
 
-    public void setFileHash( String fileHash )
-    {
+    public void setFileHash(String fileHash) {
         this.fileHash = fileHash;
     }
 
-    public String getFileHash()
-    {
+    public String getFileHash() {
         return fileHash;
     }
 
-    public void setBytecodeHash( String bytecodeHash )
-    {
+    public void setBytecodeHash(String bytecodeHash) {
         this.bytecodeHash = bytecodeHash;
     }
 
-    public String getBytecodeHash()
-    {
+    public String getBytecodeHash() {
         return bytecodeHash;
     }
 
-    public boolean isDebugPresent()
-    {
+    public boolean isDebugPresent() {
         return jarClasses.isDebugPresent();
     }
 
-    public void setJarClasses( JarClasses jarClasses )
-    {
+    public void setJarClasses(JarClasses jarClasses) {
         this.jarClasses = jarClasses;
     }
 
-    public int getNumEntries()
-    {
+    public int getNumEntries() {
         return entries.size();
     }
 
-    public int getNumClasses()
-    {
+    public int getNumClasses() {
         return jarClasses.getClassNames().size();
     }
 
-    public int getNumPackages()
-    {
+    public int getNumPackages() {
         return jarClasses.getPackages().size();
     }
 
-    public String getJdkRevision()
-    {
+    public String getJdkRevision() {
         return jarClasses.getJdkRevision();
     }
 
-    public void setJarIdentification( JarIdentification jarIdentification )
-    {
+    public void setJarIdentification(JarIdentification jarIdentification) {
         this.jarIdentification = jarIdentification;
     }
 
-    public JarIdentification getJarIdentification()
-    {
+    public JarIdentification getJarIdentification() {
         return jarIdentification;
     }
 
-    public JarClasses getJarClasses()
-    {
+    public JarClasses getJarClasses() {
         return jarClasses;
     }
 }

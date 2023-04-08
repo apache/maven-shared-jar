@@ -1,5 +1,3 @@
-package org.apache.maven.shared.jar;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,11 +16,7 @@ package org.apache.maven.shared.jar;
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import junit.framework.AssertionFailedError;
-import org.codehaus.plexus.ContainerConfiguration;
-import org.codehaus.plexus.PlexusConstants;
-import org.codehaus.plexus.PlexusTestCase;
+package org.apache.maven.shared.jar;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -33,50 +27,48 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import junit.framework.AssertionFailedError;
+import org.codehaus.plexus.ContainerConfiguration;
+import org.codehaus.plexus.PlexusConstants;
+import org.codehaus.plexus.PlexusTestCase;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Abstract JarAnalyzer TestCase
  */
-public abstract class AbstractJarAnalyzerTestCase
-    extends PlexusTestCase
-{
+public abstract class AbstractJarAnalyzerTestCase extends PlexusTestCase {
     @Override
-    protected void customizeContainerConfiguration( ContainerConfiguration configuration )
-    {
-        configuration.setAutoWiring( true ).setClassPathScanning( PlexusConstants.SCANNING_CACHE );
+    protected void customizeContainerConfiguration(ContainerConfiguration configuration) {
+        configuration.setAutoWiring(true).setClassPathScanning(PlexusConstants.SCANNING_CACHE);
     }
 
-    protected File getSampleJar( String filename )
-        throws UnsupportedEncodingException
-    {
-        String path = getClass().getResource( "/jars/" + filename ).getPath();
+    protected File getSampleJar(String filename) throws UnsupportedEncodingException {
+        String path = getClass().getResource("/jars/" + filename).getPath();
         // URLDecoder.decode necessary for JDK 1.5+, where spaces are escaped to %20
-        return new File( URLDecoder.decode( path, UTF_8.name() ) );
+        return new File(URLDecoder.decode(path, UTF_8.name()));
     }
 
-    protected void assertNotContainsRegex( String msg, String regex, Collection<String> coll )
-    {
+    protected void assertNotContainsRegex(String msg, String regex, Collection<String> coll) {
         List<String> failures = new ArrayList<>();
-        Pattern pat = Pattern.compile( regex );
-        for ( String value : coll )
-        {
-            Matcher mat = pat.matcher( value );
-            if ( mat.find() )
-            {
-                failures.add( value );
+        Pattern pat = Pattern.compile(regex);
+        for (String value : coll) {
+            Matcher mat = pat.matcher(value);
+            if (mat.find()) {
+                failures.add(value);
             }
         }
 
-        if ( !failures.isEmpty() )
-        {
+        if (!failures.isEmpty()) {
             StringBuilder sb = new StringBuilder();
-            sb.append( msg ).append( " collection has illegal regex \"" ).append( regex ).append( "\"" );
-            for ( String failure : failures )
-            {
-                sb.append( "\n   - \"" ).append( failure ).append( "\"" );
+            sb.append(msg)
+                    .append(" collection has illegal regex \"")
+                    .append(regex)
+                    .append("\"");
+            for (String failure : failures) {
+                sb.append("\n   - \"").append(failure).append("\"");
             }
-            throw new AssertionFailedError( sb.toString() );
+            throw new AssertionFailedError(sb.toString());
         }
     }
 }

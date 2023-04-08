@@ -1,5 +1,3 @@
-package org.apache.maven.shared.jar.identification;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.shared.jar.identification;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.jar.identification;
 
 import org.apache.maven.shared.jar.JarAnalyzer;
 
@@ -26,8 +25,7 @@ import org.apache.maven.shared.jar.JarAnalyzer;
  *
  * @see org.apache.maven.shared.jar.identification.JarIdentificationAnalysis
  */
-public interface JarIdentificationExposer
-{
+public interface JarIdentificationExposer {
     /**
      * Expose metadata during the identification process.
      *
@@ -35,5 +33,5 @@ public interface JarIdentificationExposer
      * @param jarAnalyzer    the JAR to obtain the information from. Should be treated as read only, with the exception
      *                       of caching the metadata if it would be identical when run over the same file again.
      */
-    void expose( JarIdentification identification, JarAnalyzer jarAnalyzer );
+    void expose(JarIdentification identification, JarAnalyzer jarAnalyzer);
 }

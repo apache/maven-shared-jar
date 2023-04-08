@@ -1,5 +1,3 @@
-package org.apache.maven.shared.jar.identification.exposers;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.shared.jar.identification.exposers;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.jar.identification.exposers;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -36,26 +35,21 @@ import static java.util.Objects.requireNonNull;
  * potential group IDs from the class packages.
  */
 @Singleton
-@Named( "jarClasses" )
-public class JarClassesExposer
-    implements JarIdentificationExposer
-{
+@Named("jarClasses")
+public class JarClassesExposer implements JarIdentificationExposer {
     private final JarClassesAnalysis analyzer;
 
     @Inject
-    public JarClassesExposer( JarClassesAnalysis analyzer )
-    {
-        this.analyzer = requireNonNull( analyzer );
+    public JarClassesExposer(JarClassesAnalysis analyzer) {
+        this.analyzer = requireNonNull(analyzer);
     }
 
     @Override
-    public void expose( JarIdentification identification, JarAnalyzer jarAnalyzer )
-    {
-        JarClasses jarclasses = analyzer.analyze( jarAnalyzer );
+    public void expose(JarIdentification identification, JarAnalyzer jarAnalyzer) {
+        JarClasses jarclasses = analyzer.analyze(jarAnalyzer);
 
-        for ( String packagename : jarclasses.getPackages() )
-        {
-            identification.addGroupId( packagename );
+        for (String packagename : jarclasses.getPackages()) {
+            identification.addGroupId(packagename);
         }
     }
 }

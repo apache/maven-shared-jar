@@ -1,5 +1,3 @@
-package org.apache.maven.shared.jar.identification;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,15 +16,16 @@ package org.apache.maven.shared.jar.identification;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.jar.identification;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import java.util.List;
+
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.codehaus.plexus.util.StringUtils;
-
-import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
@@ -41,17 +40,15 @@ import static java.util.Objects.requireNonNull;
  */
 @Singleton
 @Named
-public class JarIdentificationAnalysis
-{
+public class JarIdentificationAnalysis {
     /**
      * The Maven information exposers to use during identification.
      */
     private final List<JarIdentificationExposer> exposers;
 
     @Inject
-    public JarIdentificationAnalysis( List<JarIdentificationExposer> exposers )
-    {
-        this.exposers = requireNonNull( exposers );
+    public JarIdentificationAnalysis(List<JarIdentificationExposer> exposers) {
+        this.exposers = requireNonNull(exposers);
     }
 
     /**
@@ -62,86 +59,69 @@ public class JarIdentificationAnalysis
      * @param jarAnalyzer the JAR to analyze. This must not yet have been closed.
      * @return the Maven metadata discovered
      */
-    public JarIdentification analyze( JarAnalyzer jarAnalyzer )
-    {
+    public JarIdentification analyze(JarAnalyzer jarAnalyzer) {
         JarIdentification taxon = jarAnalyzer.getJarData().getJarIdentification();
-        if ( taxon != null )
-        {
+        if (taxon != null) {
             return taxon;
         }
 
         taxon = new JarIdentification();
 
-        for ( JarIdentificationExposer exposer : exposers )
-        {
-            exposer.expose( taxon, jarAnalyzer );
+        for (JarIdentificationExposer exposer : exposers) {
+            exposer.expose(taxon, jarAnalyzer);
         }
 
-        normalize( taxon );
+        normalize(taxon);
 
-        jarAnalyzer.getJarData().setJarIdentification( taxon );
+        jarAnalyzer.getJarData().setJarIdentification(taxon);
 
         return taxon;
     }
 
-    private void normalize( JarIdentification taxon )
-    {
-        if ( StringUtils.isEmpty( taxon.getGroupId() ) )
-        {
-            taxon.setGroupId( pickSmallest( taxon.getPotentialGroupIds() ) );
+    private void normalize(JarIdentification taxon) {
+        if (StringUtils.isEmpty(taxon.getGroupId())) {
+            taxon.setGroupId(pickSmallest(taxon.getPotentialGroupIds()));
         }
 
-        if ( StringUtils.isEmpty( taxon.getArtifactId() ) )
-        {
-            taxon.setArtifactId( pickLargest( taxon.getPotentialArtifactIds() ) );
+        if (StringUtils.isEmpty(taxon.getArtifactId())) {
+            taxon.setArtifactId(pickLargest(taxon.getPotentialArtifactIds()));
         }
 
-        if ( StringUtils.isEmpty( taxon.getVersion() ) )
-        {
-            taxon.setVersion( pickSmallest( taxon.getPotentialVersions() ) );
+        if (StringUtils.isEmpty(taxon.getVersion())) {
+            taxon.setVersion(pickSmallest(taxon.getPotentialVersions()));
         }
 
-        if ( StringUtils.isEmpty( taxon.getName() ) )
-        {
-            taxon.setName( pickLargest( taxon.getPotentialNames() ) );
+        if (StringUtils.isEmpty(taxon.getName())) {
+            taxon.setName(pickLargest(taxon.getPotentialNames()));
         }
 
-        if ( StringUtils.isEmpty( taxon.getVendor() ) )
-        {
-            taxon.setVendor( pickLargest( taxon.getPotentialVendors() ) );
+        if (StringUtils.isEmpty(taxon.getVendor())) {
+            taxon.setVendor(pickLargest(taxon.getPotentialVendors()));
         }
     }
 
-    private String pickSmallest( List<String> list )
-    {
+    private String pickSmallest(List<String> list) {
         String smallest = null;
 
         int size = Integer.MAX_VALUE;
-        for ( String val : list )
-        {
-            if ( StringUtils.isNotEmpty( val ) )
-            {
-                if ( val.length() < size )
-                {
+        for (String val : list) {
+            if (StringUtils.isNotEmpty(val)) {
+                if (val.length() < size) {
                     smallest = val;
                     size = val.length();
                 }
             }
         }
-        
+
         return smallest;
     }
 
-    private String pickLargest( List<String> list )
-    {
+    private String pickLargest(List<String> list) {
         String largest = null;
         int size = Integer.MIN_VALUE;
-        for ( String val : list )
-        {
-            if ( StringUtils.isNotEmpty( val ) )
-            {
-                if ( val.length() > size )
-                {
+        for (String val : list) {
+            if (StringUtils.isNotEmpty(val)) {
+                if (val.length() > size) {
                     largest = val;
                     size = val.length();
                 }

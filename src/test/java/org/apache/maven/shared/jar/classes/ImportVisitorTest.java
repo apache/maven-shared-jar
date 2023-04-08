@@ -1,5 +1,3 @@
-package org.apache.maven.shared.jar.classes;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,11 @@ package org.apache.maven.shared.jar.classes;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.jar.classes;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.ClassParser;
@@ -25,56 +28,45 @@ import org.apache.bcel.classfile.DescendingVisitor;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.maven.shared.jar.AbstractJarAnalyzerTestCase;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
-
 /**
  * Import Visitor Test
  */
-public class ImportVisitorTest
-    extends AbstractJarAnalyzerTestCase
-{
-    public void testImportsJxr()
-        throws ClassFormatException, IOException
-    {
-        File jxrjar = getSampleJar( "jxr.jar" );
+public class ImportVisitorTest extends AbstractJarAnalyzerTestCase {
+    public void testImportsJxr() throws ClassFormatException, IOException {
+        File jxrjar = getSampleJar("jxr.jar");
         String classname = "org/apache/maven/jxr/DirectoryIndexer.class";
-        ClassParser classParser = new ClassParser( jxrjar.getAbsolutePath(), classname );
+        ClassParser classParser = new ClassParser(jxrjar.getAbsolutePath(), classname);
         JavaClass javaClass = classParser.parse();
 
-        ImportVisitor importVisitor = new ImportVisitor( javaClass );
-        DescendingVisitor descVisitor = new DescendingVisitor( javaClass, importVisitor );
-        javaClass.accept( descVisitor );
+        ImportVisitor importVisitor = new ImportVisitor(javaClass);
+        DescendingVisitor descVisitor = new DescendingVisitor(javaClass, importVisitor);
+        javaClass.accept(descVisitor);
 
         List<String> imports = importVisitor.getImports();
-        assertNotNull( "Import List", imports );
+        assertNotNull("Import List", imports);
 
-        assertNotContainsRegex( "Import List", "[\\[\\)\\(\\;]", imports );
+        assertNotContainsRegex("Import List", "[\\[\\)\\(\\;]", imports);
 
-        assertTrue( "imports", imports.contains( "org.apache.maven.jxr.pacman.PackageType" ) );
-        assertTrue( "imports", imports.contains( "org.apache.oro.text.perl.Perl5Util" ) );
+        assertTrue("imports", imports.contains("org.apache.maven.jxr.pacman.PackageType"));
+        assertTrue("imports", imports.contains("org.apache.oro.text.perl.Perl5Util"));
     }
 
-    public void testImportsAnt()
-        throws ClassFormatException, IOException
-    {
-        File jxrjar = getSampleJar( "ant.jar" );
+    public void testImportsAnt() throws ClassFormatException, IOException {
+        File jxrjar = getSampleJar("ant.jar");
         String classname = "org/apache/tools/ant/Target.class";
-        ClassParser classParser = new ClassParser( jxrjar.getAbsolutePath(), classname );
+        ClassParser classParser = new ClassParser(jxrjar.getAbsolutePath(), classname);
         JavaClass javaClass = classParser.parse();
 
-        ImportVisitor importVisitor = new ImportVisitor( javaClass );
-        DescendingVisitor descVisitor = new DescendingVisitor( javaClass, importVisitor );
-        javaClass.accept( descVisitor );
+        ImportVisitor importVisitor = new ImportVisitor(javaClass);
+        DescendingVisitor descVisitor = new DescendingVisitor(javaClass, importVisitor);
+        javaClass.accept(descVisitor);
 
         List<String> imports = importVisitor.getImports();
-        assertNotNull( "Import List", imports );
+        assertNotNull("Import List", imports);
 
-        assertNotContainsRegex( "Import List", "[\\[\\)\\(\\;]", imports );
+        assertNotContainsRegex("Import List", "[\\[\\)\\(\\;]", imports);
 
-        assertTrue( "imports", imports.contains( "org.apache.tools.ant.Location" ) );
-        assertTrue( "imports", imports.contains( "org.apache.tools.ant.Task" ) );
+        assertTrue("imports", imports.contains("org.apache.tools.ant.Location"));
+        assertTrue("imports", imports.contains("org.apache.tools.ant.Task"));
     }
 }

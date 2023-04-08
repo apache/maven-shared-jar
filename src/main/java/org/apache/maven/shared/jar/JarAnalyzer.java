@@ -1,5 +1,3 @@
-package org.apache.maven.shared.jar;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.shared.jar;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.jar;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,24 +61,23 @@ import java.util.zip.ZipException;
  * @see org.apache.maven.shared.jar.identification.JarIdentificationAnalysis#analyze(JarAnalyzer)
  * @see org.apache.maven.shared.jar.classes.JarClassesAnalysis#analyze(JarAnalyzer)
  */
-public class JarAnalyzer
-{
+public class JarAnalyzer {
     /**
      * Pattern to filter JAR entries for class files.
      *
      * @todo why are inner classes and other potentially valid classes omitted? (It flukes it by finding everything after $)
      */
-    private static final Pattern CLASS_FILTER = Pattern.compile( "[A-Za-z0-9]*\\.class$" );
+    private static final Pattern CLASS_FILTER = Pattern.compile("[A-Za-z0-9]*\\.class$");
 
     /**
      * Pattern to filter JAR entries for Maven POM files.
      */
-    private static final Pattern MAVEN_POM_FILTER = Pattern.compile( "META-INF/maven/.*/pom\\.xml$" );
+    private static final Pattern MAVEN_POM_FILTER = Pattern.compile("META-INF/maven/.*/pom\\.xml$");
 
     /**
      * Pattern to filter JAR entries for text files that may contain a version.
      */
-    private static final Pattern VERSION_FILTER = Pattern.compile( "[Vv][Ee][Rr][Ss][Ii][Oo][Nn]" );
+    private static final Pattern VERSION_FILTER = Pattern.compile("[Vv][Ee][Rr][Ss][Ii][Oo][Nn]");
 
     /**
      * The associated JAR file.
@@ -98,37 +96,29 @@ public class JarAnalyzer
      * @throws java.io.IOException if there is a problem opening the JAR file, or reading the manifest. The JAR file
      *             will be closed if this occurs.
      */
-    public JarAnalyzer( File file )
-        throws IOException
-    {
-        try
-        {
-            this.jarFile = new JarFile( file );
-        }
-        catch ( ZipException e )
-        {
-            ZipException ioe = new ZipException( "Failed to open file " + file + " : " + e.getMessage() );
-            ioe.initCause( e );
+    public JarAnalyzer(File file) throws IOException {
+        try {
+            this.jarFile = new JarFile(file);
+        } catch (ZipException e) {
+            ZipException ioe = new ZipException("Failed to open file " + file + " : " + e.getMessage());
+            ioe.initCause(e);
             throw ioe;
         }
 
         // Obtain entries list.
-        List<JarEntry> entries = Collections.list( jarFile.entries() );
+        List<JarEntry> entries = Collections.list(jarFile.entries());
 
         // Sorting of list is done by name to ensure a bytecode hash is always consistent.
-        entries.sort( Comparator.comparing( ZipEntry::getName ) );
+        entries.sort(Comparator.comparing(ZipEntry::getName));
 
         Manifest manifest;
-        try
-        {
+        try {
             manifest = jarFile.getManifest();
-        }
-        catch ( IOException e )
-        {
+        } catch (IOException e) {
             closeQuietly();
             throw e;
         }
-        this.jarData = new JarData( file, manifest, entries );
+        this.jarData = new JarData(file, manifest, entries);
     }
 
     /**
@@ -139,23 +129,17 @@ public class JarAnalyzer
      * @return the input stream of the individual JAR entry.
      * @throws java.io.IOException if there is a problem opening the individual entry
      */
-    public InputStream getEntryInputStream( JarEntry entry )
-        throws IOException
-    {
-        return jarFile.getInputStream( entry );
+    public InputStream getEntryInputStream(JarEntry entry) throws IOException {
+        return jarFile.getInputStream(entry);
     }
 
     /**
      * Close the associated JAR file, ignoring any errors that may occur.
      */
-    public void closeQuietly()
-    {
-        try
-        {
+    public void closeQuietly() {
+        try {
             jarFile.close();
-        }
-        catch ( IOException e )
-        {
+        } catch (IOException e) {
             // not much we can do about it but ignore it
         }
     }
@@ -166,16 +150,13 @@ public class JarAnalyzer
      * @param pattern the pattern to filter against
      * @return the list of files found, in {@link java.util.jar.JarEntry} elements
      */
-    public List<JarEntry> filterEntries( Pattern pattern )
-    {
+    public List<JarEntry> filterEntries(Pattern pattern) {
         List<JarEntry> ret = new ArrayList<>();
 
-        for ( JarEntry entry : getEntries() )
-        {
-            Matcher mat = pattern.matcher( entry.getName() );
-            if ( mat.find() )
-            {
-                ret.add( entry );
+        for (JarEntry entry : getEntries()) {
+            Matcher mat = pattern.matcher(entry.getName());
+            if (mat.find()) {
+                ret.add(entry);
             }
         }
         return ret;
@@ -186,9 +167,8 @@ public class JarAnalyzer
      *
      * @return the list of files found, in {@link java.util.jar.JarEntry} elements
      */
-    public List<JarEntry> getClassEntries()
-    {
-        return filterEntries( CLASS_FILTER );
+    public List<JarEntry> getClassEntries() {
+        return filterEntries(CLASS_FILTER);
     }
 
     /**
@@ -196,9 +176,8 @@ public class JarAnalyzer
      *
      * @return the list of files found, in {@link java.util.jar.JarEntry} elements
      */
-    public List<JarEntry> getMavenPomEntries()
-    {
-        return filterEntries( MAVEN_POM_FILTER );
+    public List<JarEntry> getMavenPomEntries() {
+        return filterEntries(MAVEN_POM_FILTER);
     }
 
     /**
@@ -206,9 +185,8 @@ public class JarAnalyzer
      *
      * @return the list of files found, in {@link java.util.jar.JarEntry} elements
      */
-    public List<JarEntry> getVersionEntries()
-    {
-        return filterEntries( VERSION_FILTER );
+    public List<JarEntry> getVersionEntries() {
+        return filterEntries(VERSION_FILTER);
     }
 
     /**
@@ -216,8 +194,7 @@ public class JarAnalyzer
      *
      * @return the list of files found, in {@link java.util.jar.JarEntry} elements
      */
-    public List<JarEntry> getEntries()
-    {
+    public List<JarEntry> getEntries() {
         return jarData.getEntries();
     }
 
@@ -226,13 +203,11 @@ public class JarAnalyzer
      *
      * @return the JAR file reference
      */
-    public File getFile()
-    {
+    public File getFile() {
         return jarData.getFile();
     }
 
-    public JarData getJarData()
-    {
+    public JarData getJarData() {
         return jarData;
     }
 }

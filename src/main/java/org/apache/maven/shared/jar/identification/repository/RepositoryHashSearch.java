@@ -1,5 +1,3 @@
-package org.apache.maven.shared.jar.identification.repository;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.shared.jar.identification.repository;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.jar.identification.repository;
 
 import java.util.List;
 
@@ -26,15 +25,14 @@ import org.apache.maven.artifact.Artifact;
 /**
  * Interface for Repository Hash Searches.
  */
-public interface RepositoryHashSearch
-{
+public interface RepositoryHashSearch {
     /**
      * Search the repository for artifacts matching the given hash code when consider the entire contents of the file.
      *
      * @param hash the hash code to use
      * @return a list of {@link org.apache.maven.artifact.Artifact} instances that matched
      */
-    List<Artifact> searchFileHash( String hash );
+    List<Artifact> searchFileHash(String hash);
 
     /**
      * Search the repository for artifacts matching the given hash code when consider the bytecode of the classes in the
@@ -43,5 +41,5 @@ public interface RepositoryHashSearch
      * @param hash the hash code to use
      * @return a list of {@link org.apache.maven.artifact.Artifact} instances that matched
      */
-    List<Artifact> searchBytecodeHash( String hash );
+    List<Artifact> searchBytecodeHash(String hash);
 }

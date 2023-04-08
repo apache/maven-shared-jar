@@ -1,5 +1,3 @@
-package org.apache.maven.shared.jar.identification.exposers;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,50 +16,45 @@ package org.apache.maven.shared.jar.identification.exposers;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.shared.jar.identification.exposers;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
 
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
-
 /**
  * Exposer that examines a JAR's manifest to derive Maven metadata.
  */
 @Singleton
-@Named( "manifest" )
-public class ManifestExposer
-    implements JarIdentificationExposer
-{
+@Named("manifest")
+public class ManifestExposer implements JarIdentificationExposer {
     @Override
-    public void expose( JarIdentification identification, JarAnalyzer jarAnalyzer )
-    {
+    public void expose(JarIdentification identification, JarAnalyzer jarAnalyzer) {
         Manifest manifest = jarAnalyzer.getJarData().getManifest();
-        if ( manifest != null )
-        {
-            addManifestAttributeValues( manifest.getMainAttributes(), identification );
+        if (manifest != null) {
+            addManifestAttributeValues(manifest.getMainAttributes(), identification);
 
-            for ( Attributes attribs : manifest.getEntries().values() )
-            {
-                addManifestAttributeValues( attribs, identification );
+            for (Attributes attribs : manifest.getEntries().values()) {
+                addManifestAttributeValues(attribs, identification);
             }
         }
     }
 
-    private void addManifestAttributeValues( Attributes attribs, JarIdentification identification )
-    {
-        identification.addName( attribs.getValue( Attributes.Name.IMPLEMENTATION_TITLE ) );
-        identification.addVersion( attribs.getValue( Attributes.Name.IMPLEMENTATION_VERSION ) );
-        identification.addVendor( attribs.getValue( Attributes.Name.IMPLEMENTATION_VENDOR ) );
+    private void addManifestAttributeValues(Attributes attribs, JarIdentification identification) {
+        identification.addName(attribs.getValue(Attributes.Name.IMPLEMENTATION_TITLE));
+        identification.addVersion(attribs.getValue(Attributes.Name.IMPLEMENTATION_VERSION));
+        identification.addVendor(attribs.getValue(Attributes.Name.IMPLEMENTATION_VENDOR));
 
-        identification.addName( attribs.getValue( Attributes.Name.SPECIFICATION_TITLE ) );
-        identification.addVersion( attribs.getValue( Attributes.Name.SPECIFICATION_VERSION ) );
-        identification.addVendor( attribs.getValue( Attributes.Name.SPECIFICATION_VENDOR ) );
+        identification.addName(attribs.getValue(Attributes.Name.SPECIFICATION_TITLE));
+        identification.addVersion(attribs.getValue(Attributes.Name.SPECIFICATION_VERSION));
+        identification.addVendor(attribs.getValue(Attributes.Name.SPECIFICATION_VENDOR));
 
-        identification.addGroupId( attribs.getValue( Attributes.Name.EXTENSION_NAME ) );
+        identification.addGroupId(attribs.getValue(Attributes.Name.EXTENSION_NAME));
     }
 }
