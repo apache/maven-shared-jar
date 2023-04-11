@@ -27,21 +27,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import junit.framework.AssertionFailedError;
-import org.codehaus.plexus.ContainerConfiguration;
-import org.codehaus.plexus.PlexusConstants;
-import org.codehaus.plexus.PlexusTestCase;
+import org.opentest4j.AssertionFailedError;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Abstract JarAnalyzer TestCase
  */
-public abstract class AbstractJarAnalyzerTestCase extends PlexusTestCase {
-    @Override
-    protected void customizeContainerConfiguration(ContainerConfiguration configuration) {
-        configuration.setAutoWiring(true).setClassPathScanning(PlexusConstants.SCANNING_CACHE);
-    }
+public abstract class AbstractJarAnalyzerTestCase {
 
     protected File getSampleJar(String filename) throws UnsupportedEncodingException {
         String path = getClass().getResource("/jars/" + filename).getPath();

@@ -23,12 +23,19 @@ import java.io.File;
 import org.apache.maven.shared.jar.AbstractJarAnalyzerTestCase;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test Case for Embedded Maven Model Taxon Data.
  */
-public class EmbeddedMavenModelExposerTest extends AbstractJarAnalyzerTestCase {
-    public void testExposerWithParent() throws Exception {
+class EmbeddedMavenModelExposerTest extends AbstractJarAnalyzerTestCase {
+
+    @Test
+    void testExposerWithParent() throws Exception {
         File file = getSampleJar("test1.jar");
 
         JarIdentification identification = new JarIdentification();
@@ -46,7 +53,8 @@ public class EmbeddedMavenModelExposerTest extends AbstractJarAnalyzerTestCase {
         assertEquals("1.1-SNAPSHOT", identification.getPotentialVersions().get(0));
     }
 
-    public void testExposerWithJXR() throws Exception {
+    @Test
+    void testExposerWithJXR() throws Exception {
         File file = getSampleJar("jxr.jar");
 
         JarIdentification identification = new JarIdentification();
@@ -54,15 +62,15 @@ public class EmbeddedMavenModelExposerTest extends AbstractJarAnalyzerTestCase {
         EmbeddedMavenModelExposer exposer = new EmbeddedMavenModelExposer();
         exposer.expose(identification, new JarAnalyzer(file));
 
-        assertFalse("exposer.groupIds", identification.getPotentialGroupIds().isEmpty());
-        assertFalse(
-                "exposer.artifactIds", identification.getPotentialArtifactIds().isEmpty());
-        assertFalse("exposer.versions", identification.getPotentialVersions().isEmpty());
+        assertFalse(identification.getPotentialGroupIds().isEmpty(), "exposer.groupIds");
+        assertFalse(identification.getPotentialArtifactIds().isEmpty(), "exposer.artifactIds");
+        assertFalse(identification.getPotentialVersions().isEmpty(), "exposer.versions");
 
         // TODO test others
     }
 
-    public void testExposerWithANT() throws Exception {
+    @Test
+    void testExposerWithANT() throws Exception {
         File file = getSampleJar("ant.jar");
 
         JarIdentification identification = new JarIdentification();
@@ -70,10 +78,9 @@ public class EmbeddedMavenModelExposerTest extends AbstractJarAnalyzerTestCase {
         EmbeddedMavenModelExposer exposer = new EmbeddedMavenModelExposer();
         exposer.expose(identification, new JarAnalyzer(file));
 
-        assertTrue("exposer.groupIds", identification.getPotentialGroupIds().isEmpty());
-        assertTrue(
-                "exposer.artifactIds", identification.getPotentialArtifactIds().isEmpty());
-        assertTrue("exposer.versions", identification.getPotentialVersions().isEmpty());
+        assertTrue(identification.getPotentialGroupIds().isEmpty(), "exposer.groupIds");
+        assertTrue(identification.getPotentialArtifactIds().isEmpty(), "exposer.artifactIds");
+        assertTrue(identification.getPotentialVersions().isEmpty(), "exposer.versions");
 
         // TODO test others
     }

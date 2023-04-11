@@ -22,15 +22,22 @@ import java.io.File;
 import java.io.IOException;
 import java.util.zip.ZipException;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Tests for the JarAnalyzer class.
  */
-public class JarAnalyzerTest extends AbstractJarAnalyzerTestCase {
+class JarAnalyzerTest extends AbstractJarAnalyzerTestCase {
     private JarAnalyzer jarAnalyzer;
 
+    @AfterEach
     protected void tearDown() throws Exception {
-        super.tearDown();
-
         if (jarAnalyzer != null) {
             jarAnalyzer.closeQuietly();
         }
@@ -45,40 +52,36 @@ public class JarAnalyzerTest extends AbstractJarAnalyzerTestCase {
         return new JarAnalyzer(getSampleJar(filename));
     }
 
-    public void testSealed() throws Exception {
+    @Test
+    void testSealed() throws Exception {
         JarData jarData = getJarData("evil-sealed-regex-1.0.jar");
         assertTrue(jarData.isSealed());
     }
 
-    public void testNotSealed() throws Exception {
+    @Test
+    void testNotSealed() throws Exception {
         JarData jarData = getJarData("codec.jar");
         assertFalse(jarData.isSealed());
     }
 
-    public void testMissingFile() {
-        try {
-            jarAnalyzer = new JarAnalyzer(new File("foo-bar-this-should-not-exist.jar"));
-            fail("Should not have succeeded to get the missing JAR");
-        } catch (IOException e) {
-            assertTrue(true);
-        }
+    @Test
+    void testMissingFile() {
+        assertThrows(IOException.class, () -> new JarAnalyzer(new File("foo-bar-this-should-not-exist.jar")));
     }
 
-    public void testInvalidJarFile() throws Exception {
-        try {
-            getJarAnalyzer("invalid.jar");
-            fail("Should not have succeeded to get the invalid JAR");
-        } catch (ZipException e) {
-            assertTrue(true);
-        }
+    @Test
+    void testInvalidJarFile() throws Exception {
+        assertThrows(ZipException.class, () -> getJarAnalyzer("invalid.jar"));
     }
 
-    public void testCloseTwice() throws Exception {
+    @Test
+    void testCloseTwice() throws Exception {
         JarAnalyzer jarAnalyzer = getJarAnalyzer("codec.jar");
 
         // no exception should be thrown
-        jarAnalyzer.closeQuietly();
-        jarAnalyzer.closeQuietly();
-        assertTrue(true);
+        Assertions.assertDoesNotThrow(() -> {
+            jarAnalyzer.closeQuietly();
+            jarAnalyzer.closeQuietly();
+        });
     }
 }
