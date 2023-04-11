@@ -18,36 +18,45 @@
  */
 package org.apache.maven.shared.jar.identification;
 
+import javax.inject.Inject;
+
 import java.io.File;
 
 import org.apache.maven.shared.jar.AbstractJarAnalyzerTestCase;
 import org.apache.maven.shared.jar.JarAnalyzer;
+import org.codehaus.plexus.testing.PlexusTest;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * JarAnalyzer Taxon Analyzer Test Case
- *
  * TODO test the exposers individually instead of in aggregate here (and test the normalize, etc. methods here instead with controlled exposers)
  */
-public class JarIdentificationAnalyzerTest extends AbstractJarAnalyzerTestCase {
+@PlexusTest
+class JarIdentificationAnalyzerTest extends AbstractJarAnalyzerTestCase {
+
+    @Inject
+    JarIdentificationAnalysis analyzer;
+
     private JarIdentification getJarTaxon(String filename) throws Exception {
         File jarfile = getSampleJar(filename);
-
-        JarIdentificationAnalysis analyzer =
-                (JarIdentificationAnalysis) lookup(JarIdentificationAnalysis.class.getName());
         JarIdentification taxon = analyzer.analyze(new JarAnalyzer(jarfile));
-        assertNotNull("JarIdentification", taxon);
-
+        assertNotNull(taxon, "JarIdentification");
         return taxon;
     }
 
-    public void testTaxonAnalyzerWithJXR() throws Exception {
+    @Test
+    void testTaxonAnalyzerWithJXR() throws Exception {
         JarIdentification taxon = getJarTaxon("jxr.jar");
 
-        assertEquals("identification.groupId", "org.apache.maven", taxon.getGroupId());
-        assertEquals("identification.artifactId", "maven-jxr", taxon.getArtifactId());
-        assertEquals("identification.version", "1.1-SNAPSHOT", taxon.getVersion());
-        assertEquals("identification.name", "Maven JXR", taxon.getName());
-        assertEquals("identification.vendor", "Apache Software Foundation", taxon.getVendor());
+        assertEquals("org.apache.maven", taxon.getGroupId(), "identification.groupId");
+        assertEquals("maven-jxr", taxon.getArtifactId(), "identification.artifactId");
+        assertEquals("1.1-SNAPSHOT", taxon.getVersion(), "identification.version");
+        assertEquals("Maven JXR", taxon.getName(), "identification.name");
+        assertEquals("Apache Software Foundation", taxon.getVendor(), "identification.vendor");
 
         // TODO assert potentials too
     }
@@ -57,30 +66,32 @@ public class JarIdentificationAnalyzerTest extends AbstractJarAnalyzerTestCase {
      *
      * @throws Exception failures
      */
-    public void testTaxonAnalyzerWithCODEC() throws Exception {
+    @Test
+    void testTaxonAnalyzerWithCODEC() throws Exception {
         JarIdentification taxon = getJarTaxon("codec.jar");
 
-        assertEquals("identification.groupId", "org.apache.commons.codec", taxon.getGroupId());
-        assertEquals("identification.artifactId", "codec", taxon.getArtifactId());
+        assertEquals("org.apache.commons.codec", taxon.getGroupId(), "identification.groupId");
+        assertEquals("codec", taxon.getArtifactId(), "identification.artifactId");
         // TODO fix assertion
         // assertEquals( "identification.version", "codec_release_1_0_0_interim_20030519095102_build",
         // identification.getVersion() );
-        assertEquals("identification.version", "20030519", taxon.getVersion());
-        assertEquals("identification.name", "codec", taxon.getName());
-        assertNull("identification.vendor", taxon.getVendor());
+        assertEquals("20030519", taxon.getVersion(), "identification.version");
+        assertEquals("codec", taxon.getName(), "identification.name");
+        assertNull(taxon.getVendor(), "identification.vendor");
 
         // TODO assert potentials too
     }
 
-    public void testTaxonAnalyzerWithANT() throws Exception {
+    @Test
+    void testTaxonAnalyzerWithANT() throws Exception {
         JarIdentification taxon = getJarTaxon("ant.jar");
 
-        assertEquals("identification.groupId", "org.apache.tools.ant", taxon.getGroupId());
-        assertEquals("identification.artifactId", "ant", taxon.getArtifactId());
-        assertEquals("identification.version", "1.6.5", taxon.getVersion());
+        assertEquals("org.apache.tools.ant", taxon.getGroupId(), "identification.groupId");
+        assertEquals("ant", taxon.getArtifactId(), "identification.artifactId");
+        assertEquals("1.6.5", taxon.getVersion(), "identification.version");
         // TODO fix assertion
         // assertEquals( "identification.name", "Apache Ant", identification.getName() );
-        assertEquals("identification.vendor", "Apache Software Foundation", taxon.getVendor());
+        assertEquals("Apache Software Foundation", taxon.getVendor(), "identification.vendor");
 
         // TODO assert potentials too
     }

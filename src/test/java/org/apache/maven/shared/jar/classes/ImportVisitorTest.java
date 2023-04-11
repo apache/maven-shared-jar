@@ -27,12 +27,18 @@ import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.DescendingVisitor;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.maven.shared.jar.AbstractJarAnalyzerTestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Import Visitor Test
  */
-public class ImportVisitorTest extends AbstractJarAnalyzerTestCase {
-    public void testImportsJxr() throws ClassFormatException, IOException {
+class ImportVisitorTest extends AbstractJarAnalyzerTestCase {
+
+    @Test
+    void testImportsJxr() throws ClassFormatException, IOException {
         File jxrjar = getSampleJar("jxr.jar");
         String classname = "org/apache/maven/jxr/DirectoryIndexer.class";
         ClassParser classParser = new ClassParser(jxrjar.getAbsolutePath(), classname);
@@ -43,15 +49,16 @@ public class ImportVisitorTest extends AbstractJarAnalyzerTestCase {
         javaClass.accept(descVisitor);
 
         List<String> imports = importVisitor.getImports();
-        assertNotNull("Import List", imports);
+        assertNotNull(imports, "Import List");
 
         assertNotContainsRegex("Import List", "[\\[\\)\\(\\;]", imports);
 
-        assertTrue("imports", imports.contains("org.apache.maven.jxr.pacman.PackageType"));
-        assertTrue("imports", imports.contains("org.apache.oro.text.perl.Perl5Util"));
+        assertTrue(imports.contains("org.apache.maven.jxr.pacman.PackageType"), "imports");
+        assertTrue(imports.contains("org.apache.oro.text.perl.Perl5Util"), "imports");
     }
 
-    public void testImportsAnt() throws ClassFormatException, IOException {
+    @Test
+    void testImportsAnt() throws ClassFormatException, IOException {
         File jxrjar = getSampleJar("ant.jar");
         String classname = "org/apache/tools/ant/Target.class";
         ClassParser classParser = new ClassParser(jxrjar.getAbsolutePath(), classname);
@@ -62,11 +69,11 @@ public class ImportVisitorTest extends AbstractJarAnalyzerTestCase {
         javaClass.accept(descVisitor);
 
         List<String> imports = importVisitor.getImports();
-        assertNotNull("Import List", imports);
+        assertNotNull(imports, "Import List");
 
         assertNotContainsRegex("Import List", "[\\[\\)\\(\\;]", imports);
 
-        assertTrue("imports", imports.contains("org.apache.tools.ant.Location"));
-        assertTrue("imports", imports.contains("org.apache.tools.ant.Task"));
+        assertTrue(imports.contains("org.apache.tools.ant.Location"), "imports");
+        assertTrue(imports.contains("org.apache.tools.ant.Task"), "imports");
     }
 }
