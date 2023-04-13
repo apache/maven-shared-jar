@@ -113,7 +113,19 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
             {"helloworld-1.5.jar", "1.5"},
             {"helloworld-1.6.jar", "1.6"},
             {"helloworld-1.7.jar", "1.7"},
-            {"helloworld-1.8.jar", "1.8"}
+            {"helloworld-1.8.jar", "1.8"},
+            {"helloworld-9.jar", "9"},
+            {"helloworld-10.jar", "10"},
+            {"helloworld-11.jar", "11"},
+            {"helloworld-12.jar", "12"},
+            {"helloworld-13.jar", "13"},
+            {"helloworld-14.jar", "14"},
+            {"helloworld-15.jar", "15"},
+            {"helloworld-16.jar", "16"},
+            {"helloworld-17.jar", "17"},
+            {"helloworld-18.jar", "18"},
+            {"helloworld-19.jar", "19"},
+            {"helloworld-20.jar", "20"}
         };
     }
 
