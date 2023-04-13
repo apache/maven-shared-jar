@@ -22,7 +22,11 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.jar.JarEntry;
 
 import org.apache.bcel.classfile.ClassFormatException;
@@ -45,24 +49,37 @@ import org.slf4j.LoggerFactory;
  */
 @Singleton
 @Named
+@SuppressWarnings("checkstyle:MagicNumber")
 public class JarClassesAnalysis {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private static final double JAVA_1_8_CLASS_VERSION = 52.0;
+    private static final Map<Double, String> JAVA_CLASS_VERSIONS;
 
-    private static final double JAVA_1_7_CLASS_VERSION = 51.0;
-
-    private static final double JAVA_1_6_CLASS_VERSION = 50.0;
-
-    private static final double JAVA_1_5_CLASS_VERSION = 49.0;
-
-    private static final double JAVA_1_4_CLASS_VERSION = 48.0;
-
-    private static final double JAVA_1_3_CLASS_VERSION = 47.0;
-
-    private static final double JAVA_1_2_CLASS_VERSION = 46.0;
-
-    private static final double JAVA_1_1_CLASS_VERSION = 45.3;
+    static {
+        HashMap<Double, String> aMap = new HashMap<>();
+        aMap.put(65.0, "21");
+        aMap.put(64.0, "20");
+        aMap.put(63.0, "19");
+        aMap.put(62.0, "18");
+        aMap.put(61.0, "17");
+        aMap.put(60.0, "16");
+        aMap.put(59.0, "15");
+        aMap.put(58.0, "14");
+        aMap.put(57.0, "13");
+        aMap.put(56.0, "12");
+        aMap.put(55.0, "11");
+        aMap.put(54.0, "10");
+        aMap.put(53.0, "9");
+        aMap.put(52.0, "1.8");
+        aMap.put(51.0, "1.7");
+        aMap.put(50.0, "1.6");
+        aMap.put(49.0, "1.5");
+        aMap.put(48.0, "1.4");
+        aMap.put(47.0, "1.3");
+        aMap.put(46.0, "1.2");
+        aMap.put(45.3, "1.1");
+        JAVA_CLASS_VERSIONS = Collections.unmodifiableMap(aMap);
+    }
 
     /**
      * Analyze a JAR and find any classes and their details. Note that if the provided JAR analyzer has previously
@@ -131,23 +148,7 @@ public class JarClassesAnalysis {
                 }
             }
 
-            if (maxVersion == JAVA_1_8_CLASS_VERSION) {
-                classes.setJdkRevision("1.8");
-            } else if (maxVersion == JAVA_1_7_CLASS_VERSION) {
-                classes.setJdkRevision("1.7");
-            } else if (maxVersion == JAVA_1_6_CLASS_VERSION) {
-                classes.setJdkRevision("1.6");
-            } else if (maxVersion == JAVA_1_5_CLASS_VERSION) {
-                classes.setJdkRevision("1.5");
-            } else if (maxVersion == JAVA_1_4_CLASS_VERSION) {
-                classes.setJdkRevision("1.4");
-            } else if (maxVersion == JAVA_1_3_CLASS_VERSION) {
-                classes.setJdkRevision("1.3");
-            } else if (maxVersion == JAVA_1_2_CLASS_VERSION) {
-                classes.setJdkRevision("1.2");
-            } else if (maxVersion == JAVA_1_1_CLASS_VERSION) {
-                classes.setJdkRevision("1.1");
-            }
+            Optional.ofNullable(JAVA_CLASS_VERSIONS.get(maxVersion)).ifPresent(classes::setJdkRevision);
 
             jarAnalyzer.getJarData().setJarClasses(classes);
         }
