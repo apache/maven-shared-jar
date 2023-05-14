@@ -105,7 +105,7 @@ public class JarIdentificationAnalysis {
 
         int size = Integer.MAX_VALUE;
         for (String val : list) {
-            if (StringUtils.isNotEmpty(val)) {
+            if (val != null && !val.isEmpty()) {
                 if (val.length() < size) {
                     smallest = val;
                     size = val.length();
@@ -120,7 +120,7 @@ public class JarIdentificationAnalysis {
         String largest = null;
         int size = Integer.MIN_VALUE;
         for (String val : list) {
-            if (StringUtils.isNotEmpty(val)) {
+            if (val != null && !val.isEmpty()) {
                 if (val.length() > size) {
                     largest = val;
                     size = val.length();

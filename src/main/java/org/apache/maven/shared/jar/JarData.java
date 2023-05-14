@@ -27,7 +27,6 @@ import java.util.jar.Manifest;
 
 import org.apache.maven.shared.jar.classes.JarClasses;
 import org.apache.maven.shared.jar.identification.JarIdentification;
-import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Class that contains details of a single JAR file and it's entries.
@@ -90,7 +89,7 @@ public final class JarData {
         boolean aSealed = false;
         if (this.manifest != null) {
             String sval = this.manifest.getMainAttributes().getValue(Attributes.Name.SEALED);
-            if (StringUtils.isNotEmpty(sval)) {
+            if (sval != null && !sval.isEmpty()) {
                 aSealed = "true".equalsIgnoreCase(sval.trim());
             }
         }

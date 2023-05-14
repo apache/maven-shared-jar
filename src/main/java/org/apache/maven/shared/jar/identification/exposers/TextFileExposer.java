@@ -32,7 +32,6 @@ import java.util.jar.JarEntry;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
-import org.codehaus.plexus.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +69,7 @@ public class TextFileExposer implements JarIdentificationExposer {
                     // TODO: maybe even for groupId entries.
 
                     logger.debug(line);
-                    if (StringUtils.isNotEmpty(line)) {
+                    if (line != null && !line.isEmpty()) {
                         textVersions.add(line);
                     }
                 } catch (IOException e) {

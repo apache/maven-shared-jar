@@ -32,7 +32,6 @@ import org.apache.commons.collections4.bag.HashBag;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
-import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Exposer that examines a a JAR and uses the most recent timestamp as a potential version.
@@ -61,7 +60,7 @@ public class TimestampExposer implements JarIdentificationExposer {
             }
         }
 
-        if (StringUtils.isNotEmpty(ts)) {
+        if (ts != null && !ts.isEmpty()) {
             identification.addVersion(ts);
         }
     }
