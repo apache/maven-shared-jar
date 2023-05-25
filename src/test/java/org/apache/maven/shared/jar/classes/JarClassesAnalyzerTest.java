@@ -21,9 +21,11 @@ package org.apache.maven.shared.jar.classes;
 import javax.inject.Inject;
 
 import java.io.File;
+import java.util.Map;
 
 import org.apache.maven.shared.jar.AbstractJarAnalyzerTestCase;
 import org.apache.maven.shared.jar.JarAnalyzer;
+import org.apache.maven.shared.jar.JarData;
 import org.codehaus.plexus.testing.PlexusTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * JarAnalyzer Classes Test Case
@@ -135,6 +138,99 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
         JarClasses jclass = getJarClasses(jarName);
 
         assertEquals(expectedRevision, jclass.getJdkRevision());
+    }
+
+    @Test
+    void testAnalyzeMultiReleaseJarVersion() throws Exception {
+        JarData jarData = getJarData("multi-release-test-0.0.1-SNAPSHOT.jar");
+        JarClasses jclass = jarData.getJarClasses();
+
+        assertEquals("1.8", jclass.getJdkRevision());
+        assertFalse(jclass.getImports().isEmpty());
+        assertEquals(1, jclass.getPackages().size());
+        assertEquals(1, jclass.getClassNames().size());
+        assertFalse(jclass.getMethods().isEmpty());
+
+        JarReleases releases = jarData.getReleases();
+        assertNotNull(releases);
+        Map<Integer, JarClasses> releasesMap = releases.getReleasesMap();
+        assertNotNull(releasesMap);
+        assertEquals(2, releasesMap.size()); // 9 and 11
+
+        JarClasses jarClasses9 = releases.getJarClasses(9);
+        assertEquals("9", jarClasses9.getJdkRevision());
+        assertFalse(jarClasses9.getImports().isEmpty());
+        assertEquals(1, jarClasses9.getPackages().size());
+        assertEquals(1, jarClasses9.getClassNames().size());
+        assertFalse(jarClasses9.getMethods().isEmpty());
+
+        JarClasses jarClasses11 = releases.getJarClasses(11);
+        assertEquals("11", jarClasses11.getJdkRevision());
+        assertFalse(jarClasses11.getImports().isEmpty());
+        assertEquals(1, jarClasses11.getPackages().size());
+        assertEquals(1, jarClasses11.getClassNames().size());
+        assertFalse(jarClasses11.getMethods().isEmpty());
+
+        // test ordering
+        assertEquals("[9, 11]", releasesMap.keySet().toString());
+
+        // test best fit
+        try {
+            releases.getBestFitRelease(null);
+            fail("It should throw an NPE");
+        } catch (NullPointerException e) {
+            assertTrue(true);
+        }
+        assertNull(releases.getBestFitRelease(8)); // unreal value but good just for testing
+        assertEquals("9", releases.getBestFitRelease(9).getJdkRevision());
+        assertEquals("9", releases.getBestFitRelease(10).getJdkRevision());
+        assertEquals("11", releases.getBestFitRelease(11).getJdkRevision());
+        assertEquals("11", releases.getBestFitRelease(20).getJdkRevision());
+
+        try {
+            releases.getBestFitRelaseBySystemProperty(null);
+            fail("It should throw an NPE");
+        } catch (NullPointerException e) {
+            assertTrue(true);
+        }
+
+        try {
+            getBestFitReleaseBySystemProperty(releases, null);
+            fail("It should throw an NPE");
+        } catch (NullPointerException e) {
+            assertTrue(true);
+        }
+
+        try {
+            getBestFitReleaseBySystemProperty(releases, "xxx");
+            fail("It should throw an IAE");
+        } catch (IllegalArgumentException e) {
+            assertTrue(true);
+        }
+
+        assertNull(getBestFitReleaseBySystemProperty(releases, "8"));
+        assertEquals("9", getBestFitReleaseBySystemProperty(releases, "9").getJdkRevision());
+        assertEquals("9", getBestFitReleaseBySystemProperty(releases, "10").getJdkRevision());
+        assertEquals("11", getBestFitReleaseBySystemProperty(releases, "11").getJdkRevision());
+        assertEquals("11", getBestFitReleaseBySystemProperty(releases, "20").getJdkRevision());
+    }
+
+    private JarClasses getBestFitReleaseBySystemProperty(JarReleases releases, String value) {
+        String key = "maven.shared.jar.test.vm";
+        System.setProperty(key, value);
+        return releases.getBestFitRelaseBySystemProperty(key);
+    }
+
+    private JarData getJarData(String filename) throws Exception {
+        File file = getSampleJar(filename);
+
+        JarAnalyzer jarAnalyzer = new JarAnalyzer(file);
+        JarClasses jclass = analyzer.analyze(jarAnalyzer);
+        JarData jarData = jarAnalyzer.getJarData();
+        assertNotNull(jclass, "JarClasses");
+        assertNotNull(jarData, "JarData");
+
+        return jarData;
     }
 
     private JarClasses getJarClasses(String filename) throws Exception {

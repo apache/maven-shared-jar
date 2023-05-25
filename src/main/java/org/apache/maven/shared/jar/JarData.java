@@ -26,6 +26,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 
 import org.apache.maven.shared.jar.classes.JarClasses;
+import org.apache.maven.shared.jar.classes.JarReleases;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 
 /**
@@ -41,6 +42,11 @@ public final class JarData {
      * Whether the JAR file is sealed.
      */
     private final boolean aSealed;
+
+    /**
+     * Whether the JAR file is Multi-Release.
+     */
+    private boolean multiRelease;
 
     /**
      * The hashcode for the entire file's contents.
@@ -73,6 +79,11 @@ public final class JarData {
     private JarIdentification jarIdentification;
 
     /**
+     * Information about the JAR's Multi-Release entries
+     */
+    private JarReleases releases;
+
+    /**
      * Constructor.
      *
      * @param file     the JAR file
@@ -87,13 +98,19 @@ public final class JarData {
         this.entries = Collections.unmodifiableList(entries);
 
         boolean aSealed = false;
+        boolean multiRelease = false;
         if (this.manifest != null) {
             String sval = this.manifest.getMainAttributes().getValue(Attributes.Name.SEALED);
             if (sval != null && !sval.isEmpty()) {
                 aSealed = "true".equalsIgnoreCase(sval.trim());
             }
+            String sMultiRelease = this.manifest.getMainAttributes().getValue(new Attributes.Name("Multi-Release"));
+            if (sMultiRelease != null && !sMultiRelease.isEmpty()) {
+                multiRelease = "true".equalsIgnoreCase(sMultiRelease.trim());
+            }
         }
         this.aSealed = aSealed;
+        this.multiRelease = multiRelease;
     }
 
     public List<JarEntry> getEntries() {
@@ -110,6 +127,10 @@ public final class JarData {
 
     public boolean isSealed() {
         return aSealed;
+    }
+
+    public boolean isMultiRelease() {
+        return multiRelease;
     }
 
     public void setFileHash(String fileHash) {
@@ -162,5 +183,13 @@ public final class JarData {
 
     public JarClasses getJarClasses() {
         return jarClasses;
+    }
+
+    public void setReleases(JarReleases releases) {
+        this.releases = releases;
+    }
+
+    public JarReleases getReleases() {
+        return this.releases;
     }
 }
