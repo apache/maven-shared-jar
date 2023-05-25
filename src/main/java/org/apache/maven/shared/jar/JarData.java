@@ -22,16 +22,21 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.jar.Attributes;
+import java.util.jar.Attributes.Name;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 
 import org.apache.maven.shared.jar.classes.JarClasses;
+import org.apache.maven.shared.jar.classes.JarVersionedRuntimes;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 
 /**
  * Class that contains details of a single JAR file and it's entries.
  */
 public final class JarData {
+
+    private static final Name ATTR_MULTI_RELEASE = new Attributes.Name("Multi-Release");
+
     /**
      * The JAR file.
      */
@@ -41,6 +46,11 @@ public final class JarData {
      * Whether the JAR file is sealed.
      */
     private final boolean aSealed;
+
+    /**
+     * Whether the JAR file is Multi-Release.
+     */
+    private boolean multiRelease;
 
     /**
      * The hashcode for the entire file's contents.
@@ -73,6 +83,11 @@ public final class JarData {
     private JarIdentification jarIdentification;
 
     /**
+     * Information about the JAR's Multi-Release entries
+     */
+    private JarVersionedRuntimes versionedRuntimes;
+
+    /**
      * Constructor.
      *
      * @param file     the JAR file
@@ -86,14 +101,8 @@ public final class JarData {
 
         this.entries = Collections.unmodifiableList(entries);
 
-        boolean aSealed = false;
-        if (this.manifest != null) {
-            String sval = this.manifest.getMainAttributes().getValue(Attributes.Name.SEALED);
-            if (sval != null && !sval.isEmpty()) {
-                aSealed = "true".equalsIgnoreCase(sval.trim());
-            }
-        }
-        this.aSealed = aSealed;
+        this.aSealed = isAttributePresent(Attributes.Name.SEALED);
+        this.multiRelease = isAttributePresent(ATTR_MULTI_RELEASE);
     }
 
     public List<JarEntry> getEntries() {
@@ -110,6 +119,10 @@ public final class JarData {
 
     public boolean isSealed() {
         return aSealed;
+    }
+
+    public boolean isMultiRelease() {
+        return multiRelease;
     }
 
     public void setFileHash(String fileHash) {
@@ -162,5 +175,21 @@ public final class JarData {
 
     public JarClasses getJarClasses() {
         return jarClasses;
+    }
+
+    public void setVersionedRuntimes(JarVersionedRuntimes versionedRuntimess) {
+        this.versionedRuntimes = versionedRuntimess;
+    }
+
+    public JarVersionedRuntimes getVersionedRuntimes() {
+        return this.versionedRuntimes;
+    }
+
+    private boolean isAttributePresent(Attributes.Name attrName) {
+        if (this.manifest != null) {
+            String sval = this.manifest.getMainAttributes().getValue(attrName);
+            return sval != null && "true".equalsIgnoreCase(sval.trim());
+        }
+        return false;
     }
 }

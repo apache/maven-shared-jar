@@ -21,9 +21,13 @@ package org.apache.maven.shared.jar.classes;
 import javax.inject.Inject;
 
 import java.io.File;
+import java.util.List;
+import java.util.Map;
+import java.util.jar.JarEntry;
 
 import org.apache.maven.shared.jar.AbstractJarAnalyzerTestCase;
 import org.apache.maven.shared.jar.JarAnalyzer;
+import org.apache.maven.shared.jar.JarData;
 import org.codehaus.plexus.testing.PlexusTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * JarAnalyzer Classes Test Case
@@ -135,6 +140,181 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
         JarClasses jclass = getJarClasses(jarName);
 
         assertEquals(expectedRevision, jclass.getJdkRevision());
+    }
+
+    @Test
+    void testAnalyzeJarWithModuleInfoClass() throws Exception {
+        JarData jarData = getJarData("tomcat-jni-9.0.75.jar");
+        JarClasses jclass = jarData.getJarClasses();
+        assertEquals("1.8", jclass.getJdkRevision());
+    }
+
+    @Test
+    void testAnalyzeJarWithOnlyModuleInfoClass() throws Exception {
+        JarData jarData = getJarData("module-info-only-test-0.0.1.jar");
+        // root level classes
+        JarClasses jclass = jarData.getJarClasses();
+        assertTrue(jclass.getImports().isEmpty());
+        assertTrue(jclass.getPackages().isEmpty());
+        assertTrue(jclass.getClassNames().isEmpty());
+        assertTrue(jclass.getMethods().isEmpty());
+        assertNull(jclass.getJdkRevision());
+
+        JarVersionedRuntimes jarVersionedRuntimes = jarData.getVersionedRuntimes();
+        assertNotNull(jarVersionedRuntimes);
+        Map<Integer, JarVersionedRuntime> jarVersionedRuntimeMap = jarVersionedRuntimes.getVersionedRuntimeMap();
+        assertNotNull(jarVersionedRuntimeMap);
+        assertEquals(1, jarVersionedRuntimeMap.size()); // 11
+
+        JarVersionedRuntime jarVersionedRuntime11 = jarVersionedRuntimes.getJarVersionedRuntime(11);
+        JarClasses jarClasses11 = jarVersionedRuntime11.getJarClasses();
+        assertEquals("11", jarClasses11.getJdkRevision());
+        assertTrue(jarClasses11.getImports().isEmpty());
+        assertEquals(1, jarClasses11.getPackages().size());
+        assertEquals("", jarClasses11.getPackages().get(0));
+        assertEquals(1, jarClasses11.getClassNames().size());
+        assertTrue(jarClasses11.getMethods().isEmpty());
+        assertEquals(1, jarVersionedRuntime11.getEntries().size());
+        assertEntriesContains(jarVersionedRuntime11.getEntries(), "META-INF/versions/11/module-info.class");
+    }
+
+    @Test
+    void testAnalyzeMultiReleaseJarVersion() throws Exception {
+        JarData jarData = getJarData("multi-release-test-0.0.1.jar");
+        JarClasses jclass = jarData.getJarClasses();
+
+        assertEquals("1.8", jclass.getJdkRevision());
+        assertFalse(jclass.getImports().isEmpty());
+        assertEquals(1, jclass.getPackages().size());
+        assertEquals(1, jclass.getClassNames().size());
+        assertFalse(jclass.getMethods().isEmpty());
+        assertEntriesContains(jarData.getEntries(), "resource.txt");
+
+        JarVersionedRuntimes jarVersionedRuntimes = jarData.getVersionedRuntimes();
+        assertNotNull(jarVersionedRuntimes);
+        Map<Integer, JarVersionedRuntime> jarVersionedRuntimeMap = jarVersionedRuntimes.getVersionedRuntimeMap();
+        assertNotNull(jarVersionedRuntimeMap);
+        assertEquals(2, jarVersionedRuntimeMap.size()); // 9 and 11
+
+        JarVersionedRuntime jarVersionedRuntime9 = jarVersionedRuntimes.getJarVersionedRuntime(9);
+        JarClasses jarClasses9 = jarVersionedRuntime9.getJarClasses();
+        assertEquals("9", jarClasses9.getJdkRevision());
+        assertFalse(jarClasses9.getImports().isEmpty());
+        assertEquals(1, jarClasses9.getPackages().size());
+        assertEquals(1, jarClasses9.getClassNames().size());
+        assertFalse(jarClasses9.getMethods().isEmpty());
+        assertEntriesContains(jarVersionedRuntime9.getEntries(), "META-INF/versions/9/resource.txt");
+
+        JarVersionedRuntime jarVersionedRuntime11 = jarVersionedRuntimes.getJarVersionedRuntime(11);
+        JarClasses jarClasses11 = jarVersionedRuntime11.getJarClasses();
+        assertEquals("11", jarClasses11.getJdkRevision());
+        assertFalse(jarClasses11.getImports().isEmpty());
+        assertEquals(1, jarClasses11.getPackages().size());
+        assertEquals(1, jarClasses11.getClassNames().size());
+        assertFalse(jarClasses11.getMethods().isEmpty());
+        assertEntriesContains(jarVersionedRuntime11.getEntries(), "META-INF/versions/11/resource.txt");
+
+        // test ordering
+        assertEquals("[9, 11]", jarVersionedRuntimeMap.keySet().toString());
+
+        // test best fit
+        try {
+            jarVersionedRuntimes.getBestFitJarVersionedRuntime(null);
+            fail("It should throw an NPE");
+        } catch (NullPointerException e) {
+            assertTrue(true);
+        }
+        assertNull(jarVersionedRuntimes.getBestFitJarVersionedRuntime(8)); // unreal value but good just for testing
+        assertEquals(
+                "9",
+                jarVersionedRuntimes
+                        .getBestFitJarVersionedRuntime(9)
+                        .getJarClasses()
+                        .getJdkRevision());
+        assertEquals(
+                "9",
+                jarVersionedRuntimes
+                        .getBestFitJarVersionedRuntime(10)
+                        .getJarClasses()
+                        .getJdkRevision());
+        assertEquals(
+                "11",
+                jarVersionedRuntimes
+                        .getBestFitJarVersionedRuntime(11)
+                        .getJarClasses()
+                        .getJdkRevision());
+        assertEquals(
+                "11",
+                jarVersionedRuntimes
+                        .getBestFitJarVersionedRuntime(20)
+                        .getJarClasses()
+                        .getJdkRevision());
+
+        try {
+            jarVersionedRuntimes.getBestFitJarVersionedRuntimeBySystemProperty(null);
+            fail("It should throw an NPE");
+        } catch (NullPointerException e) {
+            assertTrue(true);
+        }
+
+        try {
+            getBestFitReleaseBySystemProperty(jarVersionedRuntimes, null);
+            fail("It should throw an NPE");
+        } catch (NullPointerException e) {
+            assertTrue(true);
+        }
+
+        try {
+            getBestFitReleaseBySystemProperty(jarVersionedRuntimes, "xxx");
+            fail("It should throw an ISE");
+        } catch (IllegalStateException e) {
+            assertTrue(true);
+        }
+
+        assertNull(getBestFitReleaseBySystemProperty(jarVersionedRuntimes, "8"));
+        assertEquals(
+                "9",
+                getBestFitReleaseBySystemProperty(jarVersionedRuntimes, "9")
+                        .getJarClasses()
+                        .getJdkRevision());
+        assertEquals(
+                "9",
+                getBestFitReleaseBySystemProperty(jarVersionedRuntimes, "10")
+                        .getJarClasses()
+                        .getJdkRevision());
+        assertEquals(
+                "11",
+                getBestFitReleaseBySystemProperty(jarVersionedRuntimes, "11")
+                        .getJarClasses()
+                        .getJdkRevision());
+        assertEquals(
+                "11",
+                getBestFitReleaseBySystemProperty(jarVersionedRuntimes, "20")
+                        .getJarClasses()
+                        .getJdkRevision());
+    }
+
+    private void assertEntriesContains(List<JarEntry> list, final String entryToFind) {
+        assertTrue(list.stream().anyMatch(entry -> entry.getName().equals(entryToFind)));
+    }
+
+    private JarVersionedRuntime getBestFitReleaseBySystemProperty(
+            JarVersionedRuntimes jarVersionedRuntimes, String value) {
+        String key = "maven.shared.jar.test.vm";
+        System.setProperty(key, value);
+        return jarVersionedRuntimes.getBestFitJarVersionedRuntimeBySystemProperty(key);
+    }
+
+    private JarData getJarData(String filename) throws Exception {
+        File file = getSampleJar(filename);
+
+        JarAnalyzer jarAnalyzer = new JarAnalyzer(file);
+        JarClasses jclass = analyzer.analyze(jarAnalyzer);
+        JarData jarData = jarAnalyzer.getJarData();
+        assertNotNull(jclass, "JarClasses");
+        assertNotNull(jarData, "JarData");
+
+        return jarData;
     }
 
     private JarClasses getJarClasses(String filename) throws Exception {

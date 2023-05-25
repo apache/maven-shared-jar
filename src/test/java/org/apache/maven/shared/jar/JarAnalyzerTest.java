@@ -65,6 +65,18 @@ class JarAnalyzerTest extends AbstractJarAnalyzerTestCase {
     }
 
     @Test
+    void testMultiRelease() throws Exception {
+        JarData jarData = getJarData("multi-release-test-0.0.1.jar");
+        assertTrue(jarData.isMultiRelease());
+    }
+
+    @Test
+    void testNotMultiRelease() throws Exception {
+        JarData jarData = getJarData("codec.jar");
+        assertFalse(jarData.isMultiRelease());
+    }
+
+    @Test
     void testMissingFile() {
         assertThrows(IOException.class, () -> new JarAnalyzer(new File("foo-bar-this-should-not-exist.jar")));
     }
