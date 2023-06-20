@@ -66,8 +66,7 @@ public class JarClassesAnalysis {
      */
     private static final Integer ROOT = 0;
 
-    private static final Pattern CLASS_FILTER_MULTI_RELEASE =
-            Pattern.compile("^META-INF/versions/(\\d{1,2})/.*\\.class$");
+    private static final Pattern ENTRY_FILTER_MULTI_RELEASE = Pattern.compile("^META-INF/versions/(\\d{1,2})/.*$");
 
     private static final Map<Double, String> JAVA_CLASS_VERSIONS;
 
@@ -119,7 +118,7 @@ public class JarClassesAnalysis {
     }
 
     private Integer jarEntryVersion(JarEntry entry) {
-        Matcher matcher = CLASS_FILTER_MULTI_RELEASE.matcher(entry.getName());
+        Matcher matcher = ENTRY_FILTER_MULTI_RELEASE.matcher(entry.getName());
         if (matcher.matches()) {
             return Integer.valueOf(matcher.group(1));
         }
@@ -129,29 +128,44 @@ public class JarClassesAnalysis {
     private JarClasses analyzeMultiRelease(JarAnalyzer jarAnalyzer) {
         String jarfilename = jarAnalyzer.getFile().getAbsolutePath();
 
-        List<JarEntry> classList = jarAnalyzer.getClassEntries();
-
-        // group by Java version
-        Map<Integer, List<JarEntry>> map = classList.stream().collect(Collectors.groupingBy(this::jarEntryVersion));
+        Map<Integer, List<JarEntry>> mapEntries =
+                jarAnalyzer.getEntries().stream().collect(Collectors.groupingBy(this::jarEntryVersion));
 
         // ordered by increasing Java version
-        NavigableMap<Integer, JarClasses> releases = new TreeMap<>();
+        NavigableMap<Integer, JarRuntimeVersion> runtimeVersionsMap = new TreeMap<>();
 
-        JarClasses classes = null;
-        for (Map.Entry<Integer, List<JarEntry>> mapEntry : map.entrySet()) {
-            Integer release = mapEntry.getKey();
-            List<JarEntry> releaseClassList = mapEntry.getValue();
+        for (Map.Entry<Integer, List<JarEntry>> mapEntry : mapEntries.entrySet()) {
+            Integer runtimeVersion = mapEntry.getKey();
+            List<JarEntry> runtimeVersionEntryList = mapEntry.getValue();
 
-            classes = analyze(jarfilename, releaseClassList);
+            List<JarEntry> classList = jarAnalyzer.getClassEntries(runtimeVersionEntryList);
 
-            releases.put(release, classes);
+            JarClasses classes = analyze(jarfilename, classList);
+
+            runtimeVersionsMap.put(runtimeVersion, new JarRuntimeVersion(runtimeVersionEntryList, classes));
         }
 
-        classes = releases.remove(ROOT);
-        jarAnalyzer.getJarData().setJarClasses(classes);
-        jarAnalyzer.getJarData().setReleases(new JarReleases(releases));
+        JarRuntimeVersion baseJarRelease = runtimeVersionsMap.remove(ROOT);
+        JarClasses baseJarClasses = baseJarRelease.getJarClasses();
 
-        return classes;
+        jarAnalyzer.getJarData().setJarClasses(baseJarClasses);
+
+        // Paranoid?
+        for (Map.Entry<Integer, JarRuntimeVersion> runtimeVersionEntry : runtimeVersionsMap.entrySet()) {
+            Integer version = runtimeVersionEntry.getKey();
+            String jdkRevision = runtimeVersionEntry.getValue().getJarClasses().getJdkRevision();
+            if (!version.equals(Integer.valueOf(jdkRevision))) {
+                logger.warn(
+                        "Multi-release version {} in JAR file '{}' has some class compiled for Jdk revision {}",
+                        version,
+                        jarfilename,
+                        jdkRevision);
+            }
+        }
+
+        jarAnalyzer.getJarData().setRuntimeVersions(new JarRuntimeVersions(runtimeVersionsMap));
+
+        return baseJarClasses;
     }
 
     private JarClasses analyzeRoot(JarAnalyzer jarAnalyzer) {
@@ -188,13 +202,16 @@ public class JarClassesAnalysis {
                     }
                 }
 
-                double classVersion = javaClass.getMajor();
-                if (javaClass.getMinor() > 0) {
-                    classVersion = classVersion + javaClass.getMinor() / 10.0;
-                }
+                if (!"module-info.class".equals(classname)) {
+                    // ignore the module-info.class for computing the jdkRevision, since it will always be >= 9.
+                    double classVersion = javaClass.getMajor();
+                    if (javaClass.getMinor() > 0) {
+                        classVersion = classVersion + javaClass.getMinor() / 10.0;
+                    }
 
-                if (classVersion > maxVersion) {
-                    maxVersion = classVersion;
+                    if (classVersion > maxVersion) {
+                        maxVersion = classVersion;
+                    }
                 }
 
                 Method[] methods = javaClass.getMethods();

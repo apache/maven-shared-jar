@@ -66,7 +66,7 @@ class JarAnalyzerTest extends AbstractJarAnalyzerTestCase {
 
     @Test
     void testMultiRelease() throws Exception {
-        JarData jarData = getJarData("multi-release-test-0.0.1-SNAPSHOT.jar");
+        JarData jarData = getJarData("multi-release-test-0.0.1.jar");
         assertTrue(jarData.isMultiRelease());
     }
 

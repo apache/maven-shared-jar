@@ -26,7 +26,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 
 import org.apache.maven.shared.jar.classes.JarClasses;
-import org.apache.maven.shared.jar.classes.JarReleases;
+import org.apache.maven.shared.jar.classes.JarRuntimeVersions;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 
 /**
@@ -81,7 +81,7 @@ public final class JarData {
     /**
      * Information about the JAR's Multi-Release entries
      */
-    private JarReleases releases;
+    private JarRuntimeVersions runtimeVersions;
 
     /**
      * Constructor.
@@ -185,11 +185,11 @@ public final class JarData {
         return jarClasses;
     }
 
-    public void setReleases(JarReleases releases) {
-        this.releases = releases;
+    public void setRuntimeVersions(JarRuntimeVersions runtimeVersions) {
+        this.runtimeVersions = runtimeVersions;
     }
 
-    public JarReleases getReleases() {
-        return this.releases;
+    public JarRuntimeVersions getRuntimeVersions() {
+        return this.runtimeVersions;
     }
 }

@@ -24,54 +24,58 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Gathered facts about the releases contained within a Multi-Release JAR file.
+ * Gathered facts about the runtimeVersionMap contained within a Multi-Release JAR file.
  *
  * @see org.apache.maven.shared.jar.classes.JarClassesAnalysis#analyze(org.apache.maven.shared.jar.JarAnalyzer)
  */
-public class JarReleases {
+public class JarRuntimeVersions {
 
     /**
      * Information about the JAR's Multi-Release entries
      */
-    private NavigableMap<Integer, JarClasses> releases;
+    private NavigableMap<Integer, JarRuntimeVersion> runtimeVersionMap;
 
-    public JarReleases(NavigableMap<Integer, JarClasses> releases) {
-        this.releases = releases;
+    public JarRuntimeVersions(NavigableMap<Integer, JarRuntimeVersion> runtimeVersionMap) {
+        this.runtimeVersionMap = runtimeVersionMap;
     }
 
     /**
-     * @return the releases Map
+     * @return the runtimeVersionMap Map
      */
-    public NavigableMap<Integer, JarClasses> getReleasesMap() {
-        return releases;
+    public NavigableMap<Integer, JarRuntimeVersion> getRuntimeVersionMap() {
+        return runtimeVersionMap;
+    }
+
+    public JarRuntimeVersion getJarRuntimeVersion(Integer version) {
+        return runtimeVersionMap.get(version);
     }
 
     /**
      * Return the JarClasses associated to the release.
-     * @param release the release version.
+     * @param version the release version.
      * @return the JarClasses.
      */
-    public JarClasses getJarClasses(Integer release) {
-        return releases.get(release);
+    public JarClasses getJarClasses(Integer version) {
+        return runtimeVersionMap.get(version).getJarClasses();
     }
 
     /**
      * Get a set of release versions included in the JAR file.
      * @return a set with the Java versions as Strings.
      */
-    public Set<Integer> getReleaseVersionsAsSet() {
-        return releases.keySet();
+    public Set<Integer> getRuntimeVersionsAsSet() {
+        return runtimeVersionMap.keySet();
     }
 
     /**
      * Return the highest the JarClasses of the Jdk version that would be executed if they would be executed on a JVM given by the release parameter.
-     * @param release the Jdk version number of the executing JVM.
+     * @param version the Jdk version number of the executing JVM.
      * @return The fittest JarClasses object matching if found one, or null otherwise.
      * @throws NullPointerException if release is null.
      */
-    public JarClasses getBestFitRelease(Integer release) {
-        Objects.requireNonNull(release, "The release parameter is null");
-        Entry<Integer, JarClasses> entry = releases.floorEntry(release);
+    public JarRuntimeVersion getBestFitJarRuntimeVersion(Integer version) {
+        Objects.requireNonNull(version, "The release parameter is null");
+        Entry<Integer, JarRuntimeVersion> entry = runtimeVersionMap.floorEntry(version);
         if (entry == null) {
             return null;
         }
@@ -86,13 +90,13 @@ public class JarReleases {
      * @throws NullPointerException if key is null or the System property value is null.
      * @throws IllegalArgumentException if the system property is not convertible to Integer.
      */
-    public JarClasses getBestFitRelaseBySystemProperty(String key) {
+    public JarRuntimeVersion getBestFitJarRuntimeVersionBySystemProperty(String key) {
         Objects.requireNonNull(key, "The value of the System property key is null!");
         String property = System.getProperty(key);
         Objects.requireNonNull(property, "The value of the System property '" + key + "' is null!");
         try {
             Integer release = Integer.parseInt(property);
-            return getBestFitRelease(release);
+            return getBestFitJarRuntimeVersion(release);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException(
                     "The value of the System property '" + key + "' [" + property
