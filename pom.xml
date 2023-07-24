@@ -59,7 +59,7 @@
     <mavenVersion>3.2.5</mavenVersion>
     <slf4jVersion>1.7.36</slf4jVersion>
     <project.build.outputTimestamp>2023-04-15T15:52:39Z</project.build.outputTimestamp>
-    <junitVersion>5.9.2</junitVersion>
+    <junitVersion>5.10.0</junitVersion>
   </properties>
 
   <dependencies>
