@@ -35,6 +35,7 @@ import org.apache.bcel.classfile.DescendingVisitor;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.util.SyntheticRepository;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,6 +80,12 @@ public class JarClassesAnalysis {
         aMap.put(46.0, "1.2");
         aMap.put(45.3, "1.1");
         JAVA_CLASS_VERSIONS = Collections.unmodifiableMap(aMap);
+
+        // Workaround for BCEL concurrent access exception, to remove
+        // when https://github.com/apache/commons-bcel/pull/275 is merged
+        synchronized (SyntheticRepository.class) {
+            SyntheticRepository.getInstance();
+        }
     }
 
     /**
