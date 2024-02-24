@@ -151,9 +151,20 @@ public class JarAnalyzer {
      * @return the list of files found, in {@link java.util.jar.JarEntry} elements
      */
     public List<JarEntry> filterEntries(Pattern pattern) {
+        return filterEntries(pattern, getEntries());
+    }
+
+    /**
+     * Filter a list of JAR entries against the pattern.
+     *
+     * @param pattern the pattern to filter against.
+     * @param entryList the list of entries to filter from.
+     * @return the filtered list of JarEntry.
+     */
+    private List<JarEntry> filterEntries(Pattern pattern, List<JarEntry> entryList) {
         List<JarEntry> ret = new ArrayList<>();
 
-        for (JarEntry entry : getEntries()) {
+        for (JarEntry entry : entryList) {
             Matcher mat = pattern.matcher(entry.getName());
             if (mat.find()) {
                 ret.add(entry);
@@ -169,6 +180,18 @@ public class JarAnalyzer {
      */
     public List<JarEntry> getClassEntries() {
         return filterEntries(CLASS_FILTER);
+    }
+
+    /**
+     * Get all the classes in the entry list.
+     *
+     * @param entryList the entry list.
+     * @return the filtered entry list.
+     *
+     * @since 3.0.1
+     */
+    public List<JarEntry> getClassEntries(List<JarEntry> entryList) {
+        return filterEntries(CLASS_FILTER, entryList);
     }
 
     /**

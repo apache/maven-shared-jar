@@ -26,8 +26,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.jar.JarEntry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.ClassParser;
@@ -36,6 +41,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.maven.shared.jar.JarAnalyzer;
+import org.apache.maven.shared.jar.JarData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +57,16 @@ import org.slf4j.LoggerFactory;
 @Named
 @SuppressWarnings("checkstyle:MagicNumber")
 public class JarClassesAnalysis {
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    /**
+     * Constant representing the classes in the root of a Multi-Release JAR file.
+     * Meaning outside of any given META-INF/versions/NN/... entry.
+     */
+    private static final Integer ROOT = 0;
+
+    private static final Pattern ENTRY_FILTER_MULTI_RELEASE = Pattern.compile("^META-INF/versions/(\\d{1,2})/.*$");
 
     private static final Map<Double, String> JAVA_CLASS_VERSIONS;
 
@@ -90,33 +105,105 @@ public class JarClassesAnalysis {
      * @return the details of the classes found
      */
     public JarClasses analyze(JarAnalyzer jarAnalyzer) {
-        JarClasses classes = jarAnalyzer.getJarData().getJarClasses();
+        JarData jarData = jarAnalyzer.getJarData();
+        JarClasses classes = jarData.getJarClasses();
         if (classes == null) {
-            String jarfilename = jarAnalyzer.getFile().getAbsolutePath();
-            classes = new JarClasses();
+            if (jarData.isMultiRelease()) {
+                classes = analyzeMultiRelease(jarAnalyzer);
+            } else {
+                classes = analyzeRoot(jarAnalyzer);
+            }
+        }
+        return classes;
+    }
 
-            List<JarEntry> classList = jarAnalyzer.getClassEntries();
+    private Integer jarEntryVersion(JarEntry entry) {
+        Matcher matcher = ENTRY_FILTER_MULTI_RELEASE.matcher(entry.getName());
+        if (matcher.matches()) {
+            return Integer.valueOf(matcher.group(1));
+        }
+        return ROOT;
+    }
 
-            classes.setDebugPresent(false);
+    private JarClasses analyzeMultiRelease(JarAnalyzer jarAnalyzer) {
+        String jarfilename = jarAnalyzer.getFile().getAbsolutePath();
 
-            double maxVersion = 0.0;
+        Map<Integer, List<JarEntry>> mapEntries =
+                jarAnalyzer.getEntries().stream().collect(Collectors.groupingBy(this::jarEntryVersion));
 
-            for (JarEntry entry : classList) {
-                String classname = entry.getName();
+        // ordered by increasing Java version
+        NavigableMap<Integer, JarRuntimeVersion> runtimeVersionsMap = new TreeMap<>();
 
-                try {
-                    ClassParser classParser = new ClassParser(jarfilename, classname);
+        for (Map.Entry<Integer, List<JarEntry>> mapEntry : mapEntries.entrySet()) {
+            Integer runtimeVersion = mapEntry.getKey();
+            List<JarEntry> runtimeVersionEntryList = mapEntry.getValue();
 
-                    JavaClass javaClass = classParser.parse();
+            List<JarEntry> classList = jarAnalyzer.getClassEntries(runtimeVersionEntryList);
 
-                    String classSignature = javaClass.getClassName();
+            JarClasses classes = analyze(jarfilename, classList);
 
-                    if (!classes.isDebugPresent()) {
-                        if (hasDebugSymbols(javaClass)) {
-                            classes.setDebugPresent(true);
-                        }
+            runtimeVersionsMap.put(runtimeVersion, new JarRuntimeVersion(runtimeVersionEntryList, classes));
+        }
+
+        JarRuntimeVersion baseJarRelease = runtimeVersionsMap.remove(ROOT);
+        JarClasses baseJarClasses = baseJarRelease.getJarClasses();
+
+        jarAnalyzer.getJarData().setJarClasses(baseJarClasses);
+
+        // Paranoid?
+        for (Map.Entry<Integer, JarRuntimeVersion> runtimeVersionEntry : runtimeVersionsMap.entrySet()) {
+            Integer version = runtimeVersionEntry.getKey();
+            String jdkRevision = runtimeVersionEntry.getValue().getJarClasses().getJdkRevision();
+            if (!version.equals(Integer.valueOf(jdkRevision))) {
+                logger.warn(
+                        "Multi-release version {} in JAR file '{}' has some class compiled for Jdk revision {}",
+                        version,
+                        jarfilename,
+                        jdkRevision);
+            }
+        }
+
+        jarAnalyzer.getJarData().setRuntimeVersions(new JarRuntimeVersions(runtimeVersionsMap));
+
+        return baseJarClasses;
+    }
+
+    private JarClasses analyzeRoot(JarAnalyzer jarAnalyzer) {
+        String jarfilename = jarAnalyzer.getFile().getAbsolutePath();
+
+        List<JarEntry> classList = jarAnalyzer.getClassEntries();
+
+        JarClasses classes = analyze(jarfilename, classList);
+
+        jarAnalyzer.getJarData().setJarClasses(classes);
+        return classes;
+    }
+
+    private JarClasses analyze(String jarfilename, List<JarEntry> classList) {
+        JarClasses classes = new JarClasses();
+
+        classes.setDebugPresent(false);
+
+        double maxVersion = 0.0;
+
+        for (JarEntry entry : classList) {
+            String classname = entry.getName();
+
+            try {
+                ClassParser classParser = new ClassParser(jarfilename, classname);
+
+                JavaClass javaClass = classParser.parse();
+
+                String classSignature = javaClass.getClassName();
+
+                if (!classes.isDebugPresent()) {
+                    if (hasDebugSymbols(javaClass)) {
+                        classes.setDebugPresent(true);
                     }
+                }
 
+                if (!"module-info.class".equals(classname)) {
+                    // ignore the module-info.class for computing the jdkRevision, since it will always be >= 9.
                     double classVersion = javaClass.getMajor();
                     if (javaClass.getMinor() > 0) {
                         classVersion = classVersion + javaClass.getMinor() / 10.0;
@@ -125,33 +212,32 @@ public class JarClassesAnalysis {
                     if (classVersion > maxVersion) {
                         maxVersion = classVersion;
                     }
-
-                    Method[] methods = javaClass.getMethods();
-                    for (Method method : methods) {
-                        classes.addMethod(classSignature + "." + method.getName() + method.getSignature());
-                    }
-
-                    String classPackageName = javaClass.getPackageName();
-
-                    classes.addClassName(classSignature);
-                    classes.addPackage(classPackageName);
-
-                    ImportVisitor importVisitor = new ImportVisitor(javaClass);
-                    DescendingVisitor descVisitor = new DescendingVisitor(javaClass, importVisitor);
-                    javaClass.accept(descVisitor);
-
-                    classes.addImports(importVisitor.getImports());
-                } catch (ClassFormatException e) {
-                    logger.warn("Unable to process class " + classname + " in JarAnalyzer File " + jarfilename, e);
-                } catch (IOException e) {
-                    logger.warn("Unable to process JarAnalyzer File " + jarfilename, e);
                 }
+
+                Method[] methods = javaClass.getMethods();
+                for (Method method : methods) {
+                    classes.addMethod(classSignature + "." + method.getName() + method.getSignature());
+                }
+
+                String classPackageName = javaClass.getPackageName();
+
+                classes.addClassName(classSignature);
+                classes.addPackage(classPackageName);
+
+                ImportVisitor importVisitor = new ImportVisitor(javaClass);
+                DescendingVisitor descVisitor = new DescendingVisitor(javaClass, importVisitor);
+                javaClass.accept(descVisitor);
+
+                classes.addImports(importVisitor.getImports());
+            } catch (ClassFormatException e) {
+                logger.warn("Unable to process class " + classname + " in JarAnalyzer File " + jarfilename, e);
+            } catch (IOException e) {
+                logger.warn("Unable to process JarAnalyzer File " + jarfilename, e);
             }
-
-            Optional.ofNullable(JAVA_CLASS_VERSIONS.get(maxVersion)).ifPresent(classes::setJdkRevision);
-
-            jarAnalyzer.getJarData().setJarClasses(classes);
         }
+
+        Optional.ofNullable(JAVA_CLASS_VERSIONS.get(maxVersion)).ifPresent(classes::setJdkRevision);
+
         return classes;
     }
 
