@@ -62,11 +62,11 @@ public class JarClassesAnalysis {
 
     /**
      * Constant representing the root content of a Multi-Release JAR file, thus outside of
-     * any given META-INF/versions/NN/... entry.
+     * any given META-INF/versions/N/... entry.
      */
     private static final Integer ROOT = 0;
 
-    private static final Pattern ENTRY_FILTER_MULTI_RELEASE = Pattern.compile("^META-INF/versions/(\\d{1,2})/.+$");
+    private static final Pattern ENTRY_FILTER_MULTI_RELEASE = Pattern.compile("^META-INF/versions/([1-9]\\d*)/.*$");
 
     private static final Map<Double, String> JAVA_CLASS_VERSIONS;
 
@@ -151,19 +151,6 @@ public class JarClassesAnalysis {
         jarData.setRootEntries(rootContentVersionedRuntime.getEntries());
         JarClasses rootJarClasses = rootContentVersionedRuntime.getJarClasses();
         jarData.setJarClasses(rootJarClasses);
-
-        // Paranoid?
-        for (Map.Entry<Integer, JarVersionedRuntime> runtimeVersionEntry : runtimeVersionsMap.entrySet()) {
-            Integer version = runtimeVersionEntry.getKey();
-            String jdkRevision = runtimeVersionEntry.getValue().getJarClasses().getJdkRevision();
-            if (!version.equals(Integer.valueOf(jdkRevision))) {
-                logger.warn(
-                        "Multi-release version {} in JAR file '{}' has some class compiled for Jdk revision {}",
-                        version,
-                        jarFilename,
-                        jdkRevision);
-            }
-        }
 
         jarData.setVersionedRuntimes(new JarVersionedRuntimes(runtimeVersionsMap));
 

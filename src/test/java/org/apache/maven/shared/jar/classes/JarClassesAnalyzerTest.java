@@ -154,7 +154,7 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
         JarData jarData = getJarData("module-info-only-test-0.0.1.jar");
         assertEquals(10, jarData.getNumEntries());
         // root level information
-        assertEquals(9, jarData.getNumRootEntries());
+        assertEquals(8, jarData.getNumRootEntries());
         JarClasses jclass = jarData.getJarClasses();
         assertTrue(jclass.getImports().isEmpty());
         assertTrue(jclass.getPackages().isEmpty());
@@ -176,7 +176,7 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
         assertEquals("", jarClasses11.getPackages().get(0));
         assertEquals(1, jarClasses11.getClassNames().size());
         assertTrue(jarClasses11.getMethods().isEmpty());
-        assertEquals(1, jarVersionedRuntime11.getNumEntries());
+        assertEquals(2, jarVersionedRuntime11.getNumEntries());
         assertEntriesContains(jarVersionedRuntime11.getEntries(), "META-INF/versions/11/module-info.class");
     }
 
@@ -185,7 +185,7 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
         JarData jarData = getJarData("multi-release-test-0.0.1.jar");
         assertEquals(37, jarData.getNumEntries());
         // root level information
-        assertEquals(19, jarData.getNumRootEntries());
+        assertEquals(17, jarData.getNumRootEntries());
         JarClasses jclass = jarData.getJarClasses();
         assertEquals("1.8", jclass.getJdkRevision());
         assertFalse(jclass.getImports().isEmpty());
@@ -207,7 +207,7 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
         assertEquals(1, jarClasses9.getPackages().size());
         assertEquals(1, jarClasses9.getClassNames().size());
         assertFalse(jarClasses9.getMethods().isEmpty());
-        assertEquals(9, jarVersionedRuntime9.getNumEntries());
+        assertEquals(10, jarVersionedRuntime9.getNumEntries());
         assertEntriesContains(jarVersionedRuntime9.getEntries(), "META-INF/versions/9/resource.txt");
 
         JarVersionedRuntime jarVersionedRuntime11 = jarVersionedRuntimes.getJarVersionedRuntime(11);
@@ -217,7 +217,7 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
         assertEquals(1, jarClasses11.getPackages().size());
         assertEquals(1, jarClasses11.getClassNames().size());
         assertFalse(jarClasses11.getMethods().isEmpty());
-        assertEquals(9, jarVersionedRuntime11.getNumEntries());
+        assertEquals(10, jarVersionedRuntime11.getNumEntries());
         assertEntriesContains(jarVersionedRuntime11.getEntries(), "META-INF/versions/11/resource.txt");
 
         // test ordering
@@ -298,6 +298,63 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
                 getBestFitReleaseBySystemProperty(jarVersionedRuntimes, "20")
                         .getJarClasses()
                         .getJdkRevision());
+    }
+
+    /**
+     * Exposes issue MSHARED-1413
+     */
+    @Test
+    public void testAnalyzeMultiReleaseJarWithVersion11HasALowerJdkRevisionClass() {
+        try {
+            // Version 11 has one class compiled to target Java 1.8
+            JarData jarData = getJarData("multi-release-version-with-lower-jdk-revision-class-0.0.1.jar");
+            JarClasses jclass = jarData.getJarClasses();
+
+            assertNull(jclass.getJdkRevision());
+
+            JarVersionedRuntimes jarVersionedRuntimes = jarData.getVersionedRuntimes();
+            assertNotNull(jarVersionedRuntimes);
+            Map<Integer, JarVersionedRuntime> jarVersionedRuntimeMap = jarVersionedRuntimes.getVersionedRuntimeMap();
+            assertNotNull(jarVersionedRuntimeMap);
+            assertEquals(1, jarVersionedRuntimeMap.size()); // 11
+
+            JarVersionedRuntime jarVersionedRuntime11 = jarVersionedRuntimes.getJarVersionedRuntime(11);
+            JarClasses jarClasses11 = jarVersionedRuntime11.getJarClasses();
+            assertEquals("1.8", jarClasses11.getJdkRevision());
+        } catch (Exception e) {
+            fail("It should not raise an exception", e);
+        }
+    }
+
+    /**
+     * Ensures no exceptions are raised when versioned content does not contain classes (just resources)
+     */
+    @Test
+    public void testAnalyzeMultiReleaseJarResourcesOnly() {
+        try {
+            JarData jarData = getJarData("multi-release-resources-only-0.0.1.jar");
+            JarClasses jclass = jarData.getJarClasses();
+
+            assertEquals("1.8", jclass.getJdkRevision());
+
+            JarVersionedRuntimes jarVersionedRuntimes = jarData.getVersionedRuntimes();
+            assertNotNull(jarVersionedRuntimes);
+            Map<Integer, JarVersionedRuntime> jarVersionedRuntimeMap = jarVersionedRuntimes.getVersionedRuntimeMap();
+            assertNotNull(jarVersionedRuntimeMap);
+            assertEquals(2, jarVersionedRuntimeMap.size()); // 9 and 11
+
+            JarVersionedRuntime jarVersionedRuntime9 = jarVersionedRuntimes.getJarVersionedRuntime(9);
+            JarClasses jarClasses9 = jarVersionedRuntime9.getJarClasses();
+            // no classes found
+            assertNull(jarClasses9.getJdkRevision());
+
+            JarVersionedRuntime jarVersionedRuntime11 = jarVersionedRuntimes.getJarVersionedRuntime(11);
+            JarClasses jarClasses11 = jarVersionedRuntime11.getJarClasses();
+            // no classes found
+            assertNull(jarClasses11.getJdkRevision());
+        } catch (Exception e) {
+            fail("It should not raise an exception", e);
+        }
     }
 
     private void assertEntriesContains(List<JarEntry> list, final String entryToFind) {
