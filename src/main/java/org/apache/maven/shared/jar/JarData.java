@@ -78,6 +78,11 @@ public final class JarData {
     private final List<JarEntry> entries;
 
     /**
+     * The JAR entries of the root content, when it is a multi-release JAR
+     */
+    private List<JarEntry> rootEntries;
+
+    /**
      * Information about the JAR's identifying features.
      */
     private JarIdentification jarIdentification;
@@ -107,6 +112,14 @@ public final class JarData {
 
     public List<JarEntry> getEntries() {
         return entries;
+    }
+
+    public List<JarEntry> getRootEntries() {
+        return rootEntries;
+    }
+
+    public void setRootEntries(List<JarEntry> rootEntries) {
+        this.rootEntries = rootEntries;
     }
 
     public Manifest getManifest() {
@@ -151,6 +164,10 @@ public final class JarData {
 
     public int getNumEntries() {
         return entries.size();
+    }
+
+    public int getNumRootEntries() {
+        return rootEntries.size();
     }
 
     public int getNumClasses() {

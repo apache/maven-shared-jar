@@ -48,4 +48,8 @@ public class JarVersionedRuntime {
     public JarClasses getJarClasses() {
         return jarClasses;
     }
+
+    public int getNumEntries() {
+        return entries.size();
+    }
 }

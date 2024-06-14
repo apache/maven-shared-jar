@@ -61,8 +61,8 @@ public class JarClassesAnalysis {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
-     * Constant representing the classes in the root of a Multi-Release JAR file.
-     * Meaning outside of any given META-INF/versions/NN/... entry.
+     * Constant representing the root content of a Multi-Release JAR file, thus outside of
+     * any given META-INF/versions/NN/... entry.
      */
     private static final Integer ROOT = 0;
 
@@ -145,10 +145,12 @@ public class JarClassesAnalysis {
             runtimeVersionsMap.put(runtimeVersion, new JarVersionedRuntime(runtimeVersionEntryList, classes));
         }
 
-        JarVersionedRuntime baseJarRelease = runtimeVersionsMap.remove(ROOT);
-        JarClasses baseJarClasses = baseJarRelease.getJarClasses();
+        JarData jarData = jarAnalyzer.getJarData();
 
-        jarAnalyzer.getJarData().setJarClasses(baseJarClasses);
+        JarVersionedRuntime rootContentVersionedRuntime = runtimeVersionsMap.remove(ROOT);
+        jarData.setRootEntries(rootContentVersionedRuntime.getEntries());
+        JarClasses rootJarClasses = rootContentVersionedRuntime.getJarClasses();
+        jarData.setJarClasses(rootJarClasses);
 
         // Paranoid?
         for (Map.Entry<Integer, JarVersionedRuntime> runtimeVersionEntry : runtimeVersionsMap.entrySet()) {
@@ -163,9 +165,9 @@ public class JarClassesAnalysis {
             }
         }
 
-        jarAnalyzer.getJarData().setVersionedRuntimes(new JarVersionedRuntimes(runtimeVersionsMap));
+        jarData.setVersionedRuntimes(new JarVersionedRuntimes(runtimeVersionsMap));
 
-        return baseJarClasses;
+        return rootJarClasses;
     }
 
     private JarClasses analyzeRoot(JarAnalyzer jarAnalyzer) {

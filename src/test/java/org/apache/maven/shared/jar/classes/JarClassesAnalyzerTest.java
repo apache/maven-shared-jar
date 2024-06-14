@@ -152,7 +152,9 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
     @Test
     void testAnalyzeJarWithOnlyModuleInfoClass() throws Exception {
         JarData jarData = getJarData("module-info-only-test-0.0.1.jar");
-        // root level classes
+        assertEquals(10, jarData.getNumEntries());
+        // root level information
+        assertEquals(9, jarData.getNumRootEntries());
         JarClasses jclass = jarData.getJarClasses();
         assertTrue(jclass.getImports().isEmpty());
         assertTrue(jclass.getPackages().isEmpty());
@@ -174,15 +176,17 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
         assertEquals("", jarClasses11.getPackages().get(0));
         assertEquals(1, jarClasses11.getClassNames().size());
         assertTrue(jarClasses11.getMethods().isEmpty());
-        assertEquals(1, jarVersionedRuntime11.getEntries().size());
+        assertEquals(1, jarVersionedRuntime11.getNumEntries());
         assertEntriesContains(jarVersionedRuntime11.getEntries(), "META-INF/versions/11/module-info.class");
     }
 
     @Test
     void testAnalyzeMultiReleaseJarVersion() throws Exception {
         JarData jarData = getJarData("multi-release-test-0.0.1.jar");
+        assertEquals(37, jarData.getNumEntries());
+        // root level information
+        assertEquals(19, jarData.getNumRootEntries());
         JarClasses jclass = jarData.getJarClasses();
-
         assertEquals("1.8", jclass.getJdkRevision());
         assertFalse(jclass.getImports().isEmpty());
         assertEquals(1, jclass.getPackages().size());
@@ -203,6 +207,7 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
         assertEquals(1, jarClasses9.getPackages().size());
         assertEquals(1, jarClasses9.getClassNames().size());
         assertFalse(jarClasses9.getMethods().isEmpty());
+        assertEquals(9, jarVersionedRuntime9.getNumEntries());
         assertEntriesContains(jarVersionedRuntime9.getEntries(), "META-INF/versions/9/resource.txt");
 
         JarVersionedRuntime jarVersionedRuntime11 = jarVersionedRuntimes.getJarVersionedRuntime(11);
@@ -212,6 +217,7 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
         assertEquals(1, jarClasses11.getPackages().size());
         assertEquals(1, jarClasses11.getClassNames().size());
         assertFalse(jarClasses11.getMethods().isEmpty());
+        assertEquals(9, jarVersionedRuntime11.getNumEntries());
         assertEntriesContains(jarVersionedRuntime11.getEntries(), "META-INF/versions/11/resource.txt");
 
         // test ordering
