@@ -177,8 +177,8 @@ public final class JarData {
         return jarClasses;
     }
 
-    public void setVersionedRuntimes(JarVersionedRuntimes versionedRuntimess) {
-        this.versionedRuntimes = versionedRuntimess;
+    public void setVersionedRuntimes(JarVersionedRuntimes versionedRuntimes) {
+        this.versionedRuntimes = versionedRuntimes;
     }
 
     public JarVersionedRuntimes getVersionedRuntimes() {

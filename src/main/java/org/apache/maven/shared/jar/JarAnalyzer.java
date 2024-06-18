@@ -188,7 +188,7 @@ public class JarAnalyzer {
      * @param entryList the entry list.
      * @return the filtered entry list.
      *
-     * @since 3.0.1
+     * @since 3.1.0
      */
     public List<JarEntry> getClassEntries(List<JarEntry> entryList) {
         return filterEntries(CLASS_FILTER, entryList);
