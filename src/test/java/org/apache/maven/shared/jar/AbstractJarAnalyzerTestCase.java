@@ -27,9 +27,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.opentest4j.AssertionFailedError;
-
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Abstract JarAnalyzer TestCase
@@ -61,7 +60,7 @@ public abstract class AbstractJarAnalyzerTestCase {
             for (String failure : failures) {
                 sb.append("\n   - \"").append(failure).append("\"");
             }
-            throw new AssertionFailedError(sb.toString());
+            fail(sb.toString());
         }
     }
 }
