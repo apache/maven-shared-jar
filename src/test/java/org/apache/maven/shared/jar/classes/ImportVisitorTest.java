@@ -28,6 +28,8 @@ import org.apache.bcel.classfile.DescendingVisitor;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.maven.shared.jar.AbstractJarAnalyzerTestCase;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -75,5 +77,49 @@ class ImportVisitorTest extends AbstractJarAnalyzerTestCase {
 
         assertTrue(imports.contains("org.apache.tools.ant.Location"), "imports");
         assertTrue(imports.contains("org.apache.tools.ant.Task"), "imports");
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+            strings = {
+                "helloworld-1.1.jar",
+                "helloworld-1.2.jar",
+                "helloworld-1.3.jar",
+                "helloworld-1.4.jar",
+                "helloworld-1.5.jar",
+                "helloworld-1.6.jar",
+                "helloworld-1.7.jar",
+                "helloworld-1.8.jar",
+                "helloworld-9.jar",
+                "helloworld-10.jar",
+                "helloworld-11.jar",
+                "helloworld-12.jar",
+                "helloworld-13.jar",
+                "helloworld-14.jar",
+                "helloworld-15.jar",
+                "helloworld-16.jar",
+                "helloworld-17.jar",
+                "helloworld-18.jar",
+                "helloworld-19.jar",
+                "helloworld-20.jar",
+                "helloworld-21.jar",
+                "helloworld-22.jar",
+                "helloworld-23.jar",
+                "helloworld-24.jar",
+                "helloworld-25.jar"
+            })
+    void testImportByJDKVersion(String jarName) throws IOException, ClassFormatException {
+        File jarFile = getSampleJar(jarName);
+
+        ClassParser classParser = new ClassParser(jarFile.getAbsolutePath(), "net/test/HelloWorld.class");
+        JavaClass javaClass = classParser.parse();
+
+        ImportVisitor importVisitor = new ImportVisitor(javaClass);
+        DescendingVisitor descVisitor = new DescendingVisitor(javaClass, importVisitor);
+        javaClass.accept(descVisitor);
+
+        List<String> imports = importVisitor.getImports();
+        assertNotNull(imports, "Import List");
+        assertTrue(imports.size() >= 4);
     }
 }
