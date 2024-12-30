@@ -130,7 +130,12 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
             {"helloworld-17.jar", "17"},
             {"helloworld-18.jar", "18"},
             {"helloworld-19.jar", "19"},
-            {"helloworld-20.jar", "20"}
+            {"helloworld-20.jar", "20"},
+            {"helloworld-21.jar", "21"},
+            {"helloworld-23.jar", "23"},
+            {"helloworld-22.jar", "22"},
+            {"helloworld-24.jar", "24"},
+            {"helloworld-25.jar", "25"}
         };
     }
 

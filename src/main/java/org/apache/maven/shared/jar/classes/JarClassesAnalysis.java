@@ -72,6 +72,10 @@ public class JarClassesAnalysis {
 
     static {
         HashMap<Double, String> aMap = new HashMap<>();
+        aMap.put(69.0, "25");
+        aMap.put(68.0, "24");
+        aMap.put(67.0, "23");
+        aMap.put(66.0, "22");
         aMap.put(65.0, "21");
         aMap.put(64.0, "20");
         aMap.put(63.0, "19");
