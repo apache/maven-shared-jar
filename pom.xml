@@ -40,8 +40,8 @@
     <url>https://github.com/apache/maven-shared-jar/tree/${project.scm.tag}</url>
   </scm>
   <issueManagement>
-    <system>jira</system>
-    <url>https://issues.apache.org/jira/issues/?jql=project+%3D+MSHARED+AND+component+%3D+maven-shared-jar</url>
+    <system>GitHub Issues</system>
+    <url>https://github.com/apache/maven-shared-jar/issues</url>
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
