@@ -22,7 +22,7 @@ notifications:
   jira_options: link label
 
 github:
-  description: "Apache Maven JAR Utilities"
+  description: "Apache Maven JAR Analysis Utilities"
   homepage: https://maven.apache.org/shared/maven-shared-jar/
   labels:
     - java
