@@ -30,6 +30,8 @@ ${project.name}
 
   Utilities that help identify the contents of a JAR, including Java class analysis and Maven metadata analysis.
 
+  This permits for example to prepare data for {{{./dependencies.html#Dependency_File_Details} Dependency File Details section of Dependencies Report}}.
+
 * Using the Utilities
 
   Instructions on how to use the utilities can be found in the {{{./apidocs/index.html} Javadoc Overview}}.
