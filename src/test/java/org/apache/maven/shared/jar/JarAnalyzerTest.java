@@ -23,9 +23,9 @@ import java.io.IOException;
 import java.util.zip.ZipException;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -53,45 +53,45 @@ class JarAnalyzerTest extends AbstractJarAnalyzerTestCase {
     }
 
     @Test
-    void testSealed() throws Exception {
+    void sealed() throws Exception {
         JarData jarData = getJarData("evil-sealed-regex-1.0.jar");
         assertTrue(jarData.isSealed());
     }
 
     @Test
-    void testNotSealed() throws Exception {
+    void notSealed() throws Exception {
         JarData jarData = getJarData("codec.jar");
         assertFalse(jarData.isSealed());
     }
 
     @Test
-    void testMultiRelease() throws Exception {
+    void multiRelease() throws Exception {
         JarData jarData = getJarData("multi-release-test-0.0.1.jar");
         assertTrue(jarData.isMultiRelease());
     }
 
     @Test
-    void testNotMultiRelease() throws Exception {
+    void notMultiRelease() throws Exception {
         JarData jarData = getJarData("codec.jar");
         assertFalse(jarData.isMultiRelease());
     }
 
     @Test
-    void testMissingFile() {
+    void missingFile() {
         assertThrows(IOException.class, () -> new JarAnalyzer(new File("foo-bar-this-should-not-exist.jar")));
     }
 
     @Test
-    void testInvalidJarFile() throws Exception {
+    void invalidJarFile() throws Exception {
         assertThrows(ZipException.class, () -> getJarAnalyzer("invalid.jar"));
     }
 
     @Test
-    void testCloseTwice() throws Exception {
+    void closeTwice() throws Exception {
         JarAnalyzer jarAnalyzer = getJarAnalyzer("codec.jar");
 
         // no exception should be thrown
-        Assertions.assertDoesNotThrow(() -> {
+        assertDoesNotThrow(() -> {
             jarAnalyzer.closeQuietly();
             jarAnalyzer.closeQuietly();
         });
