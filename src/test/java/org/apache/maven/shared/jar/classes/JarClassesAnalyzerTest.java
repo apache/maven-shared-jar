@@ -33,12 +33,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * JarAnalyzer Classes Test Case
@@ -50,7 +51,7 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
     private JarClassesAnalysis analyzer;
 
     @Test
-    void testAnalyzeJXR() throws Exception {
+    void analyzeJXR() throws Exception {
         JarClasses jclass = getJarClasses("jxr.jar");
 
         assertFalse(jclass.getImports().isEmpty(), "classes.imports.length > 0");
@@ -67,7 +68,7 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
     }
 
     @Test
-    void testAnalyzeANT() throws Exception {
+    void analyzeANT() throws Exception {
         JarClasses jclass = getJarClasses("ant.jar");
 
         assertFalse(jclass.getImports().isEmpty(), "classes.imports.length > 0");
@@ -84,7 +85,7 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
     }
 
     @Test
-    void testAnalyzeJarWithInvalidClassFile() throws Exception {
+    void analyzeJarWithInvalidClassFile() throws Exception {
         JarClasses jclass = getJarClasses("invalid-class-file.jar");
 
         // Doesn't fail, as exceptions are ignored.
@@ -96,14 +97,14 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
     }
 
     @Test
-    void testAnalyzeJarWithDebug() throws Exception {
+    void analyzeJarWithDebug() throws Exception {
         JarClasses jclass = getJarClasses("helloworld-1.4-debug.jar");
 
         assertTrue(jclass.isDebugPresent(), "has debug");
     }
 
     @Test
-    void testAnalyzeJarWithoutDebug() throws Exception {
+    void analyzeJarWithoutDebug() throws Exception {
         JarClasses jclass = getJarClasses("helloworld-1.4.jar");
 
         assertFalse(jclass.isDebugPresent(), "no debug present");
@@ -148,14 +149,14 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
     }
 
     @Test
-    void testAnalyzeJarWithModuleInfoClass() throws Exception {
+    void analyzeJarWithModuleInfoClass() throws Exception {
         JarData jarData = getJarData("tomcat-jni-9.0.75.jar");
         JarClasses jclass = jarData.getJarClasses();
         assertEquals("1.8", jclass.getJdkRevision());
     }
 
     @Test
-    void testAnalyzeJarWithOnlyModuleInfoClass() throws Exception {
+    void analyzeJarWithOnlyModuleInfoClass() throws Exception {
         JarData jarData = getJarData("module-info-only-test-0.0.1.jar");
         assertEquals(10, jarData.getNumEntries());
         // root level information
@@ -186,7 +187,7 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
     }
 
     @Test
-    void testAnalyzeMultiReleaseJarVersion() throws Exception {
+    void analyzeMultiReleaseJarVersion() throws Exception {
         JarData jarData = getJarData("multi-release-test-0.0.1.jar");
         assertEquals(37, jarData.getNumEntries());
         // root level information
@@ -229,12 +230,8 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
         assertEquals("[9, 11]", jarVersionedRuntimeMap.keySet().toString());
 
         // test best fit
-        try {
-            jarVersionedRuntimes.getBestFitJarVersionedRuntime(null);
-            fail("It should throw an NPE");
-        } catch (NullPointerException e) {
-            assertTrue(true);
-        }
+        assertThrows(NullPointerException.class, () -> jarVersionedRuntimes.getBestFitJarVersionedRuntime(null));
+
         assertNull(jarVersionedRuntimes.getBestFitJarVersionedRuntime(8)); // unreal value but good just for testing
         assertEquals(
                 "9",
@@ -261,26 +258,11 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
                         .getJarClasses()
                         .getJdkRevision());
 
-        try {
-            jarVersionedRuntimes.getBestFitJarVersionedRuntimeBySystemProperty(null);
-            fail("It should throw an NPE");
-        } catch (NullPointerException e) {
-            assertTrue(true);
-        }
-
-        try {
-            getBestFitReleaseBySystemProperty(jarVersionedRuntimes, null);
-            fail("It should throw an NPE");
-        } catch (NullPointerException e) {
-            assertTrue(true);
-        }
-
-        try {
-            getBestFitReleaseBySystemProperty(jarVersionedRuntimes, "xxx");
-            fail("It should throw an ISE");
-        } catch (IllegalStateException e) {
-            assertTrue(true);
-        }
+        assertThrows(
+                NullPointerException.class,
+                () -> jarVersionedRuntimes.getBestFitJarVersionedRuntimeBySystemProperty(null));
+        assertThrows(NullPointerException.class, () -> getBestFitReleaseBySystemProperty(jarVersionedRuntimes, null));
+        assertThrows(IllegalStateException.class, () -> getBestFitReleaseBySystemProperty(jarVersionedRuntimes, "xxx"));
 
         assertNull(getBestFitReleaseBySystemProperty(jarVersionedRuntimes, "8"));
         assertEquals(
@@ -309,57 +291,59 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
      * Exposes issue MSHARED-1413
      */
     @Test
-    public void testAnalyzeMultiReleaseJarWithVersion11HasALowerJdkRevisionClass() {
-        try {
-            // Version 11 has one class compiled to target Java 1.8
-            JarData jarData = getJarData("multi-release-version-with-lower-jdk-revision-class-0.0.1.jar");
-            JarClasses jclass = jarData.getJarClasses();
+    void analyzeMultiReleaseJarWithVersion11HasALowerJdkRevisionClass() {
+        assertDoesNotThrow(
+                () -> {
+                    // Version 11 has one class compiled to target Java 1.8
+                    JarData jarData = getJarData("multi-release-version-with-lower-jdk-revision-class-0.0.1.jar");
+                    JarClasses jclass = jarData.getJarClasses();
 
-            assertNull(jclass.getJdkRevision());
+                    assertNull(jclass.getJdkRevision());
 
-            JarVersionedRuntimes jarVersionedRuntimes = jarData.getVersionedRuntimes();
-            assertNotNull(jarVersionedRuntimes);
-            Map<Integer, JarVersionedRuntime> jarVersionedRuntimeMap = jarVersionedRuntimes.getVersionedRuntimeMap();
-            assertNotNull(jarVersionedRuntimeMap);
-            assertEquals(1, jarVersionedRuntimeMap.size()); // 11
+                    JarVersionedRuntimes jarVersionedRuntimes = jarData.getVersionedRuntimes();
+                    assertNotNull(jarVersionedRuntimes);
+                    Map<Integer, JarVersionedRuntime> jarVersionedRuntimeMap =
+                            jarVersionedRuntimes.getVersionedRuntimeMap();
+                    assertNotNull(jarVersionedRuntimeMap);
+                    assertEquals(1, jarVersionedRuntimeMap.size()); // 11
 
-            JarVersionedRuntime jarVersionedRuntime11 = jarVersionedRuntimes.getJarVersionedRuntime(11);
-            JarClasses jarClasses11 = jarVersionedRuntime11.getJarClasses();
-            assertEquals("1.8", jarClasses11.getJdkRevision());
-        } catch (Exception e) {
-            fail("It should not raise an exception", e);
-        }
+                    JarVersionedRuntime jarVersionedRuntime11 = jarVersionedRuntimes.getJarVersionedRuntime(11);
+                    JarClasses jarClasses11 = jarVersionedRuntime11.getJarClasses();
+                    assertEquals("1.8", jarClasses11.getJdkRevision());
+                },
+                "It should not raise an exception");
     }
 
     /**
      * Ensures no exceptions are raised when versioned content does not contain classes (just resources)
      */
     @Test
-    public void testAnalyzeMultiReleaseJarResourcesOnly() {
-        try {
-            JarData jarData = getJarData("multi-release-resources-only-0.0.1.jar");
-            JarClasses jclass = jarData.getJarClasses();
+    void analyzeMultiReleaseJarResourcesOnly() {
+        assertDoesNotThrow(
+                () -> {
+                    JarData jarData = getJarData("multi-release-resources-only-0.0.1.jar");
+                    JarClasses jclass = jarData.getJarClasses();
 
-            assertEquals("1.8", jclass.getJdkRevision());
+                    assertEquals("1.8", jclass.getJdkRevision());
 
-            JarVersionedRuntimes jarVersionedRuntimes = jarData.getVersionedRuntimes();
-            assertNotNull(jarVersionedRuntimes);
-            Map<Integer, JarVersionedRuntime> jarVersionedRuntimeMap = jarVersionedRuntimes.getVersionedRuntimeMap();
-            assertNotNull(jarVersionedRuntimeMap);
-            assertEquals(2, jarVersionedRuntimeMap.size()); // 9 and 11
+                    JarVersionedRuntimes jarVersionedRuntimes = jarData.getVersionedRuntimes();
+                    assertNotNull(jarVersionedRuntimes);
+                    Map<Integer, JarVersionedRuntime> jarVersionedRuntimeMap =
+                            jarVersionedRuntimes.getVersionedRuntimeMap();
+                    assertNotNull(jarVersionedRuntimeMap);
+                    assertEquals(2, jarVersionedRuntimeMap.size()); // 9 and 11
 
-            JarVersionedRuntime jarVersionedRuntime9 = jarVersionedRuntimes.getJarVersionedRuntime(9);
-            JarClasses jarClasses9 = jarVersionedRuntime9.getJarClasses();
-            // no classes found
-            assertNull(jarClasses9.getJdkRevision());
+                    JarVersionedRuntime jarVersionedRuntime9 = jarVersionedRuntimes.getJarVersionedRuntime(9);
+                    JarClasses jarClasses9 = jarVersionedRuntime9.getJarClasses();
+                    // no classes found
+                    assertNull(jarClasses9.getJdkRevision());
 
-            JarVersionedRuntime jarVersionedRuntime11 = jarVersionedRuntimes.getJarVersionedRuntime(11);
-            JarClasses jarClasses11 = jarVersionedRuntime11.getJarClasses();
-            // no classes found
-            assertNull(jarClasses11.getJdkRevision());
-        } catch (Exception e) {
-            fail("It should not raise an exception", e);
-        }
+                    JarVersionedRuntime jarVersionedRuntime11 = jarVersionedRuntimes.getJarVersionedRuntime(11);
+                    JarClasses jarClasses11 = jarVersionedRuntime11.getJarClasses();
+                    // no classes found
+                    assertNull(jarClasses11.getJdkRevision());
+                },
+                "It should not raise an exception");
     }
 
     private void assertEntriesContains(List<JarEntry> list, final String entryToFind) {

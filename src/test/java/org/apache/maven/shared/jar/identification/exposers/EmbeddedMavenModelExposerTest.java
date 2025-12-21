@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class EmbeddedMavenModelExposerTest extends AbstractJarAnalyzerTestCase {
 
     @Test
-    void testExposerWithParent() throws Exception {
+    void exposerWithParent() throws Exception {
         File file = getSampleJar("test1.jar");
 
         JarIdentification identification = new JarIdentification();
@@ -54,7 +54,7 @@ class EmbeddedMavenModelExposerTest extends AbstractJarAnalyzerTestCase {
     }
 
     @Test
-    void testExposerWithJXR() throws Exception {
+    void exposerWithJXR() throws Exception {
         File file = getSampleJar("jxr.jar");
 
         JarIdentification identification = new JarIdentification();
@@ -70,7 +70,7 @@ class EmbeddedMavenModelExposerTest extends AbstractJarAnalyzerTestCase {
     }
 
     @Test
-    void testExposerWithANT() throws Exception {
+    void exposerWithANT() throws Exception {
         File file = getSampleJar("ant.jar");
 
         JarIdentification identification = new JarIdentification();
