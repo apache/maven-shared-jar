@@ -49,7 +49,7 @@ class JarIdentificationAnalyzerTest extends AbstractJarAnalyzerTestCase {
     }
 
     @Test
-    void testTaxonAnalyzerWithJXR() throws Exception {
+    void taxonAnalyzerWithJXR() throws Exception {
         JarIdentification taxon = getJarTaxon("jxr.jar");
 
         assertEquals("org.apache.maven", taxon.getGroupId(), "identification.groupId");
@@ -67,7 +67,7 @@ class JarIdentificationAnalyzerTest extends AbstractJarAnalyzerTestCase {
      * @throws Exception failures
      */
     @Test
-    void testTaxonAnalyzerWithCODEC() throws Exception {
+    void taxonAnalyzerWithCODEC() throws Exception {
         JarIdentification taxon = getJarTaxon("codec.jar");
 
         assertEquals("org.apache.commons.codec", taxon.getGroupId(), "identification.groupId");
@@ -83,7 +83,7 @@ class JarIdentificationAnalyzerTest extends AbstractJarAnalyzerTestCase {
     }
 
     @Test
-    void testTaxonAnalyzerWithANT() throws Exception {
+    void taxonAnalyzerWithANT() throws Exception {
         JarIdentification taxon = getJarTaxon("ant.jar");
 
         assertEquals("org.apache.tools.ant", taxon.getGroupId(), "identification.groupId");

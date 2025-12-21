@@ -19,10 +19,8 @@
 package org.apache.maven.shared.jar.classes;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
-import org.apache.bcel.classfile.ClassFormatException;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.DescendingVisitor;
 import org.apache.bcel.classfile.JavaClass;
@@ -40,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ImportVisitorTest extends AbstractJarAnalyzerTestCase {
 
     @Test
-    void testImportsJxr() throws ClassFormatException, IOException {
+    void importsJxr() throws Exception {
         File jxrjar = getSampleJar("jxr.jar");
         String classname = "org/apache/maven/jxr/DirectoryIndexer.class";
         ClassParser classParser = new ClassParser(jxrjar.getAbsolutePath(), classname);
@@ -60,7 +58,7 @@ class ImportVisitorTest extends AbstractJarAnalyzerTestCase {
     }
 
     @Test
-    void testImportsAnt() throws ClassFormatException, IOException {
+    void importsAnt() throws Exception {
         File jxrjar = getSampleJar("ant.jar");
         String classname = "org/apache/tools/ant/Target.class";
         ClassParser classParser = new ClassParser(jxrjar.getAbsolutePath(), classname);
@@ -108,7 +106,7 @@ class ImportVisitorTest extends AbstractJarAnalyzerTestCase {
                 "helloworld-24.jar",
                 "helloworld-25.jar"
             })
-    void testImportByJDKVersion(String jarName) throws IOException, ClassFormatException {
+    void importByJDKVersion(String jarName) throws Exception {
         File jarFile = getSampleJar(jarName);
 
         ClassParser classParser = new ClassParser(jarFile.getAbsolutePath(), "net/test/HelloWorld.class");
