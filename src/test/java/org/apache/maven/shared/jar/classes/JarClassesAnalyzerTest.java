@@ -92,7 +92,7 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
         assertTrue(jclass.getClassNames().isEmpty());
         assertTrue(jclass.getPackages().isEmpty());
         assertTrue(jclass.getImports().isEmpty());
-        assertNull(jclass.getJdkRevision());
+        assertNull(jclass.getMaxJavaClassVersion());
         assertTrue(jclass.getMethods().isEmpty());
     }
 
@@ -145,14 +145,14 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
     void testAnalyzeJarVersion(String jarName, String expectedRevision) throws Exception {
         JarClasses jclass = getJarClasses(jarName);
 
-        assertEquals(expectedRevision, jclass.getJdkRevision());
+        assertEquals(expectedRevision, jclass.getMaxJavaClassVersion());
     }
 
     @Test
     void analyzeJarWithModuleInfoClass() throws Exception {
         JarData jarData = getJarData("tomcat-jni-9.0.75.jar");
         JarClasses jclass = jarData.getJarClasses();
-        assertEquals("1.8", jclass.getJdkRevision());
+        assertEquals("1.8", jclass.getMaxJavaClassVersion());
     }
 
     @Test
@@ -166,7 +166,7 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
         assertTrue(jclass.getPackages().isEmpty());
         assertTrue(jclass.getClassNames().isEmpty());
         assertTrue(jclass.getMethods().isEmpty());
-        assertNull(jclass.getJdkRevision());
+        assertNull(jclass.getMaxJavaClassVersion());
 
         JarVersionedRuntimes jarVersionedRuntimes = jarData.getVersionedRuntimes();
         assertNotNull(jarVersionedRuntimes);
@@ -176,7 +176,7 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
 
         JarVersionedRuntime jarVersionedRuntime11 = jarVersionedRuntimes.getJarVersionedRuntime(11);
         JarClasses jarClasses11 = jarVersionedRuntime11.getJarClasses();
-        assertEquals("11", jarClasses11.getJdkRevision());
+        assertEquals("11", jarClasses11.getMaxJavaClassVersion());
         assertTrue(jarClasses11.getImports().isEmpty());
         assertEquals(1, jarClasses11.getPackages().size());
         assertEquals("", jarClasses11.getPackages().get(0));
@@ -193,7 +193,7 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
         // root level information
         assertEquals(17, jarData.getNumRootEntries());
         JarClasses jclass = jarData.getJarClasses();
-        assertEquals("1.8", jclass.getJdkRevision());
+        assertEquals("1.8", jclass.getMaxJavaClassVersion());
         assertFalse(jclass.getImports().isEmpty());
         assertEquals(1, jclass.getPackages().size());
         assertEquals(1, jclass.getClassNames().size());
@@ -208,7 +208,7 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
 
         JarVersionedRuntime jarVersionedRuntime9 = jarVersionedRuntimes.getJarVersionedRuntime(9);
         JarClasses jarClasses9 = jarVersionedRuntime9.getJarClasses();
-        assertEquals("9", jarClasses9.getJdkRevision());
+        assertEquals("9", jarClasses9.getMaxJavaClassVersion());
         assertFalse(jarClasses9.getImports().isEmpty());
         assertEquals(1, jarClasses9.getPackages().size());
         assertEquals(1, jarClasses9.getClassNames().size());
@@ -218,7 +218,7 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
 
         JarVersionedRuntime jarVersionedRuntime11 = jarVersionedRuntimes.getJarVersionedRuntime(11);
         JarClasses jarClasses11 = jarVersionedRuntime11.getJarClasses();
-        assertEquals("11", jarClasses11.getJdkRevision());
+        assertEquals("11", jarClasses11.getMaxJavaClassVersion());
         assertFalse(jarClasses11.getImports().isEmpty());
         assertEquals(1, jarClasses11.getPackages().size());
         assertEquals(1, jarClasses11.getClassNames().size());
@@ -238,25 +238,25 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
                 jarVersionedRuntimes
                         .getBestFitJarVersionedRuntime(9)
                         .getJarClasses()
-                        .getJdkRevision());
+                        .getMaxJavaClassVersion());
         assertEquals(
                 "9",
                 jarVersionedRuntimes
                         .getBestFitJarVersionedRuntime(10)
                         .getJarClasses()
-                        .getJdkRevision());
+                        .getMaxJavaClassVersion());
         assertEquals(
                 "11",
                 jarVersionedRuntimes
                         .getBestFitJarVersionedRuntime(11)
                         .getJarClasses()
-                        .getJdkRevision());
+                        .getMaxJavaClassVersion());
         assertEquals(
                 "11",
                 jarVersionedRuntimes
                         .getBestFitJarVersionedRuntime(20)
                         .getJarClasses()
-                        .getJdkRevision());
+                        .getMaxJavaClassVersion());
 
         assertThrows(
                 NullPointerException.class,
@@ -269,22 +269,22 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
                 "9",
                 getBestFitReleaseBySystemProperty(jarVersionedRuntimes, "9")
                         .getJarClasses()
-                        .getJdkRevision());
+                        .getMaxJavaClassVersion());
         assertEquals(
                 "9",
                 getBestFitReleaseBySystemProperty(jarVersionedRuntimes, "10")
                         .getJarClasses()
-                        .getJdkRevision());
+                        .getMaxJavaClassVersion());
         assertEquals(
                 "11",
                 getBestFitReleaseBySystemProperty(jarVersionedRuntimes, "11")
                         .getJarClasses()
-                        .getJdkRevision());
+                        .getMaxJavaClassVersion());
         assertEquals(
                 "11",
                 getBestFitReleaseBySystemProperty(jarVersionedRuntimes, "20")
                         .getJarClasses()
-                        .getJdkRevision());
+                        .getMaxJavaClassVersion());
     }
 
     /**
@@ -298,7 +298,7 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
                     JarData jarData = getJarData("multi-release-version-with-lower-jdk-revision-class-0.0.1.jar");
                     JarClasses jclass = jarData.getJarClasses();
 
-                    assertNull(jclass.getJdkRevision());
+                    assertNull(jclass.getMaxJavaClassVersion());
 
                     JarVersionedRuntimes jarVersionedRuntimes = jarData.getVersionedRuntimes();
                     assertNotNull(jarVersionedRuntimes);
@@ -309,7 +309,7 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
 
                     JarVersionedRuntime jarVersionedRuntime11 = jarVersionedRuntimes.getJarVersionedRuntime(11);
                     JarClasses jarClasses11 = jarVersionedRuntime11.getJarClasses();
-                    assertEquals("1.8", jarClasses11.getJdkRevision());
+                    assertEquals("1.8", jarClasses11.getMaxJavaClassVersion());
                 },
                 "It should not raise an exception");
     }
@@ -324,7 +324,7 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
                     JarData jarData = getJarData("multi-release-resources-only-0.0.1.jar");
                     JarClasses jclass = jarData.getJarClasses();
 
-                    assertEquals("1.8", jclass.getJdkRevision());
+                    assertEquals("1.8", jclass.getMaxJavaClassVersion());
 
                     JarVersionedRuntimes jarVersionedRuntimes = jarData.getVersionedRuntimes();
                     assertNotNull(jarVersionedRuntimes);
@@ -336,14 +336,59 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
                     JarVersionedRuntime jarVersionedRuntime9 = jarVersionedRuntimes.getJarVersionedRuntime(9);
                     JarClasses jarClasses9 = jarVersionedRuntime9.getJarClasses();
                     // no classes found
-                    assertNull(jarClasses9.getJdkRevision());
+                    assertNull(jarClasses9.getMaxJavaClassVersion());
 
                     JarVersionedRuntime jarVersionedRuntime11 = jarVersionedRuntimes.getJarVersionedRuntime(11);
                     JarClasses jarClasses11 = jarVersionedRuntime11.getJarClasses();
                     // no classes found
-                    assertNull(jarClasses11.getJdkRevision());
+                    assertNull(jarClasses11.getMaxJavaClassVersion());
                 },
                 "It should not raise an exception");
+    }
+
+    /**
+     * Ensures that the deprecated JDK revision property is consistent with the max Java class version property.
+     * Delete this test when the deprecated JDK revision property is removed, as it will no longer be relevant.
+     */
+    @Test
+    void deprecatedJdkRevisionEquivalentToMaxJavaClassVersionInJarClasses() throws Exception {
+        JarClasses jclass = getJarClasses("helloworld-1.8.jar");
+
+        assertEquals("1.8", jclass.getJdkRevision());
+        assertEquals("1.8", jclass.getMaxJavaClassVersion());
+
+        jclass.setJdkRevision("1.7");
+        assertEquals("1.7", jclass.getJdkRevision());
+        assertEquals("1.7", jclass.getMaxJavaClassVersion());
+
+        jclass.setMaxJavaClassVersion("25");
+        assertEquals("25", jclass.getJdkRevision());
+        assertEquals("25", jclass.getMaxJavaClassVersion());
+
+        jclass.setJdkRevision(null);
+        assertNull(jclass.getJdkRevision());
+        assertNull(jclass.getMaxJavaClassVersion());
+
+        jclass.setMaxJavaClassVersion(null);
+        assertNull(jclass.getJdkRevision());
+        assertNull(jclass.getMaxJavaClassVersion());
+    }
+
+    /**
+     * Ensures that the deprecated JDK revision property is consistent with the max Java class version.
+     * Delete this test when the deprecated JDK revision property is removed, as it will no longer be relevant.
+     */
+    @Test
+    void deprecatedJdkRevisionEquivalentToMaxJavaClassVersionInJarData() throws Exception {
+        JarData jarData = getJarData("helloworld-1.8.jar");
+        JarClasses jclass = jarData.getJarClasses();
+
+        String expectedMaxVersion = "1.8";
+
+        assertEquals(expectedMaxVersion, jarData.getJdkRevision());
+        assertEquals(expectedMaxVersion, jarData.getMaxJavaClassVersion());
+        assertEquals(expectedMaxVersion, jclass.getJdkRevision());
+        assertEquals(expectedMaxVersion, jclass.getMaxJavaClassVersion());
     }
 
     private void assertEntriesContains(List<JarEntry> list, final String entryToFind) {

@@ -57,10 +57,10 @@ public class JarClasses {
     private boolean isDebugPresent;
 
     /**
-     * The highest JVM revision available in any class files. While the JAR may work on earlier JVMs if particular
-     * classes are not used, this is the minimum JVM that guarantees compatibility.
+     * The highest Java class version available in any class files. While the JAR may work on earlier JVMs if particular
+     * classes are not used, this is the minimum JVM version that guarantees compatibility.
      */
-    private String jdkRevision;
+    private String maxJavaClassVersion;
 
     /**
      * Constructor to create an empty instance.
@@ -130,12 +130,48 @@ public class JarClasses {
         this.isDebugPresent = hasDebugSymbols;
     }
 
-    public String getJdkRevision() {
-        return jdkRevision;
+    /**
+     * Get the highest Java class version available in any class files. While the JAR may work on earlier JVMs if particular
+     * classes are not used, this is the minimum JVM version that guarantees compatibility.
+     *
+     * @return the highest Java class version available in any class files, or null if not known.
+     *
+     * @since 3.2.1
+     */
+    public String getMaxJavaClassVersion() {
+        return maxJavaClassVersion;
     }
 
+    /**
+     * Set the highest Java class version available in any class files. While the JAR may work on earlier JVMs if particular
+     * classes are not used, this is the minimum JVM version that guarantees compatibility.
+     *
+     * @param maxJavaClassVersion the highest Java class version available in any class files.
+     *
+     * @since 3.2.1
+     */
+    public void setMaxJavaClassVersion(String maxJavaClassVersion) {
+        this.maxJavaClassVersion = maxJavaClassVersion;
+    }
+
+    /**
+     * The JDK revision of the classes in the JAR.
+     * @return the JDK revision of the classes in the JAR, or null if not known.
+     * @deprecated since 3.2.1, use {@link #getMaxJavaClassVersion()} instead, which is more accurate name.
+     */
+    @Deprecated
+    public String getJdkRevision() {
+        return getMaxJavaClassVersion();
+    }
+
+    /**
+     * Set the JDK revision of the classes in the JAR.
+     * @param jdkRevision the JDK revision of the classes in the JAR.
+     * @deprecated since 3.2.1, use {@link #setMaxJavaClassVersion(String)} instead, which is more accurate name.
+     */
+    @Deprecated
     public void setJdkRevision(String jdkRevision) {
-        this.jdkRevision = jdkRevision;
+        setMaxJavaClassVersion(jdkRevision);
     }
 
     public List<String> getMethods() {
