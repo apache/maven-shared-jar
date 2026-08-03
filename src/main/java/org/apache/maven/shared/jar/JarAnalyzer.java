@@ -31,7 +31,6 @@ import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 
 /**
  * Open a JAR file to be analyzed. Note that once created, the {@link #closeQuietly()} method should be called to
@@ -97,13 +96,7 @@ public class JarAnalyzer {
      *             will be closed if this occurs.
      */
     public JarAnalyzer(File file) throws IOException {
-        try {
-            this.jarFile = new JarFile(file);
-        } catch (ZipException e) {
-            ZipException ioe = new ZipException("Failed to open file " + file + " : " + e.getMessage());
-            ioe.initCause(e);
-            throw ioe;
-        }
+        this.jarFile = new JarFile(file);
 
         // Obtain entries list.
         List<JarEntry> entries = Collections.list(jarFile.entries());
