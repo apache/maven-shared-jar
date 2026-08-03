@@ -23,10 +23,12 @@ import javax.inject.Singleton;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.jar.JarEntry;
 
-import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.JarData;
 import org.slf4j.Logger;
@@ -49,13 +51,19 @@ public class JarBytecodeHashAnalyzer implements JarHashAnalyzer {
             List<JarEntry> entries = jarAnalyzer.getClassEntries();
 
             try {
+                MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
+                byte[] buffer = new byte[8192];
                 for (JarEntry entry : entries) {
                     try (InputStream is = jarAnalyzer.getEntryInputStream(entry)) {
-                        result = DigestUtils.sha1Hex(is);
+                        int read;
+                        while ((read = is.read(buffer)) != -1) {
+                            sha1.update(buffer, 0, read);
+                        }
                     }
                 }
+                result = Hex.encodeHexString(sha1.digest());
                 jarData.setBytecodeHash(result);
-            } catch (IOException e) {
+            } catch (IOException | NoSuchAlgorithmException e) {
                 logger.warn("Unable to calculate the hashcode.", e);
             }
         }
