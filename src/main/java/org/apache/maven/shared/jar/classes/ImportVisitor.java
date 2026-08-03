@@ -47,12 +47,12 @@ public class ImportVisitor extends EmptyVisitor {
      * Pattern to detect if the import is qualified and allows retrieval of the actual import name from the string via
      * the group 1.
      */
-    private static final Pattern QUALIFIED_IMPORT_PATTERN = Pattern.compile("L([a-zA-Z][a-zA-Z0-9\\.]+);");
+    private static final Pattern QUALIFIED_IMPORT_PATTERN = Pattern.compile("L([a-zA-Z][a-zA-Z0-9\\.$]+);");
 
     /**
      * Pattern that checks whether a string is valid UTF-8. Imports that are not are ignored.
      */
-    private static final Pattern VALID_UTF8_PATTERN = Pattern.compile("^[\\(\\)\\[A-Za-z0-9;/]+$");
+    private static final Pattern VALID_UTF8_PATTERN = Pattern.compile("^[\\(\\)\\[A-Za-z0-9;/;$]+$");
 
     /**
      * Create an Import visitor.
