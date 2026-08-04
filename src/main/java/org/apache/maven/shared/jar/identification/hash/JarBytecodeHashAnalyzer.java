@@ -24,7 +24,6 @@ import javax.inject.Singleton;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.jar.JarEntry;
 
@@ -60,7 +59,7 @@ public class JarBytecodeHashAnalyzer implements JarHashAnalyzer {
                 }
                 result = Hex.encodeHexString(sha1.digest());
                 jarData.setBytecodeHash(result);
-            } catch (IOException | NoSuchAlgorithmException e) {
+            } catch (IOException e) {
                 logger.warn("Unable to calculate the hashcode.", e);
             }
         }
