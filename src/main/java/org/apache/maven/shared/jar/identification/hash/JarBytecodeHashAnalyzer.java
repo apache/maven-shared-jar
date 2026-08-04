@@ -51,7 +51,6 @@ public class JarBytecodeHashAnalyzer implements JarHashAnalyzer {
 
             try {
                 MessageDigest sha1 = DigestUtils.getSha1Digest();
-                byte[] buffer = new byte[8192];
                 for (JarEntry entry : entries) {
                     try (InputStream is = jarAnalyzer.getEntryInputStream(entry)) {
                         DigestUtils.updateDigest(is);
