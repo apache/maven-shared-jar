@@ -1,37 +1,28 @@
- -----
- Introduction
- -----
- Brett Porter
- -----
- 2013-07-24
- -----
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
 
- ~~ Licensed to the Apache Software Foundation (ASF) under one
- ~~ or more contributor license agreements.  See the NOTICE file
- ~~ distributed with this work for additional information
- ~~ regarding copyright ownership.  The ASF licenses this file
- ~~ to you under the Apache License, Version 2.0 (the
- ~~ "License"); you may not use this file except in compliance
- ~~ with the License.  You may obtain a copy of the License at
- ~~
- ~~   http://www.apache.org/licenses/LICENSE-2.0
- ~~
- ~~ Unless required by applicable law or agreed to in writing,
- ~~ software distributed under the License is distributed on an
- ~~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- ~~ KIND, either express or implied.  See the License for the
- ~~ specific language governing permissions and limitations
- ~~ under the License.
+http://www.apache.org/licenses/LICENSE-2.0
 
- ~~ NOTE: For help with the syntax of this file, see:
- ~~ http://maven.apache.org/doxia/references/apt-format.html
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
 
-${project.name}
+# Apache Maven JAR Analysis Utilities
 
-  Utilities that help identify the contents of a JAR, including Java class analysis and Maven metadata analysis.
+Utilities that help identify the contents of a JAR, including Java class analysis and Maven metadata analysis.
 
-  This permits for example to prepare data for {{{./dependencies.html#Dependency_File_Details} Dependency File Details section of Dependencies Report}}.
+This permits for example to prepare data for [ Dependency File Details section of Dependencies Report](./dependencies.html#Dependency_File_Details).
 
-* Using the Utilities
+## Using the Utilities
 
-  Instructions on how to use the utilities can be found in the {{{./apidocs/index.html} Javadoc Overview}}.
+Instructions on how to use the utilities can be found in the [ Javadoc Overview](./apidocs/index.html).
