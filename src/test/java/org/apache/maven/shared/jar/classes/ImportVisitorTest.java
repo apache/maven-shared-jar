@@ -18,7 +18,13 @@
  */
 package org.apache.maven.shared.jar.classes;
 
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
+
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.apache.bcel.classfile.ClassParser;
@@ -29,8 +35,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Import Visitor Test
@@ -119,5 +127,35 @@ class ImportVisitorTest extends AbstractJarAnalyzerTestCase {
         List<String> imports = importVisitor.getImports();
         assertNotNull(imports, "Import List");
         assertTrue(imports.size() >= 4);
+    }
+
+    @Test
+    void utf8StringPoolInnerClassReferenceIsKept() throws Exception {
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        assumeTrue(compiler != null, "requires a JDK with javac");
+
+        Path source = Files.createTempDirectory("importvisitor-src").resolve("InnerRefHolder.java");
+        Files.write(
+                source,
+                ("package org.test.innertest;\n"
+                                + "public class InnerRefHolder {\n"
+                                + "    public static final String REF = \"org/test/innertest/Outer$Inner\";\n"
+                                + "}")
+                        .getBytes(StandardCharsets.UTF_8));
+
+        Path classesDir = Files.createTempDirectory("importvisitor-classes");
+        assertEquals(0, compiler.run(null, null, null, "-d", classesDir.toString(), source.toString()), "compilation");
+
+        JavaClass javaClass = new ClassParser(classesDir
+                        .resolve("org/test/innertest/InnerRefHolder.class")
+                        .toString())
+                .parse();
+        ImportVisitor importVisitor = new ImportVisitor(javaClass);
+        DescendingVisitor descVisitor = new DescendingVisitor(javaClass, importVisitor);
+        javaClass.accept(descVisitor);
+
+        assertTrue(
+                importVisitor.getImports().contains("org.test.innertest.Outer$Inner"),
+                "imports should keep inner class references from the UTF-8 pool");
     }
 }
