@@ -19,7 +19,12 @@
 package org.apache.maven.shared.jar;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import java.util.stream.Collectors;
 import java.util.zip.ZipException;
 
 import org.junit.jupiter.api.AfterEach;
@@ -95,5 +100,34 @@ class JarAnalyzerTest extends AbstractJarAnalyzerTestCase {
             jarAnalyzer.closeQuietly();
             jarAnalyzer.closeQuietly();
         });
+    }
+
+    @Test
+    void getClassEntriesFindsClassesWithUnderscores() throws Exception {
+        File jarFile = File.createTempFile("jar-analyzer-underscore", ".jar");
+        jarFile.deleteOnExit();
+
+        try (JarOutputStream jos = new JarOutputStream(new FileOutputStream(jarFile))) {
+            for (String entryName : new String[] {
+                "org/example/My_Helper.class",
+                "org/example/some_test.class",
+                "org/example/UPPER_CASE.class",
+                "org/example/MyHelper.class"
+            }) {
+                jos.putNextEntry(new JarEntry(entryName));
+                jos.write(new byte[] {1, 2, 3});
+                jos.closeEntry();
+            }
+        }
+
+        jarAnalyzer = new JarAnalyzer(jarFile);
+
+        List<String> classNames =
+                jarAnalyzer.getClassEntries().stream().map(JarEntry::getName).collect(Collectors.toList());
+
+        assertTrue(classNames.contains("org/example/My_Helper.class"), "Missing underscore class: " + classNames);
+        assertTrue(classNames.contains("org/example/some_test.class"), "Missing underscore class: " + classNames);
+        assertTrue(classNames.contains("org/example/UPPER_CASE.class"), "Missing underscore class: " + classNames);
+        assertTrue(classNames.contains("org/example/MyHelper.class"), "Missing regular class: " + classNames);
     }
 }

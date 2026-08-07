@@ -67,7 +67,7 @@ public class JarAnalyzer {
      *
      * @todo why are inner classes and other potentially valid classes omitted? (It flukes it by finding everything after $)
      */
-    private static final Pattern CLASS_FILTER = Pattern.compile("[A-Za-z0-9]*\\.class$");
+    private static final Pattern CLASS_FILTER = Pattern.compile("[A-Za-z0-9_]*\\.class$");
 
     /**
      * Pattern to filter JAR entries for Maven POM files.
