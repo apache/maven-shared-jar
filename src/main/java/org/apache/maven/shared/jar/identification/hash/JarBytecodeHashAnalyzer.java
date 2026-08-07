@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.jar.JarEntry;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.JarData;
 import org.slf4j.Logger;
