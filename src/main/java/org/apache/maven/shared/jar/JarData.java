@@ -50,7 +50,7 @@ public final class JarData {
     /**
      * Whether the JAR file is Multi-Release.
      */
-    private boolean multiRelease;
+    private final boolean multiRelease;
 
     /**
      * The hashcode for the entire file's contents.
