@@ -33,7 +33,7 @@ public class JarVersionedRuntimes {
     /**
      * Information about the JAR's Multi-Release entries
      */
-    private NavigableMap<Integer, JarVersionedRuntime> versionedRuntimeMap;
+    private final NavigableMap<Integer, JarVersionedRuntime> versionedRuntimeMap;
 
     public JarVersionedRuntimes(NavigableMap<Integer, JarVersionedRuntime> versionedRuntimeMap) {
         this.versionedRuntimeMap = versionedRuntimeMap;
