@@ -23,9 +23,11 @@ import javax.inject.Singleton;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.MessageDigest;
 import java.util.List;
 import java.util.jar.JarEntry;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.JarData;
@@ -34,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Analyzer that calculates the hash code for the entire file. Can be used to detect an exact copy of the file's class
- * data. Useful to see thru a recompile, recompression, or timestamp change.
+ * data. Useful to see through a recompile, recompression, or timestamp change.
  */
 @Singleton
 @Named("bytecode")
@@ -49,11 +51,13 @@ public class JarBytecodeHashAnalyzer implements JarHashAnalyzer {
             List<JarEntry> entries = jarAnalyzer.getClassEntries();
 
             try {
+                MessageDigest sha1 = DigestUtils.getSha1Digest();
                 for (JarEntry entry : entries) {
                     try (InputStream is = jarAnalyzer.getEntryInputStream(entry)) {
-                        result = DigestUtils.sha1Hex(is);
+                        DigestUtils.updateDigest(sha1, is);
                     }
                 }
+                result = Hex.encodeHexString(sha1.digest());
                 jarData.setBytecodeHash(result);
             } catch (IOException e) {
                 logger.warn("Unable to calculate the hashcode.", e);
