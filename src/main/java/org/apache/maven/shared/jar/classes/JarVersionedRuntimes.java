@@ -53,10 +53,11 @@ public class JarVersionedRuntimes {
     /**
      * Return the JarClasses associated to the release.
      * @param version the release version.
-     * @return the JarClasses.
+     * @return the JarClasses, or null if the version is not present.
      */
     public JarClasses getJarClasses(Integer version) {
-        return versionedRuntimeMap.get(version).getJarClasses();
+        JarVersionedRuntime versionedRuntime = versionedRuntimeMap.get(version);
+        return versionedRuntime != null ? versionedRuntime.getJarClasses() : null;
     }
 
     /**
