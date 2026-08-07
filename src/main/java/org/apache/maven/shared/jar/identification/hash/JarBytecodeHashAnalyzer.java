@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Analyzer that calculates the hash code for the entire file. Can be used to detect an exact copy of the file's class
- * data. Useful to see thru a recompile, recompression, or timestamp change.
+ * data. Useful to see through a recompile, recompression, or timestamp change.
  */
 @Singleton
 @Named("bytecode")
