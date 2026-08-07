@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Exposer that examines a a JAR for files that contain the text <code>version</code> (case-insensitive) and
+ * Exposer that examines a JAR for files that contain the text <code>version</code> (case-insensitive) and
  * adds the contents as potential version(s).
  */
 @Singleton
