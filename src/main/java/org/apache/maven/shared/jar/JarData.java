@@ -178,8 +178,23 @@ public final class JarData {
         return jarClasses.getPackages().size();
     }
 
+    /**
+     * Get the maximum Java class version of the JAR, if it can be determined.
+     * @return the maximum Java class version, or null if it cannot be determined
+     * @since 3.2.1
+     */
+    public String getMaxJavaClassVersion() {
+        return jarClasses.getMaxJavaClassVersion();
+    }
+
+    /**
+     * Get the JDK revision of the JAR, if it can be determined.
+     * @return the JDK revision, or null if it cannot be determined
+     * @deprecated since 3.2.1, use {@link #getMaxJavaClassVersion()} instead, which is more accurate name.
+     */
+    @Deprecated
     public String getJdkRevision() {
-        return jarClasses.getJdkRevision();
+        return getMaxJavaClassVersion();
     }
 
     public void setJarIdentification(JarIdentification jarIdentification) {
