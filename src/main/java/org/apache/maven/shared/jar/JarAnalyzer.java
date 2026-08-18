@@ -105,20 +105,22 @@ public class JarAnalyzer {
             throw ioe;
         }
 
-        // Obtain entries list.
-        List<JarEntry> entries = Collections.list(jarFile.entries());
-
-        // Sorting of list is done by name to ensure a bytecode hash is always consistent.
-        entries.sort(Comparator.comparing(ZipEntry::getName));
-
-        Manifest manifest;
         try {
-            manifest = jarFile.getManifest();
-        } catch (IOException e) {
+            // Obtain entries list.
+            List<JarEntry> entries = Collections.list(jarFile.entries());
+
+            // Sorting of list is done by name to ensure a bytecode hash is always consistent.
+            entries.sort(Comparator.comparing(ZipEntry::getName));
+
+            Manifest manifest = jarFile.getManifest();
+
+            this.jarData = new JarData(file, manifest, entries);
+        } catch (IOException | RuntimeException e) {
+            // The JarFile is already open at this point, so it has to be released before the
+            // constructor exits; otherwise the caller has no reference on which to call close.
             closeQuietly();
             throw e;
         }
-        this.jarData = new JarData(file, manifest, entries);
     }
 
     /**
