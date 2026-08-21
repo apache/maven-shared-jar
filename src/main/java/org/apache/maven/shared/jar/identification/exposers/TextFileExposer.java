@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Exposer that examines a a JAR for files that contain the text <code>version</code> (case-insensitive) and
+ * Exposer that examines a JAR for files that contain the text <code>version</code> (case-insensitive) and
  * adds the contents as potential version(s).
  */
 @Singleton
@@ -64,13 +64,15 @@ public class TextFileExposer implements JarIdentificationExposer {
                 try (InputStream is = jarAnalyzer.getEntryInputStream(entry)) {
                     BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
-                    String line = br.readLine();
                     // TODO: check for key=value pair.
                     // TODO: maybe even for groupId entries.
 
-                    logger.debug(line);
-                    if (line != null && !line.isEmpty()) {
-                        textVersions.add(line);
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        logger.debug(line);
+                        if (!line.isEmpty()) {
+                            textVersions.add(line);
+                        }
                     }
                 } catch (IOException e) {
                     logger.warn("Unable to read line from " + entry.getName(), e);
