@@ -105,21 +105,24 @@ public class JarAnalyzer {
             throw ioe;
         }
 
+        // The JarFile is open from here on. If anything below fails the constructor never
+        // returns, so the caller is left with no reference on which to call close() and the
+        // handle leaks. The flag lets finally release it without catching anything.
+        boolean constructed = false;
         try {
             // Obtain entries list.
             List<JarEntry> entries = Collections.list(jarFile.entries());
 
-            // Sorting of list is done by name to ensure a bytecode hash is always consistent.
+            // Sort list by name to ensure a bytecode hash is always consistent.
             entries.sort(Comparator.comparing(ZipEntry::getName));
 
             Manifest manifest = jarFile.getManifest();
-
             this.jarData = new JarData(file, manifest, entries);
-        } catch (IOException | RuntimeException e) {
-            // The JarFile is already open at this point, so it has to be released before the
-            // constructor exits; otherwise the caller has no reference on which to call close.
-            closeQuietly();
-            throw e;
+            constructed = true;
+        } finally {
+            if (!constructed) {
+                closeQuietly();
+            }
         }
     }
 
