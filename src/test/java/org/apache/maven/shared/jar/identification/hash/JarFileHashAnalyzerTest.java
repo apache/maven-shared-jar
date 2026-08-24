@@ -36,12 +36,9 @@ class JarFileHashAnalyzerTest extends AbstractJarAnalyzerTestCase {
     @Test
     void computeHashReturnsTheHashOnFirstCall() throws Exception {
         JarAnalyzer jarAnalyzer = new JarAnalyzer(getSampleJar("codec.jar"));
-        try {
-            String expected;
-            try (InputStream in =
-                    Files.newInputStream(jarAnalyzer.getJarData().getFile().toPath())) {
-                expected = DigestUtils.sha1Hex(in);
-            }
+        try (InputStream in =
+                Files.newInputStream(jarAnalyzer.getJarData().getFile().toPath())) {
+            String expected = DigestUtils.sha1Hex(in);
 
             String actual = analyzer.computeHash(jarAnalyzer);
 
