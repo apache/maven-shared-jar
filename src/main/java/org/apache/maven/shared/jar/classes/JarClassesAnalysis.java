@@ -235,7 +235,7 @@ public class JarClassesAnalysis {
             maxVersion = moduleInfoVersion;
         }
 
-        Optional.ofNullable(JAVA_CLASS_VERSIONS.get(maxVersion)).ifPresent(classes::setJdkRevision);
+        Optional.ofNullable(JAVA_CLASS_VERSIONS.get(maxVersion)).ifPresent(classes::setMaxJavaClassVersion);
 
         return classes;
     }
