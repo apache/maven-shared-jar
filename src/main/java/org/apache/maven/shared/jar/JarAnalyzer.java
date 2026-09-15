@@ -105,20 +105,25 @@ public class JarAnalyzer {
             throw ioe;
         }
 
-        // Obtain entries list.
-        List<JarEntry> entries = Collections.list(jarFile.entries());
-
-        // Sorting of list is done by name to ensure a bytecode hash is always consistent.
-        entries.sort(Comparator.comparing(ZipEntry::getName));
-
-        Manifest manifest;
+        // The JarFile is open from here on. If anything below fails the constructor never
+        // returns, so the caller is left with no reference on which to call close() and the
+        // handle leaks. The flag lets finally release it without catching anything.
+        boolean constructed = false;
         try {
-            manifest = jarFile.getManifest();
-        } catch (IOException e) {
-            closeQuietly();
-            throw e;
+            // Obtain entries list.
+            List<JarEntry> entries = Collections.list(jarFile.entries());
+
+            // Sort list by name to ensure a bytecode hash is always consistent.
+            entries.sort(Comparator.comparing(ZipEntry::getName));
+
+            Manifest manifest = jarFile.getManifest();
+            this.jarData = new JarData(file, manifest, entries);
+            constructed = true;
+        } finally {
+            if (!constructed) {
+                closeQuietly();
+            }
         }
-        this.jarData = new JarData(file, manifest, entries);
     }
 
     /**
