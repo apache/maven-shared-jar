@@ -48,7 +48,8 @@ public class JarFileHashAnalyzer implements JarHashAnalyzer {
             try {
                 try (InputStream inputStream =
                         Files.newInputStream(jarData.getFile().toPath())) {
-                    jarData.setFileHash(DigestUtils.sha1Hex(inputStream));
+                    result = DigestUtils.sha1Hex(inputStream);
+                    jarData.setFileHash(result);
                 }
             } catch (IOException e) {
                 logger.warn("Unable to calculate the hashcode.", e);
