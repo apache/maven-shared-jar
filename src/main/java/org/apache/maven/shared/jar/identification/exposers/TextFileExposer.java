@@ -69,7 +69,6 @@ public class TextFileExposer implements JarIdentificationExposer {
 
                     String line;
                     while ((line = br.readLine()) != null) {
-                        logger.debug(line);
                         if (!line.isEmpty()) {
                             textVersions.add(line);
                         }
