@@ -155,7 +155,7 @@ public final class JarData {
     }
 
     public boolean isDebugPresent() {
-        return jarClasses.isDebugPresent();
+        return jarClasses != null && jarClasses.isDebugPresent();
     }
 
     public void setJarClasses(JarClasses jarClasses) {
@@ -167,19 +167,19 @@ public final class JarData {
     }
 
     public int getNumRootEntries() {
-        return rootEntries.size();
+        return rootEntries == null ? 0 : rootEntries.size();
     }
 
     public int getNumClasses() {
-        return jarClasses.getClassNames().size();
+        return jarClasses == null ? 0 : jarClasses.getClassNames().size();
     }
 
     public int getNumPackages() {
-        return jarClasses.getPackages().size();
+        return jarClasses == null ? 0 : jarClasses.getPackages().size();
     }
 
     public String getJdkRevision() {
-        return jarClasses.getJdkRevision();
+        return jarClasses == null ? null : jarClasses.getJdkRevision();
     }
 
     public void setJarIdentification(JarIdentification jarIdentification) {
