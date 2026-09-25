@@ -143,6 +143,21 @@
   </dependencies>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <configuration>
+            <inputExcludes combine.children="append">
+
+              <exclude>src/test/resources/jars/*.jar</exclude>
+
+            </inputExcludes>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.eclipse.sisu</groupId>
@@ -150,4 +165,5 @@
       </plugin>
     </plugins>
   </build>
+  <profiles />
 </project>
