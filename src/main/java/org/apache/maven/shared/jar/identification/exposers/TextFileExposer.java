@@ -25,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -62,7 +63,7 @@ public class TextFileExposer implements JarIdentificationExposer {
             {
                 logger.debug("Version Hit: " + entry.getName());
                 try (InputStream is = jarAnalyzer.getEntryInputStream(entry)) {
-                    BufferedReader br = new BufferedReader(new InputStreamReader(is));
+                    BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
 
                     String line = br.readLine();
                     // TODO: check for key=value pair.
