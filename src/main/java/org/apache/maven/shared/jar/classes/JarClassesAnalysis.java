@@ -152,13 +152,18 @@ public class JarClassesAnalysis {
         JarData jarData = jarAnalyzer.getJarData();
 
         JarVersionedRuntime rootContentVersionedRuntime = runtimeVersionsMap.remove(ROOT);
-        jarData.setRootEntries(rootContentVersionedRuntime.getEntries());
-        JarClasses rootJarClasses = rootContentVersionedRuntime.getJarClasses();
-        jarData.setJarClasses(rootJarClasses);
+        if (rootContentVersionedRuntime == null) {
+            jarData.setRootEntries(Collections.emptyList());
+            jarData.setJarClasses(new JarClasses());
+        } else {
+            jarData.setRootEntries(rootContentVersionedRuntime.getEntries());
+            JarClasses rootJarClasses = rootContentVersionedRuntime.getJarClasses();
+            jarData.setJarClasses(rootJarClasses);
+        }
 
         jarData.setVersionedRuntimes(new JarVersionedRuntimes(runtimeVersionsMap));
 
-        return rootJarClasses;
+        return jarData.getJarClasses();
     }
 
     private JarClasses analyzeRoot(JarAnalyzer jarAnalyzer) {
