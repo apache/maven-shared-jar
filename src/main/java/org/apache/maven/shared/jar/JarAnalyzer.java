@@ -27,7 +27,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -97,31 +96,36 @@ public class JarAnalyzer {
      *             will be closed if this occurs.
      */
     public JarAnalyzer(File file) throws IOException {
-        try {
-            this.jarFile = new JarFile(file);
-        } catch (ZipException e) {
-            ZipException ioe = new ZipException("Failed to open file " + file + " : " + e.getMessage());
-            ioe.initCause(e);
-            throw ioe;
-        }
-
-        // The JarFile is open from here on. If anything below fails the constructor never
-        // returns, so the caller is left with no reference on which to call close() and the
-        // handle leaks. The flag lets finally release it without catching anything.
+        // Everything after the open runs inside one try so that any failure, checked or
+        // unchecked, releases the JarFile: a constructor that throws leaves the caller no
+        // reference to close. The field is only assigned once construction has succeeded.
+        JarFile opened = null;
         boolean constructed = false;
         try {
+            try {
+                opened = new JarFile(file);
+            } catch (ZipException e) {
+                ZipException ioe = new ZipException("Failed to open file " + file + " : " + e.getMessage());
+                ioe.initCause(e);
+                throw ioe;
+            }
+
             // Obtain entries list.
-            List<JarEntry> entries = Collections.list(jarFile.entries());
+            List<JarEntry> entries = Collections.list(opened.entries());
 
             // Sort list by name to ensure a bytecode hash is always consistent.
             entries.sort(Comparator.comparing(ZipEntry::getName));
 
-            Manifest manifest = jarFile.getManifest();
-            this.jarData = new JarData(file, manifest, entries);
+            this.jarData = new JarData(file, opened.getManifest(), entries);
+            this.jarFile = opened;
             constructed = true;
         } finally {
-            if (!constructed) {
-                closeQuietly();
+            if (!constructed && opened != null) {
+                try {
+                    opened.close();
+                } catch (IOException e) {
+                    // keep the original failure; it matters more than this one
+                }
             }
         }
     }
