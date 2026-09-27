@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,8 +30,11 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
+import org.apache.maven.shared.jar.identification.hash.JarBytecodeHashAnalyzer;
 import org.apache.maven.shared.jar.identification.hash.JarHashAnalyzer;
 import org.apache.maven.shared.jar.identification.repository.RepositoryHashSearch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.util.Objects.requireNonNull;
 
@@ -41,6 +45,8 @@ import static java.util.Objects.requireNonNull;
 @Singleton
 @Named("repositorySearch")
 public class RepositorySearchExposer implements JarIdentificationExposer {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     /**
      * The repository searcher to use.
      *
@@ -56,13 +62,13 @@ public class RepositorySearchExposer implements JarIdentificationExposer {
     /**
      * The hash analyzer for the file's bytecode.
      */
-    private final JarHashAnalyzer bytecodeHashAnalyzer;
+    private final JarBytecodeHashAnalyzer bytecodeHashAnalyzer;
 
     @Inject
     public RepositorySearchExposer(
             RepositoryHashSearch repositoryHashSearch,
             @Named("file") JarHashAnalyzer fileHashAnalyzer,
-            @Named("bytecode") JarHashAnalyzer bytecodeHashAnalyzer) {
+            @Named("bytecode") JarBytecodeHashAnalyzer bytecodeHashAnalyzer) {
         this.repositoryHashSearch = requireNonNull(repositoryHashSearch);
         this.fileHashAnalyzer = requireNonNull(fileHashAnalyzer);
         this.bytecodeHashAnalyzer = requireNonNull(bytecodeHashAnalyzer);
@@ -77,7 +83,13 @@ public class RepositorySearchExposer implements JarIdentificationExposer {
             repohits.addAll(repositoryHashSearch.searchFileHash(hash));
         }
 
-        String bytecodehash = bytecodeHashAnalyzer.computeHash(jarAnalyzer);
+        String bytecodehash;
+        try {
+            bytecodehash = bytecodeHashAnalyzer.computeHashWithIOException(jarAnalyzer);
+        } catch (IOException e) {
+            logger.warn("Unable to calculate the bytecode hash.", e);
+            bytecodehash = null;
+        }
         if (bytecodehash != null) {
             repohits.addAll(repositoryHashSearch.searchBytecodeHash(bytecodehash));
         }
