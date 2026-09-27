@@ -155,7 +155,7 @@ public final class JarData {
     }
 
     public boolean isDebugPresent() {
-        return jarClasses != null && jarClasses.isDebugPresent();
+        return requireJarClasses().isDebugPresent();
     }
 
     public void setJarClasses(JarClasses jarClasses) {
@@ -171,15 +171,15 @@ public final class JarData {
     }
 
     public int getNumClasses() {
-        return jarClasses == null ? 0 : jarClasses.getClassNames().size();
+        return requireJarClasses().getClassNames().size();
     }
 
     public int getNumPackages() {
-        return jarClasses == null ? 0 : jarClasses.getPackages().size();
+        return requireJarClasses().getPackages().size();
     }
 
     public String getJdkRevision() {
-        return jarClasses == null ? null : jarClasses.getJdkRevision();
+        return requireJarClasses().getJdkRevision();
     }
 
     public void setJarIdentification(JarIdentification jarIdentification) {
@@ -191,6 +191,13 @@ public final class JarData {
     }
 
     public JarClasses getJarClasses() {
+        return jarClasses;
+    }
+
+    private JarClasses requireJarClasses() {
+        if (jarClasses == null) {
+            throw new IllegalStateException("JAR classes have not been analyzed");
+        }
         return jarClasses;
     }
 

@@ -24,18 +24,17 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class JarDataTest {
     @Test
     void accessorsAreSafeBeforeAnalysisCompletes() {
         JarData jarData = new JarData(new File("example.jar"), null, Collections.emptyList());
 
-        assertFalse(jarData.isDebugPresent());
         assertEquals(0, jarData.getNumRootEntries());
-        assertEquals(0, jarData.getNumClasses());
-        assertEquals(0, jarData.getNumPackages());
-        assertNull(jarData.getJdkRevision());
+        assertThrows(IllegalStateException.class, jarData::isDebugPresent);
+        assertThrows(IllegalStateException.class, jarData::getNumClasses);
+        assertThrows(IllegalStateException.class, jarData::getNumPackages);
+        assertThrows(IllegalStateException.class, jarData::getJdkRevision);
     }
 }
