@@ -83,15 +83,13 @@ public class RepositorySearchExposer implements JarIdentificationExposer {
             repohits.addAll(repositoryHashSearch.searchFileHash(hash));
         }
 
-        String bytecodehash;
         try {
-            bytecodehash = bytecodeHashAnalyzer.computeHashCode(jarAnalyzer);
+            String bytecodehash = bytecodeHashAnalyzer.computeHashCode(jarAnalyzer);
+            if (bytecodehash != null) {
+                repohits.addAll(repositoryHashSearch.searchBytecodeHash(bytecodehash));
+            }
         } catch (IOException e) {
             logger.warn("Unable to calculate the bytecode hash.", e);
-            bytecodehash = null;
-        }
-        if (bytecodehash != null) {
-            repohits.addAll(repositoryHashSearch.searchBytecodeHash(bytecodehash));
         }
 
         // Found hits in the repository.
