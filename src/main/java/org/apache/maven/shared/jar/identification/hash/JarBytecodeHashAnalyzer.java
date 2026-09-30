@@ -48,13 +48,13 @@ public class JarBytecodeHashAnalyzer implements JarHashAnalyzer {
      *
      * @param jarAnalyzer the JAR analyzer to use
      * @return the hash, or {@code null} when the hash cannot be computed
-     * @deprecated use {@link #computeHashWithIOException(JarAnalyzer)} when the failure must be handled by the caller
+     * @deprecated use {@link #computeHashCode(JarAnalyzer)} when the failure must be handled by the caller
      */
     @Deprecated
     @Override
     public String computeHash(JarAnalyzer jarAnalyzer) {
         try {
-            return computeHashWithIOException(jarAnalyzer);
+            return computeHashCode(jarAnalyzer);
         } catch (IOException e) {
             logger.warn("Unable to calculate the hashcode.", e);
             return null;
@@ -68,7 +68,7 @@ public class JarBytecodeHashAnalyzer implements JarHashAnalyzer {
      * @return the computed hash
      * @throws IOException if a class entry cannot be read
      */
-    public String computeHashWithIOException(JarAnalyzer jarAnalyzer) throws IOException {
+    public String computeHashCode(JarAnalyzer jarAnalyzer) throws IOException {
         JarData jarData = jarAnalyzer.getJarData();
 
         String result = jarData.getBytecodeHash();

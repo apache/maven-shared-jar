@@ -80,7 +80,7 @@ class JarBytecodeHashAnalyzerTest extends AbstractJarAnalyzerTestCase {
     }
 
     @Test
-    void computeHashWithIOExceptionPropagatesReadFailure() throws Exception {
+    void computeHashCodePropagatesReadFailure() throws Exception {
         JarAnalyzer jarAnalyzer = new JarAnalyzer(createJar("org/foo/A.class")) {
             @Override
             public InputStream getEntryInputStream(JarEntry entry) throws IOException {
@@ -91,7 +91,7 @@ class JarBytecodeHashAnalyzerTest extends AbstractJarAnalyzerTestCase {
         try {
             assertThrows(
                     IOException.class,
-                    () -> analyzer.computeHashWithIOException(jarAnalyzer),
+                    () -> analyzer.computeHashCode(jarAnalyzer),
                     "the caller must be able to handle a failed class-entry read");
             assertNull(
                     analyzer.computeHash(jarAnalyzer),
