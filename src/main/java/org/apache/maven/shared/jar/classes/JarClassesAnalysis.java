@@ -18,9 +18,6 @@
  */
 package org.apache.maven.shared.jar.classes;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,6 +37,8 @@ import org.apache.bcel.classfile.DescendingVisitor;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
+import org.apache.maven.api.di.Named;
+import org.apache.maven.api.di.Singleton;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.JarData;
 import org.slf4j.Logger;

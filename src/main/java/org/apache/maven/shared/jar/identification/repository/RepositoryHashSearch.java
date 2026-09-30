@@ -20,7 +20,7 @@ package org.apache.maven.shared.jar.identification.repository;
 
 import java.util.List;
 
-import org.apache.maven.artifact.Artifact;
+import org.apache.maven.api.Artifact;
 
 /**
  * Interface for Repository Hash Searches.
@@ -30,7 +30,7 @@ public interface RepositoryHashSearch {
      * Search the repository for artifacts matching the given hash code when consider the entire contents of the file.
      *
      * @param hash the hash code to use
-     * @return a list of {@link org.apache.maven.artifact.Artifact} instances that matched
+     * @return a list of {@link org.apache.maven.api.Artifact} instances that matched
      */
     List<Artifact> searchFileHash(String hash);
 
@@ -39,7 +39,7 @@ public interface RepositoryHashSearch {
      * file.
      *
      * @param hash the hash code to use
-     * @return a list of {@link org.apache.maven.artifact.Artifact} instances that matched
+     * @return a list of {@link org.apache.maven.api.Artifact} instances that matched
      */
     List<Artifact> searchBytecodeHash(String hash);
 }

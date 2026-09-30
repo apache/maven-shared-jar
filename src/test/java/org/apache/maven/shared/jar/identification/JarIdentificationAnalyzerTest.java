@@ -18,13 +18,12 @@
  */
 package org.apache.maven.shared.jar.identification;
 
-import javax.inject.Inject;
-
 import java.io.File;
 
+import org.apache.maven.api.di.Inject;
+import org.apache.maven.api.di.testing.MavenDITest;
 import org.apache.maven.shared.jar.AbstractJarAnalyzerTestCase;
 import org.apache.maven.shared.jar.JarAnalyzer;
-import org.codehaus.plexus.testing.PlexusTest;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  * JarAnalyzer Taxon Analyzer Test Case
  * TODO test the exposers individually instead of in aggregate here (and test the normalize, etc. methods here instead with controlled exposers)
  */
-@PlexusTest
+@MavenDITest
 class JarIdentificationAnalyzerTest extends AbstractJarAnalyzerTestCase {
 
     @Inject

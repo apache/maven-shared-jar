@@ -18,24 +18,26 @@
  */
 package org.apache.maven.shared.jar.identification.exposers;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.jar.JarEntry;
 
-import org.apache.maven.model.Model;
-import org.apache.maven.model.Organization;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.apache.maven.api.di.Inject;
+import org.apache.maven.api.di.Named;
+import org.apache.maven.api.di.Singleton;
+import org.apache.maven.api.model.Model;
+import org.apache.maven.api.model.Organization;
+import org.apache.maven.api.services.xml.ModelXmlFactory;
+import org.apache.maven.api.services.xml.XmlReaderException;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Exposer that examines a JAR file for any embedded Maven metadata for identification.
@@ -44,6 +46,13 @@ import org.slf4j.LoggerFactory;
 @Named("embeddedMavenModel")
 public class EmbeddedMavenModelExposer implements JarIdentificationExposer {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final ModelXmlFactory modelXmlFactory;
+
+    @Inject
+    public EmbeddedMavenModelExposer(ModelXmlFactory modelXmlFactory) {
+        this.modelXmlFactory = requireNonNull(modelXmlFactory);
+    }
 
     @Override
     public void expose(JarIdentification identification, JarAnalyzer jarAnalyzer) {
@@ -57,10 +66,9 @@ public class EmbeddedMavenModelExposer implements JarIdentificationExposer {
         }
 
         JarEntry pom = entries.get(0);
-        MavenXpp3Reader pomreader = new MavenXpp3Reader();
         try (InputStream is = jarAnalyzer.getEntryInputStream(pom);
                 InputStreamReader isreader = new InputStreamReader(is)) {
-            Model model = pomreader.read(isreader);
+            Model model = modelXmlFactory.read(isreader, true);
 
             if (model.getParent() != null) {
                 // use parent values only if project values not exists
@@ -88,7 +96,7 @@ public class EmbeddedMavenModelExposer implements JarIdentificationExposer {
             }
         } catch (IOException e) {
             logger.error("Unable to read model " + pom.getName() + " in " + jarAnalyzer.getFile() + ".", e);
-        } catch (XmlPullParserException e) {
+        } catch (XmlReaderException e) {
             logger.error("Unable to parse model " + pom.getName() + " in " + jarAnalyzer.getFile() + ".", e);
         }
     }

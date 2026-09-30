@@ -20,6 +20,7 @@ package org.apache.maven.shared.jar.identification.exposers;
 
 import java.io.File;
 
+import org.apache.maven.impl.DefaultModelXmlFactory;
 import org.apache.maven.shared.jar.AbstractJarAnalyzerTestCase;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
@@ -40,7 +41,7 @@ class EmbeddedMavenModelExposerTest extends AbstractJarAnalyzerTestCase {
 
         JarIdentification identification = new JarIdentification();
 
-        EmbeddedMavenModelExposer exposer = new EmbeddedMavenModelExposer();
+        EmbeddedMavenModelExposer exposer = new EmbeddedMavenModelExposer(new DefaultModelXmlFactory());
         exposer.expose(identification, new JarAnalyzer(file));
 
         assertEquals(1, identification.getPotentialGroupIds().size());
@@ -59,7 +60,7 @@ class EmbeddedMavenModelExposerTest extends AbstractJarAnalyzerTestCase {
 
         JarIdentification identification = new JarIdentification();
 
-        EmbeddedMavenModelExposer exposer = new EmbeddedMavenModelExposer();
+        EmbeddedMavenModelExposer exposer = new EmbeddedMavenModelExposer(new DefaultModelXmlFactory());
         exposer.expose(identification, new JarAnalyzer(file));
 
         assertFalse(identification.getPotentialGroupIds().isEmpty(), "exposer.groupIds");
@@ -75,7 +76,7 @@ class EmbeddedMavenModelExposerTest extends AbstractJarAnalyzerTestCase {
 
         JarIdentification identification = new JarIdentification();
 
-        EmbeddedMavenModelExposer exposer = new EmbeddedMavenModelExposer();
+        EmbeddedMavenModelExposer exposer = new EmbeddedMavenModelExposer(new DefaultModelXmlFactory());
         exposer.expose(identification, new JarAnalyzer(file));
 
         assertTrue(identification.getPotentialGroupIds().isEmpty(), "exposer.groupIds");

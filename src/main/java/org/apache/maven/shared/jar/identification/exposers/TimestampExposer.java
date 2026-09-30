@@ -18,9 +18,6 @@
  */
 package org.apache.maven.shared.jar.identification.exposers;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -29,6 +26,8 @@ import java.util.jar.JarEntry;
 
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.bag.HashBag;
+import org.apache.maven.api.di.Named;
+import org.apache.maven.api.di.Singleton;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;

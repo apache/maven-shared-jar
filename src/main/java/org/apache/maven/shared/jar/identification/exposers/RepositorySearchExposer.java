@@ -18,14 +18,13 @@
  */
 package org.apache.maven.shared.jar.identification.exposers;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.maven.artifact.Artifact;
+import org.apache.maven.api.Artifact;
+import org.apache.maven.api.di.Inject;
+import org.apache.maven.api.di.Named;
+import org.apache.maven.api.di.Singleton;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
@@ -86,7 +85,7 @@ public class RepositorySearchExposer implements JarIdentificationExposer {
         for (Artifact artifact : repohits) {
             identification.addAndSetGroupId(artifact.getGroupId());
             identification.addAndSetArtifactId(artifact.getArtifactId());
-            identification.addAndSetVersion(artifact.getVersion());
+            identification.addAndSetVersion(artifact.getVersion().toString());
         }
     }
 }
