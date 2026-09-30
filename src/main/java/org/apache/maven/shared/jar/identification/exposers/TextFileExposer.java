@@ -18,9 +18,6 @@
  */
 package org.apache.maven.shared.jar.identification.exposers;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarEntry;
 
+import org.apache.maven.api.di.Named;
+import org.apache.maven.api.di.Singleton;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;

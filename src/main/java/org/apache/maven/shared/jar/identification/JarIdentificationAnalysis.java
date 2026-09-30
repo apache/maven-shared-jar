@@ -18,12 +18,11 @@
  */
 package org.apache.maven.shared.jar.identification;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import java.util.List;
 
+import org.apache.maven.api.di.Inject;
+import org.apache.maven.api.di.Named;
+import org.apache.maven.api.di.Singleton;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.codehaus.plexus.util.StringUtils;
 
