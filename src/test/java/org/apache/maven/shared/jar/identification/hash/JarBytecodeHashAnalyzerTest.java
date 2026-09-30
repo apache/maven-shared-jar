@@ -56,7 +56,7 @@ class JarBytecodeHashAnalyzerTest extends AbstractJarAnalyzerTestCase {
             }
             String expected = DigestUtils.sha1Hex(allClasses.toByteArray());
 
-            String actual = analyzer.computeHash(jarAnalyzer);
+            String actual = analyzer.computeHashCode(jarAnalyzer);
 
             assertEquals(expected, actual, "bytecode hash must cover every class entry");
         } finally {

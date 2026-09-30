@@ -68,7 +68,7 @@ public class JarBytecodeHashAnalyzer implements JarHashAnalyzer {
      * @return the computed hash
      * @throws IOException if a class entry cannot be read
      */
-    public String computeHashCode(JarAnalyzer jarAnalyzer) throws IOException {
+    public final String computeHashCode(JarAnalyzer jarAnalyzer) throws IOException {
         JarData jarData = jarAnalyzer.getJarData();
 
         String result = jarData.getBytecodeHash();
