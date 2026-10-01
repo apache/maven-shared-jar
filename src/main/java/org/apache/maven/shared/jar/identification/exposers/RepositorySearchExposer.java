@@ -23,6 +23,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,8 +34,6 @@ import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
 import org.apache.maven.shared.jar.identification.hash.JarBytecodeHashAnalyzer;
 import org.apache.maven.shared.jar.identification.hash.JarHashAnalyzer;
 import org.apache.maven.shared.jar.identification.repository.RepositoryHashSearch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static java.util.Objects.requireNonNull;
 
@@ -45,8 +44,6 @@ import static java.util.Objects.requireNonNull;
 @Singleton
 @Named("repositorySearch")
 public class RepositorySearchExposer implements JarIdentificationExposer {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     /**
      * The repository searcher to use.
      *
@@ -87,7 +84,7 @@ public class RepositorySearchExposer implements JarIdentificationExposer {
             String bytecodeHash = bytecodeHashAnalyzer.computeHashCode(jarAnalyzer);
             repohits.addAll(repositoryHashSearch.searchBytecodeHash(bytecodeHash));
         } catch (IOException e) {
-            logger.warn("Unable to calculate the bytecode hash.", e);
+            throw new UncheckedIOException("Unable to calculate the bytecode hash.", e);
         }
 
         // Found hits in the repository.
