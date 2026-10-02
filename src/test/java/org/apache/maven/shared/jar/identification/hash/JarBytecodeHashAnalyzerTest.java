@@ -34,6 +34,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Tests for the {@link JarBytecodeHashAnalyzer}.
@@ -54,7 +56,7 @@ class JarBytecodeHashAnalyzerTest extends AbstractJarAnalyzerTestCase {
             }
             String expected = DigestUtils.sha1Hex(allClasses.toByteArray());
 
-            String actual = analyzer.computeHash(jarAnalyzer);
+            String actual = analyzer.computeHashCode(jarAnalyzer);
 
             assertEquals(expected, actual, "bytecode hash must cover every class entry");
         } finally {
@@ -74,6 +76,28 @@ class JarBytecodeHashAnalyzerTest extends AbstractJarAnalyzerTestCase {
         } finally {
             jarA.closeQuietly();
             jarB.closeQuietly();
+        }
+    }
+
+    @Test
+    void computeHashCodePropagatesReadFailure() throws Exception {
+        JarAnalyzer jarAnalyzer = new JarAnalyzer(createJar("org/foo/A.class")) {
+            @Override
+            public InputStream getEntryInputStream(JarEntry entry) throws IOException {
+                throw new IOException("simulated class-entry read failure");
+            }
+        };
+
+        try {
+            assertThrows(
+                    IOException.class,
+                    () -> analyzer.computeHashCode(jarAnalyzer),
+                    "the caller must be able to handle a failed class-entry read");
+            assertNull(
+                    analyzer.computeHash(jarAnalyzer),
+                    "the deprecated method must preserve its null-on-error contract");
+        } finally {
+            jarAnalyzer.closeQuietly();
         }
     }
 
