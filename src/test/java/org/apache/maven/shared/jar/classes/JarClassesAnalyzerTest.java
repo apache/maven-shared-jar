@@ -18,17 +18,16 @@
  */
 package org.apache.maven.shared.jar.classes;
 
-import javax.inject.Inject;
-
 import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
 
+import org.apache.maven.api.di.Inject;
+import org.apache.maven.api.di.testing.MavenDITest;
 import org.apache.maven.shared.jar.AbstractJarAnalyzerTestCase;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.JarData;
-import org.codehaus.plexus.testing.PlexusTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -44,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * JarAnalyzer Classes Test Case
  */
-@PlexusTest
+@MavenDITest
 class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
 
     @Inject

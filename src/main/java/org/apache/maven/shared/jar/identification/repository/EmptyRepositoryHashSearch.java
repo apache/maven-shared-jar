@@ -18,13 +18,12 @@
  */
 package org.apache.maven.shared.jar.identification.repository;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.maven.artifact.Artifact;
+import org.apache.maven.api.Artifact;
+import org.apache.maven.api.di.Named;
+import org.apache.maven.api.di.Singleton;
 
 /**
  * Empty repository hash search.  Always returns an empty list.

@@ -18,14 +18,13 @@
  */
 package org.apache.maven.shared.jar.identification.hash;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.maven.api.di.Named;
+import org.apache.maven.api.di.Singleton;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.JarData;
 import org.slf4j.Logger;
