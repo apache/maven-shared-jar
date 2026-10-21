@@ -22,6 +22,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +31,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.shared.jar.JarAnalyzer;
 import org.apache.maven.shared.jar.identification.JarIdentification;
 import org.apache.maven.shared.jar.identification.JarIdentificationExposer;
+import org.apache.maven.shared.jar.identification.hash.JarBytecodeHashAnalyzer;
 import org.apache.maven.shared.jar.identification.hash.JarHashAnalyzer;
 import org.apache.maven.shared.jar.identification.repository.RepositoryHashSearch;
 
@@ -56,13 +59,13 @@ public class RepositorySearchExposer implements JarIdentificationExposer {
     /**
      * The hash analyzer for the file's bytecode.
      */
-    private final JarHashAnalyzer bytecodeHashAnalyzer;
+    private final JarBytecodeHashAnalyzer bytecodeHashAnalyzer;
 
     @Inject
     public RepositorySearchExposer(
             RepositoryHashSearch repositoryHashSearch,
             @Named("file") JarHashAnalyzer fileHashAnalyzer,
-            @Named("bytecode") JarHashAnalyzer bytecodeHashAnalyzer) {
+            @Named("bytecode") JarBytecodeHashAnalyzer bytecodeHashAnalyzer) {
         this.repositoryHashSearch = requireNonNull(repositoryHashSearch);
         this.fileHashAnalyzer = requireNonNull(fileHashAnalyzer);
         this.bytecodeHashAnalyzer = requireNonNull(bytecodeHashAnalyzer);
@@ -77,9 +80,11 @@ public class RepositorySearchExposer implements JarIdentificationExposer {
             repohits.addAll(repositoryHashSearch.searchFileHash(hash));
         }
 
-        String bytecodehash = bytecodeHashAnalyzer.computeHash(jarAnalyzer);
-        if (bytecodehash != null) {
-            repohits.addAll(repositoryHashSearch.searchBytecodeHash(bytecodehash));
+        try {
+            String bytecodeHash = bytecodeHashAnalyzer.computeHashCode(jarAnalyzer);
+            repohits.addAll(repositoryHashSearch.searchBytecodeHash(bytecodeHash));
+        } catch (IOException e) {
+            throw new UncheckedIOException("Unable to calculate the bytecode hash.", e);
         }
 
         // Found hits in the repository.
