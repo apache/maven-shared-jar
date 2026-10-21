@@ -152,8 +152,14 @@ public class JarClassesAnalysis {
         JarData jarData = jarAnalyzer.getJarData();
 
         JarVersionedRuntime rootContentVersionedRuntime = runtimeVersionsMap.remove(ROOT);
-        jarData.setRootEntries(rootContentVersionedRuntime.getEntries());
-        JarClasses rootJarClasses = rootContentVersionedRuntime.getJarClasses();
+        JarClasses rootJarClasses;
+        if (rootContentVersionedRuntime == null) {
+            jarData.setRootEntries(Collections.emptyList());
+            rootJarClasses = new JarClasses();
+        } else {
+            jarData.setRootEntries(rootContentVersionedRuntime.getEntries());
+            rootJarClasses = rootContentVersionedRuntime.getJarClasses();
+        }
         jarData.setJarClasses(rootJarClasses);
 
         jarData.setVersionedRuntimes(new JarVersionedRuntimes(runtimeVersionsMap));
