@@ -18,6 +18,7 @@
  */
 package org.apache.maven.shared.jar;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,24 +34,16 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 
 /**
- * Open a JAR file to be analyzed. Note that once created, the {@link #closeQuietly()} method should be called to
- * release the associated file handle.
+ * Open a JAR file to be analyzed. The associated file handle should be closed when analysis is complete.
  *
  * Typical usage:
  * <pre>
- *  JarAnalyzer jar = new JarAnalyzer( jarFile );
- *
- *  try
+ *  try (JarAnalyzer jar = new JarAnalyzer(jarFile))
  *  {
  *      // do some analysis, such as:
- *      jarClasses = jarClassAnalyzer.analyze( jar );
+ *      JarClasses jarClasses = jarClassAnalyzer.analyze(jar);
+ *      // use jarClasses or jar.getJarData() while the JAR is open
  *  }
- *  finally
- *  {
- *      jar.closeQuietly();
- *  }
- *
- *  // use jar.getJarData() in some way, or the data returned by the JAR analyzer. jar itself can no longer be used.
  * </pre>
  *
  * Note: that the actual data is separated from this class by design to minimise the chance of forgetting to close the
@@ -60,7 +53,7 @@ import java.util.zip.ZipEntry;
  * @see org.apache.maven.shared.jar.identification.JarIdentificationAnalysis#analyze(JarAnalyzer)
  * @see org.apache.maven.shared.jar.classes.JarClassesAnalysis#analyze(JarAnalyzer)
  */
-public class JarAnalyzer {
+public class JarAnalyzer implements Closeable {
     /**
      * Pattern to filter JAR entries for class files.
      *
@@ -89,7 +82,7 @@ public class JarAnalyzer {
     private final JarData jarData;
 
     /**
-     * Constructor. Opens the JAR file, so should be matched by a call to {@link #closeQuietly()}.
+     * Constructor. Opens the JAR file. Use try-with-resources to ensure that {@link #close()} is called.
      *
      * @param file the JAR file to open
      * @throws java.io.IOException if there is a problem opening the JAR file, or reading the manifest. The JAR file
@@ -123,7 +116,11 @@ public class JarAnalyzer {
      * @throws java.io.IOException if there is a problem opening the individual entry
      */
     public InputStream getEntryInputStream(JarEntry entry) throws IOException {
-        return jarFile.getInputStream(entry);
+        try {
+            return jarFile.getInputStream(entry);
+        } catch (IllegalStateException e) {
+            throw new IOException("The JAR file is closed", e);
+        }
     }
 
     /**
@@ -135,6 +132,16 @@ public class JarAnalyzer {
         } catch (IOException e) {
             // not much we can do about it but ignore it
         }
+    }
+
+    /**
+     * Close the associated JAR file.
+     *
+     * @throws IOException if an I/O error occurs while closing the JAR file
+     */
+    @Override
+    public void close() throws IOException {
+        jarFile.close();
     }
 
     /**
