@@ -22,7 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Gathered Maven information about the JAR file. Stores both assumed/validated values and potential values.
+ * Maven coordinates and descriptive metadata identified for a JAR. The fields contain validated or unambiguous values.
+ * The potential-value lists retain candidates discovered during analysis.
  *
  * @see org.apache.maven.shared.jar.identification.JarIdentificationAnalysis#analyze(org.apache.maven.shared.jar.JarAnalyzer)
  */
