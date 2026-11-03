@@ -64,13 +64,13 @@ class RepositorySearchExposerTest {
             }
         };
 
-        RepositorySearchExposer exposer = new RepositorySearchExposer(
-                search, new JarFileHashAnalyzer(), new JarBytecodeHashAnalyzer());
+        RepositorySearchExposer exposer =
+                new RepositorySearchExposer(search, new JarFileHashAnalyzer(), new JarBytecodeHashAnalyzer());
         try {
             UncheckedIOException exception = assertThrows(
-                    UncheckedIOException.class,
-                    () -> exposer.expose(new JarIdentification(), jarAnalyzer));
-            assertEquals("simulated class-entry read failure", exception.getCause().getMessage());
+                    UncheckedIOException.class, () -> exposer.expose(new JarIdentification(), jarAnalyzer));
+            assertEquals(
+                    "simulated class-entry read failure", exception.getCause().getMessage());
         } finally {
             jarAnalyzer.closeQuietly();
         }
