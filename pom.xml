@@ -23,12 +23,12 @@
   <parent>
     <groupId>org.apache.maven.shared</groupId>
     <artifactId>maven-shared-components</artifactId>
-    <version>49</version>
+    <version>50</version>
     <relativePath />
   </parent>
 
   <artifactId>maven-shared-jar</artifactId>
-  <version>3.2.1-SNAPSHOT</version>
+  <version>3.2.2-SNAPSHOT</version>
 
   <name>Apache Maven JAR Analysis Utilities</name>
   <description>Utilities that help identify the contents of a JAR, including Java class analysis and Maven metadata analysis.</description>
@@ -44,8 +44,8 @@
     <url>https://github.com/apache/maven-shared-jar/issues</url>
   </issueManagement>
   <ciManagement>
-    <system>Jenkins</system>
-    <url>https://ci-maven.apache.org/job/Maven/job/maven-box/job/maven-shared-jar/</url>
+    <system>GitHub</system>
+    <url>https://github.com/apache/maven-shared-jar/actions</url>
   </ciManagement>
   <distributionManagement>
     <site>
@@ -55,10 +55,9 @@
   </distributionManagement>
 
   <properties>
-    <javaVersion>8</javaVersion>
-    <mavenVersion>3.6.3</mavenVersion>
+    <mavenVersion>3.9.16</mavenVersion>
     <slf4jVersion>1.7.36</slf4jVersion>
-    <project.build.outputTimestamp>2024-12-30T18:33:43Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2026-09-19T17:46:16Z</project.build.outputTimestamp>
   </properties>
 
   <dependencies>
@@ -95,19 +94,19 @@
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
-      <version>1.22.1</version>
+      <version>1.23.0</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.bcel</groupId>
       <artifactId>bcel</artifactId>
-      <version>6.12.0</version>
+      <version>6.13.0</version>
     </dependency>
     <!-- Required by BCEL overwritten by maven-artifact -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.20.0</version>
+      <version>3.22.0</version>
       <scope>runtime</scope>
     </dependency>
 
@@ -130,7 +129,7 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-testing</artifactId>
-      <version>2.1.0</version>
+      <version>2.2.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -143,6 +142,21 @@
   </dependencies>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <configuration>
+            <inputExcludes combine.children="append">
+
+              <exclude>src/test/resources/jars/*.jar</exclude>
+
+            </inputExcludes>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.eclipse.sisu</groupId>
@@ -150,4 +164,5 @@
       </plugin>
     </plugins>
   </build>
+  <profiles />
 </project>
