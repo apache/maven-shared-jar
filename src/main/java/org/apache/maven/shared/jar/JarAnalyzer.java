@@ -27,7 +27,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -96,22 +95,32 @@ public class JarAnalyzer {
      *             will be closed if this occurs.
      */
     public JarAnalyzer(File file) throws IOException {
-        this.jarFile = new JarFile(file);
-
-        // Obtain entries list.
-        List<JarEntry> entries = Collections.list(jarFile.entries());
-
-        // Sorting of list is done by name to ensure a bytecode hash is always consistent.
-        entries.sort(Comparator.comparing(ZipEntry::getName));
-
-        Manifest manifest;
+        // Everything after the open runs inside one try so that any failure, checked or
+        // unchecked, releases the JarFile: a constructor that throws leaves the caller no
+        // reference to close. The field is only assigned once construction has succeeded.
+        JarFile opened = null;
+        boolean constructed = false;
         try {
-            manifest = jarFile.getManifest();
-        } catch (IOException e) {
-            closeQuietly();
-            throw e;
+            opened = new JarFile(file);
+
+            // Obtain entries list.
+            List<JarEntry> entries = Collections.list(opened.entries());
+
+            // Sort list by name to ensure a bytecode hash is always consistent.
+            entries.sort(Comparator.comparing(ZipEntry::getName));
+
+            this.jarData = new JarData(file, opened.getManifest(), entries);
+            this.jarFile = opened;
+            constructed = true;
+        } finally {
+            if (!constructed && opened != null) {
+                try {
+                    opened.close();
+                } catch (IOException e) {
+                    // keep the original failure; it matters more than this one
+                }
+            }
         }
-        this.jarData = new JarData(file, manifest, entries);
     }
 
     /**
