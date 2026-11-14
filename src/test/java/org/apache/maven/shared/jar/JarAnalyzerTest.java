@@ -21,6 +21,7 @@ package org.apache.maven.shared.jar;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -100,6 +101,21 @@ class JarAnalyzerTest extends AbstractJarAnalyzerTestCase {
             jarAnalyzer.closeQuietly();
             jarAnalyzer.closeQuietly();
         });
+    }
+
+    @Test
+    void closeCanBeUsedByTryWithResources() throws Exception {
+        JarAnalyzer closedAnalyzer;
+        JarEntry entry;
+        try (JarAnalyzer analyzer = getJarAnalyzer("codec.jar")) {
+            closedAnalyzer = analyzer;
+            entry = analyzer.getEntries().get(0);
+            try (InputStream stream = analyzer.getEntryInputStream(entry)) {
+                assertTrue(stream.read() >= 0);
+            }
+        }
+
+        assertThrows(IOException.class, () -> closedAnalyzer.getEntryInputStream(entry));
     }
 
     @Test
