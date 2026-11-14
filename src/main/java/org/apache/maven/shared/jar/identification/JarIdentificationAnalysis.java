@@ -80,53 +80,44 @@ public class JarIdentificationAnalysis {
 
     private void normalize(JarIdentification taxon) {
         if (StringUtils.isEmpty(taxon.getGroupId())) {
-            taxon.setGroupId(pickSmallest(taxon.getPotentialGroupIds()));
+            taxon.setGroupId(pickUnambiguous(taxon.getPotentialGroupIds()));
         }
 
         if (StringUtils.isEmpty(taxon.getArtifactId())) {
-            taxon.setArtifactId(pickLargest(taxon.getPotentialArtifactIds()));
+            taxon.setArtifactId(pickUnambiguous(taxon.getPotentialArtifactIds()));
         }
 
         if (StringUtils.isEmpty(taxon.getVersion())) {
-            taxon.setVersion(pickSmallest(taxon.getPotentialVersions()));
+            taxon.setVersion(pickUnambiguous(taxon.getPotentialVersions()));
         }
 
         if (StringUtils.isEmpty(taxon.getName())) {
-            taxon.setName(pickLargest(taxon.getPotentialNames()));
+            taxon.setName(pickUnambiguous(taxon.getPotentialNames()));
         }
 
         if (StringUtils.isEmpty(taxon.getVendor())) {
-            taxon.setVendor(pickLargest(taxon.getPotentialVendors()));
+            taxon.setVendor(pickUnambiguous(taxon.getPotentialVendors()));
         }
     }
 
-    private String pickSmallest(List<String> list) {
-        String smallest = null;
-
-        int size = Integer.MAX_VALUE;
-        for (String val : list) {
-            if (val != null && !val.isEmpty()) {
-                if (val.length() < size) {
-                    smallest = val;
-                    size = val.length();
-                }
+    /**
+     * Returns the value when there is at most one distinct non-empty candidate, or {@code null} when candidates
+     * conflict.
+     */
+    private String pickUnambiguous(List<String> values) {
+        String candidate = null;
+        for (String value : values) {
+            if (StringUtils.isEmpty(value)) {
+                continue;
             }
+
+            if (candidate != null && !candidate.equals(value)) {
+                return null;
+            }
+
+            candidate = value;
         }
 
-        return smallest;
-    }
-
-    private String pickLargest(List<String> list) {
-        String largest = null;
-        int size = Integer.MIN_VALUE;
-        for (String val : list) {
-            if (val != null && !val.isEmpty()) {
-                if (val.length() > size) {
-                    largest = val;
-                    size = val.length();
-                }
-            }
-        }
-        return largest;
+        return candidate;
     }
 }

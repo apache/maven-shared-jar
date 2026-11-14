@@ -84,9 +84,9 @@ public class RepositorySearchExposer implements JarIdentificationExposer {
 
         // Found hits in the repository.
         for (Artifact artifact : repohits) {
-            identification.addAndSetGroupId(artifact.getGroupId());
-            identification.addAndSetArtifactId(artifact.getArtifactId());
-            identification.addAndSetVersion(artifact.getVersion());
+            identification.addGroupId(artifact.getGroupId());
+            identification.addArtifactId(artifact.getArtifactId());
+            identification.addVersion(artifact.getVersion());
         }
     }
 }
