@@ -36,10 +36,12 @@ import org.apache.maven.artifact.Artifact;
 @Singleton
 @Named("empty")
 public class EmptyRepositoryHashSearch implements RepositoryHashSearch {
+    @Override
     public List<Artifact> searchBytecodeHash(String hash) {
         return Collections.emptyList();
     }
 
+    @Override
     public List<Artifact> searchFileHash(String hash) {
         return Collections.emptyList();
     }
