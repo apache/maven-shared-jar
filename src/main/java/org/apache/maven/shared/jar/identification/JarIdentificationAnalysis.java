@@ -25,7 +25,6 @@ import javax.inject.Singleton;
 import java.util.List;
 
 import org.apache.maven.shared.jar.JarAnalyzer;
-import org.codehaus.plexus.util.StringUtils;
 
 import static java.util.Objects.requireNonNull;
 
@@ -79,23 +78,23 @@ public class JarIdentificationAnalysis {
     }
 
     private void normalize(JarIdentification taxon) {
-        if (StringUtils.isEmpty(taxon.getGroupId())) {
+        if (taxon.getGroupId() == null || taxon.getGroupId().isEmpty()) {
             taxon.setGroupId(pickSmallest(taxon.getPotentialGroupIds()));
         }
 
-        if (StringUtils.isEmpty(taxon.getArtifactId())) {
+        if (taxon.getArtifactId() == null || taxon.getArtifactId().isEmpty()) {
             taxon.setArtifactId(pickLargest(taxon.getPotentialArtifactIds()));
         }
 
-        if (StringUtils.isEmpty(taxon.getVersion())) {
+        if (taxon.getVersion() == null || taxon.getVersion().isEmpty()) {
             taxon.setVersion(pickSmallest(taxon.getPotentialVersions()));
         }
 
-        if (StringUtils.isEmpty(taxon.getName())) {
+        if (taxon.getName() == null || taxon.getName().isEmpty()) {
             taxon.setName(pickLargest(taxon.getPotentialNames()));
         }
 
-        if (StringUtils.isEmpty(taxon.getVendor())) {
+        if (taxon.getVendor() == null || taxon.getVendor().isEmpty()) {
             taxon.setVendor(pickLargest(taxon.getPotentialVendors()));
         }
     }
