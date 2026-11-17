@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 public class JarBytecodeHashAnalyzer implements JarHashAnalyzer {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Override
     public String computeHash(JarAnalyzer jarAnalyzer) {
         JarData jarData = jarAnalyzer.getJarData();
 
