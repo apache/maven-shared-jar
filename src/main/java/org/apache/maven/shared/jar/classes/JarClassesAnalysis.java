@@ -22,6 +22,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -241,15 +242,9 @@ public class JarClassesAnalysis {
     }
 
     private boolean hasDebugSymbols(JavaClass javaClass) {
-        boolean ret = false;
-        Method[] methods = javaClass.getMethods();
-        for (Method method : methods) {
-            LineNumberTable linenumbers = method.getLineNumberTable();
-            if (linenumbers != null && linenumbers.getLength() > 0) {
-                ret = true;
-                break;
-            }
-        }
-        return ret;
+        return Arrays.stream(javaClass.getMethods()).anyMatch(method -> {
+            LineNumberTable table = method.getLineNumberTable();
+            return table != null && table.getLength() > 0;
+        });
     }
 }
