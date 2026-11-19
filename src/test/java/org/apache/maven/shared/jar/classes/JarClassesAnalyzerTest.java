@@ -21,9 +21,16 @@ package org.apache.maven.shared.jar.classes;
 import javax.inject.Inject;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 
 import org.apache.maven.shared.jar.AbstractJarAnalyzerTestCase;
 import org.apache.maven.shared.jar.JarAnalyzer;
@@ -344,6 +351,62 @@ class JarClassesAnalyzerTest extends AbstractJarAnalyzerTestCase {
                     assertNull(jarClasses11.getJdkRevision());
                 },
                 "It should not raise an exception");
+    }
+
+    @Test
+    void analyzeMultiReleaseJarWithoutRootEntries() throws Exception {
+        File jarFile = File.createTempFile("multi-release-no-root", ".jar");
+        try {
+            try (JarFile sourceJar = new JarFile(getSampleJar("helloworld-9.jar"));
+                    JarOutputStream output =
+                            new JarOutputStream(new FileOutputStream(jarFile), multiReleaseManifest())) {
+                JarEntry sourceClass = sourceJar.stream()
+                        .filter(entry -> entry.getName().endsWith(".class"))
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalStateException("No class found in source fixture"));
+                JarEntry versionedClass = new JarEntry("META-INF/versions/9/" + sourceClass.getName());
+                output.putNextEntry(versionedClass);
+                try (InputStream input = sourceJar.getInputStream(sourceClass)) {
+                    byte[] buffer = new byte[8192];
+                    int read;
+                    while ((read = input.read(buffer)) != -1) {
+                        output.write(buffer, 0, read);
+                    }
+                }
+                output.closeEntry();
+            }
+
+            JarAnalyzer jarAnalyzer = new JarAnalyzer(jarFile) {
+                @Override
+                public List<JarEntry> getEntries() {
+                    return super.getEntries().stream()
+                            .filter(entry -> entry.getName().startsWith("META-INF/versions/"))
+                            .collect(Collectors.toList());
+                }
+            };
+            try {
+                JarData jarData = jarAnalyzer.getJarData();
+                assertDoesNotThrow(
+                        () -> analyzer.analyze(jarAnalyzer), "A multi-release JAR may have no root class entries");
+                assertTrue(
+                        jarData.getRootEntries().stream()
+                                .noneMatch(entry -> entry.getName().endsWith(".class")),
+                        "Root entries should contain no classes");
+                assertTrue(jarData.getJarClasses().getClassNames().isEmpty(), "Root classes should be empty");
+                assertNotNull(jarData.getVersionedRuntimes().getJarVersionedRuntime(9), "Version 9 should be retained");
+            } finally {
+                jarAnalyzer.closeQuietly();
+            }
+        } finally {
+            Files.deleteIfExists(jarFile.toPath());
+        }
+    }
+
+    private Manifest multiReleaseManifest() {
+        Manifest manifest = new Manifest();
+        manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
+        manifest.getMainAttributes().putValue("Multi-Release", "true");
+        return manifest;
     }
 
     private void assertEntriesContains(List<JarEntry> list, final String entryToFind) {
